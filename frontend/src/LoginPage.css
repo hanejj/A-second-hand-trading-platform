@@ -1,0 +1,79 @@
+/* 로그인 페이지 전체 컨테이너 */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f8f8f8;
+}
+
+/* 가지마켓 로고 */
+.logo {
+    font-size: 36px;
+    color: #800080; /* 보라색 */
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+/* 로그인 폼 */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 입력 필드 그룹 */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+    .input-group label {
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    .input-group input {
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+/* 로그인 버튼 */
+.login-button {
+    padding: 10px;
+    background-color: #800080; /* 보라색 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+    .login-button:hover {
+        background-color: #c19cd9; /* 연한 보라색 */
+    }
+
+/* 로그인 페이지 링크들 */
+.login-links {
+    margin-top: 20px;
+    text-align: center;
+}
+
+    .login-links a {
+        display: block;
+        margin-top: 10px;
+        color: #800080;
+        text-decoration: none;
+    }
+
+        .login-links a:hover {
+            text-decoration: underline;
+        }

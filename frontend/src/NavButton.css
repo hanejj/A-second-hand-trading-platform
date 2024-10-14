@@ -1,0 +1,13 @@
+.nav-button {
+    margin: 0 10px;
+    padding: 10px 15px;
+    background-color: #6a5acd; /* 보라색 */
+    color: white; /* 글자색 */
+    text-decoration: none; /* 링크 밑줄 제거 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    transition: background-color 0.3s;
+}
+
+    .nav-button:hover {
+        background-color: #5a4ecb; /* 마우스 오버 시 색상 변경 */
+    }

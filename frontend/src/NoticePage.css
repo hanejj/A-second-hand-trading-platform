@@ -1,0 +1,76 @@
+.notice-page {
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #6a0dad; /* 보라색 배경 */
+    padding: 10px;
+    color: white;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.nav button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+h2 {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.search-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+    .search-section input {
+        padding: 8px;
+        width: 200px;
+        border: 1px solid #ddd;
+    }
+
+    .search-section button {
+        padding: 8px;
+        margin-left: 10px;
+        background-color: #6a0dad; /* 보라색 */
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+.write-button {
+    padding: 8px;
+    margin-left: 10px;
+    background-color: #6a0dad; /* 보라색 */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}

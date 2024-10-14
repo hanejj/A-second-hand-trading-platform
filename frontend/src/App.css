@@ -1,0 +1,38 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #6a0dad, #8a2be2); /* 그라디언트 배경 */
+    padding: 15px 20px;
+}
+
+.logo {
+    font-size: 40px; /* 원하는 크기로 조정 */
+    font-weight: bold; /* 굵게 설정 */
+    color: black;
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+.nav {
+    display: flex;
+    gap: 15px; /* 버튼 간격 */
+}
+
+.nav-button {
+    background-color: #6a0dad; /* 버튼 배경색 */
+    color: white; /* 버튼 글씨색 */
+    border: none;
+    border-radius: 25px; /* 둥근 모서리 */
+    padding: 10px 20px; /* 여백 */
+    cursor: pointer;
+    font-size: 16px; /* 글씨 크기 */
+    transition: all 0.3s ease; /* 애니메이션 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    text-decoration: none; /* 링크 언더라인 제거 */
+}
+
+    .nav-button:hover {
+        background-color: #8a2be2; /* 호버 시 배경색 변화 */
+        transform: translateY(-2px); /* 호버 시 약간 올라가는 효과 */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* 호버 시 그림자 변화 */
+    }

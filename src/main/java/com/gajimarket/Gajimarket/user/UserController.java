@@ -1,2 +1,4 @@
-package com.gajimarket.Gajimarket.user;public class UserController {
+package com.gajimarket.Gajimarket.user;
+
+public class UserController {
 }

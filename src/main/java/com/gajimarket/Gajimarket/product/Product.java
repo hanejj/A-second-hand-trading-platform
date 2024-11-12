@@ -25,9 +25,10 @@ public class Product {
     private String status; // 거래 상태
     private Integer buyerIdx; //구매자 인덱스
     private Boolean review; //리뷰 존재 여부
+    private String content; // 내용
     
 
-    public Product(int productIdx, String category, String title, int price, LocalDateTime createdAt, String location, int chatNum, int heartNum, String selling, String image, int sellerIdx, String sellerName, String status, Integer buyerIdx, boolean review) {
+    public Product(int productIdx, String category, String title, int price, LocalDateTime createdAt, String location, int chatNum, int heartNum, String selling, String image, int sellerIdx, String sellerName, String status, Integer buyerIdx, boolean review, String content) {
         this.productIdx = productIdx;
         this.category = category;
         this.title = title;
@@ -43,5 +44,6 @@ public class Product {
         this.status = status;
         this.buyerIdx = buyerIdx;
         this.review = review;
+        this.content=content;
     }
 }

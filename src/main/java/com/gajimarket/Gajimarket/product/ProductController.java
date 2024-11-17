@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:3000") // 프론트엔드에서 요청 가능
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -24,9 +25,19 @@ public class ProductController {
 
     // 조건별 상품 목록 조회
     @GetMapping
-    public ResponseEntity<ApiResponse> getProductList(@RequestBody ProductRequest productRequest) {
+    public ResponseEntity<ApiResponse> getProductList(
+            @RequestParam(required = false) String selling,  // 팔아요/구해요
+            @RequestParam(required = false) String category, // 카테고리
+            @RequestParam(required = false) String order     // 정렬기준
+    ) {
+        System.out.println("/product request");
+        System.out.println("sell: "+selling);
+        System.out.println("category: "+category);
+        System.out.println("order: "+order);
         ApiResponse apiResponse;
         try {
+            // Request에서 받은 파라미터를 ProductRequest 객체에 세팅
+            ProductRequest productRequest = new ProductRequest(selling, category, order);
             List<Product> product_list = productService.getProductList(productRequest);
             apiResponse = new ApiResponse("1000", null);
             apiResponse.setData(product_list);

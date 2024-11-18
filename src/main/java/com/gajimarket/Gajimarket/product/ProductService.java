@@ -56,8 +56,8 @@ public class ProductService {
                         rs.getInt("heart_num"),
                         rs.getString("selling"),
                         rs.getString("image"),
-                        rs.getInt("seller_idx"),
-                        rs.getString("seller_name"),
+                        rs.getInt("writer_idx"),
+                        rs.getString("writer_name"),
                         rs.getString("status"),
                         // 필요하지 않은 정보는 가져오지 않음
                         0, //rs.getInt("buyer_idx"),
@@ -86,8 +86,8 @@ public class ProductService {
                         rs.getInt("heart_num"),
                         rs.getString("selling"),
                         rs.getString("image"),
-                        rs.getInt("seller_idx"),
-                        rs.getString("seller_name"),
+                        rs.getInt("writer_idx"),
+                        rs.getString("writer_name"),
                         rs.getString("status"),
                         rs.getInt("buyer_idx"),
                         rs.getBoolean("review"),
@@ -97,15 +97,28 @@ public class ProductService {
     }
 
     //작성된 리뷰를 데이터베이스에 등록
-    public void writeReview(int product_idx, ReviewRequest reviewRequest){
+    public void writeReview(int product_idx, ReviewRequest reviewRequest) {
+        // 리뷰 삽입
         String sql = "INSERT INTO Review (product_idx, review, image, seller_index, buyer_index, created_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, product_idx, reviewRequest.getReview(), reviewRequest.getImage(),
                 reviewRequest.getSellerIndex(), reviewRequest.getBuyerIndex(), new Date());
-        // Product 테이블에서 해당 product_idx에 대한 리뷰 컬럼을 true로 업데이트
+
+        // Product 테이블에서 해당 product_idx에 대한 리뷰 상태를 true로 업데이트
         String updateProductSql = "UPDATE Product SET review = true WHERE product_idx = ?";
         jdbcTemplate.update(updateProductSql, product_idx);
+
+        // 리뷰 스코어에 따라 판매자의 manner_point 업데이트
+        String updateMannerPointSql = "UPDATE user " +
+                "SET manner_point = manner_point + " +
+                "CASE WHEN ? = 'good' THEN 5 " +
+                "WHEN ? = 'bad' THEN -5 " +
+                "ELSE 0 END " +
+                "WHERE user_idx = ?";
+        jdbcTemplate.update(updateMannerPointSql, reviewRequest.getReviewScore(), reviewRequest.getReviewScore(), reviewRequest.getSellerIndex());
+
     }
+
 
     //리뷰 가져오기
     public Review getReviewByProductId(int productIdx) {
@@ -134,7 +147,7 @@ public class ProductService {
 
     //상품 업로드
     public int uploadProduct(ProductUploadRequest productUploadRequest) {
-        String sql = "INSERT INTO product (title, content, image, price, category, location, created_at, seller_idx, seller_name, selling, status) " +
+        String sql = "INSERT INTO product (title, content, image, price, category, location, created_at, writer_idx, writer_name, selling, status) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,

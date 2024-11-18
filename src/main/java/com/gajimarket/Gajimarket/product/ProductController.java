@@ -6,12 +6,21 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:3000") // 프론트엔드에서 요청 가능
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -69,19 +78,42 @@ public class ProductController {
 
     // 리뷰 쓰기 기능
     @PostMapping("/{product_idx}/review/write")
-    public ResponseEntity<ApiResponse> writeReview(@PathVariable int product_idx, @RequestBody ReviewRequest reviewRequest) {
+    public ResponseEntity<ApiResponse> writeReview(
+            @PathVariable int product_idx,
+            @RequestParam("review") String review,
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("sellerIndex") int sellerIndex,
+            @RequestParam("buyerIndex") int buyerIndex,
+            @RequestParam("reviewScore") String reviewScore) { // 좋음/나쁨 평가
         ApiResponse apiResponse;
-        try{
+        try {
+            // 이미지 저장
+            String imagePath = saveImage(image);
+
+            // 생성일은 서버에서 처리
+            LocalDateTime createdAt = LocalDateTime.now();
+
+            // ReviewRequest 객체 생성
+            ReviewRequest reviewRequest = new ReviewRequest();
+            reviewRequest.setReview(review);
+            reviewRequest.setImage(imagePath);
+            reviewRequest.setSellerIndex(sellerIndex);
+            reviewRequest.setBuyerIndex(buyerIndex);
+            reviewRequest.setReviewScore(reviewScore); // 평가 추가
+            reviewRequest.setCreatedAt(createdAt);
+
+            // 서비스 호출
             productService.writeReview(product_idx, reviewRequest);
-            apiResponse=new ApiResponse("1000", "리뷰 쓰기 성공");
-            return ResponseEntity.ok()
-                    .body(apiResponse);
-        }
-        catch (Exception e){
+
+            apiResponse = new ApiResponse("1000", "리뷰 쓰기 성공");
+            return ResponseEntity.ok().body(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
             apiResponse = new ApiResponse("0", "리뷰 쓰기 실패");
             return ResponseEntity.ok().body(apiResponse);
         }
     }
+
 
     // 리뷰 읽기 기능
     @GetMapping("/{product_idx}/review/read")
@@ -100,19 +132,59 @@ public class ProductController {
 
     // 상품 게시글 업로드
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse> uploadProduct(@RequestBody ProductUploadRequest productUploadRequest) {
+    public ResponseEntity<ApiResponse> uploadProduct(
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("price") int price,
+            @RequestParam("category") String category,
+            @RequestParam("location") String location,
+            @RequestParam("createdAt") String  createdAt,
+            @RequestParam("user_idx") int userIdx,
+            @RequestParam("nickname") String nickname,
+            @RequestParam("keyword") String[] keywords,
+            @RequestParam("sell") String sellType,
+            @RequestParam("image") MultipartFile image) {
+
         ApiResponse apiResponse;
         try {
-            int productIdx=productService.uploadProduct(productUploadRequest);
+            // 이미지 저장 처리
+            String imagePath = saveImage(image);
+            // createdAt을 LocalDateTime으로 변환
+            // createdAt을 ZonedDateTime으로 파싱 (Z가 포함된 날짜 처리)
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(createdAt, DateTimeFormatter.ISO_DATE_TIME);
+            LocalDateTime createdDateTime = zonedDateTime.toLocalDateTime(); // LocalDateTime으로 변환
+
+            // 업로드된 상품 정보 처리
+            ProductUploadRequest productUploadRequest = new ProductUploadRequest(title, content, imagePath, price, category, location, createdDateTime, userIdx, nickname, Arrays.asList(keywords), sellType);
+
+            // 상품 등록 서비스 호출
+            int productIdx = productService.uploadProduct(productUploadRequest);
+
+            // 응답 데이터
             Map<String, Object> responseData = new HashMap<>();
-            responseData.put("product_idx", productIdx); //등록된 상품의 인덱스
+            responseData.put("product_idx", productIdx); // 등록된 상품의 인덱스
             apiResponse = new ApiResponse("1000", null);
             apiResponse.setData(responseData);
+
             return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
             e.printStackTrace();
             apiResponse = new ApiResponse("0", "상품 업로드 실패");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+        }
+    }
+
+
+    private String saveImage(MultipartFile image) {
+        try {
+            String uploadDir = "src/main/resources/static/uploads/";
+            String fileName = image.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir + fileName);
+            Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            return "/uploads/" + fileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("이미지 저장 실패");
         }
     }
 }

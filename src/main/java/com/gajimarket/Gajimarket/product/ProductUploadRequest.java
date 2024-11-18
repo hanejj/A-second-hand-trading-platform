@@ -2,6 +2,8 @@ package com.gajimarket.Gajimarket.product;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.cglib.core.Local;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,4 +26,17 @@ public class ProductUploadRequest {
     private String sell; //팔아요/구해요
 
 
+    public <T> ProductUploadRequest(String title, String content, String imagePath, int price, String category, String location, LocalDateTime createdAt, int userIdx, String nickname, List<String> list, String sellType) {
+        this.title=title;
+        this.content=content;
+        this.image=imagePath;
+        this.price=price;
+        this.category=category;
+        this.location=location;
+        this.createdAt=createdAt;
+        this.user_idx=userIdx;
+        this.nickname=nickname;
+        this.keyword=list;
+        this.sell=sellType;
+    }
 }

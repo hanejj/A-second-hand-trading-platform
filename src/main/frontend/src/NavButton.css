@@ -1,13 +1,13 @@
 .nav-button {
-    margin: 0 10px;
+    margin: 20px;
     padding: 10px 15px;
-    background-color: #6a5acd; /* º¸¶ó»ö */
-    color: white; /* ±ÛÀÚ»ö */
-    text-decoration: none; /* ¸µÅ© ¹ØÁÙ Á¦°Å */
-    border-radius: 5px; /* ¸ð¼­¸® µÕ±Û°Ô */
+    background-color: #9c1db2; /* ï¿½ï¿½ï¿½ï¿½ï¿½ */
+    color: white; /* ï¿½ï¿½ï¿½Ú»ï¿½ */
+    text-decoration: none; /* ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    border-radius: 5px; /* ï¿½ð¼­¸ï¿½ ï¿½Õ±Û°ï¿½ */
     transition: background-color 0.3s;
 }
 
     .nav-button:hover {
-        background-color: #5a4ecb; /* ¸¶¿ì½º ¿À¹ö ½Ã »ö»ó º¯°æ */
+        background-color: #9c1db2; /* ï¿½ï¿½ï¿½ì½º ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
     }

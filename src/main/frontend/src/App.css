@@ -2,37 +2,40 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(90deg, #6a0dad, #8a2be2); /* ±×¶óµð¾ðÆ® ¹è°æ */
+    background: linear-gradient(90deg, #C87BD6, #9c1db2); /* ï¿½×¶ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ */
     padding: 15px 20px;
 }
 
 .logo {
-    font-size: 40px; /* ¿øÇÏ´Â Å©±â·Î Á¶Á¤ */
-    font-weight: bold; /* ±½°Ô ¼³Á¤ */
+    font-size: 40px; /* ï¿½ï¿½ï¿½Ï´ï¿½ Å©ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    font-weight: bold; /* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
     color: black;
-    text-decoration: none; /* ¹ØÁÙ Á¦°Å */
+    text-decoration: none; /* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 }
 
 .nav {
     display: flex;
-    gap: 15px; /* ¹öÆ° °£°Ý */
+    justify-content: flex-start; /* ì™¼ìª½ ì •ë ¬ */
+    gap: 15px; /* ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ */
 }
 
 .nav-button {
-    background-color: #6a0dad; /* ¹öÆ° ¹è°æ»ö */
-    color: white; /* ¹öÆ° ±Û¾¾»ö */
+    display: flex;
+    justify-content: flex-start; /* ì™¼ìª½ ì •ë ¬ */
+    background-color: #C87BD6; /* ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ */
+    color: white; /* ï¿½ï¿½Æ° ï¿½Û¾ï¿½ï¿½ï¿½ */
     border: none;
-    border-radius: 25px; /* µÕ±Ù ¸ð¼­¸® */
-    padding: 10px 20px; /* ¿©¹é */
+    border-radius: 25px; /* ï¿½Õ±ï¿½ ï¿½ð¼­¸ï¿½ */
+    padding: 10px 20px; /* ï¿½ï¿½ï¿½ï¿½ */
     cursor: pointer;
-    font-size: 16px; /* ±Û¾¾ Å©±â */
-    transition: all 0.3s ease; /* ¾Ö´Ï¸ÞÀÌ¼Ç */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* ±×¸²ÀÚ È¿°ú */
-    text-decoration: none; /* ¸µÅ© ¾ð´õ¶óÀÎ Á¦°Å */
+    font-size: 16px; /* ï¿½Û¾ï¿½ Å©ï¿½ï¿½ */
+    transition: all 0.3s ease; /* ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* ï¿½×¸ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ */
+    text-decoration: none; /* ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 }
 
     .nav-button:hover {
-        background-color: #8a2be2; /* È£¹ö ½Ã ¹è°æ»ö º¯È­ */
-        transform: translateY(-2px); /* È£¹ö ½Ã ¾à°£ ¿Ã¶ó°¡´Â È¿°ú */
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* È£¹ö ½Ã ±×¸²ÀÚ º¯È­ */
+        background-color: #C87BD6; /* È£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È­ */
+        transform: translateY(-2px); /* È£ï¿½ï¿½ ï¿½ï¿½ ï¿½à°£ ï¿½Ã¶ó°¡´ï¿½ È¿ï¿½ï¿½ */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* È£ï¿½ï¿½ ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½È­ */
     }

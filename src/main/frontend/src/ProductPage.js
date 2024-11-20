@@ -121,7 +121,7 @@ const ProductPage = () => {
   return (
     <>
       <div className="product-page">
-        <img src={`http://localhost:8080${product.image}`} alt={product.title} className="product-page-image" />
+        <img src={"http://localhost:8080/image?image="+product.image} alt={product.title} className="product-page-image" />
         <div className="product-page-info">
           <p>카테고리{' >'} {getCategoryName(product.category)}</p>
           <div className="product-page-product-info-box">
@@ -189,7 +189,7 @@ const ProductPage = () => {
           <h3>리뷰</h3>
           <p><strong>작성일:</strong> {new Date(reviewData.createdAt).toLocaleDateString()}</p>
           <p>{reviewData.review}</p>
-          <img src={`http://localhost:8080${reviewData.image}`} alt="review" className="product-page-review-image" />
+          <img src={"http://localhost:8080/image?image="+reviewData.image} alt="review" className="product-page-review-image" />
         </div>
       )}
     </>

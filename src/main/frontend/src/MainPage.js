@@ -78,7 +78,7 @@ const MainPage = () => {
               </div>
             </Link>
             <Link to={`/product/${product.productIdx}`} className="product-link">
-              <img src={`http://localhost:8080${product.image}`} alt={product.title} />
+              <img src={"http://localhost:8080/image?image="+product.image} alt={product.title} />
             </Link>
           </div>          
           ))}
@@ -102,7 +102,7 @@ const MainPage = () => {
               </div>
             </Link>
             <Link to={`/product/${product.productIdx}`} className="product-link">
-              <img src={`http://localhost:8080${product.image}`} alt={product.title} />
+              <img src={"http://localhost:8080/image?image="+product.image} alt={product.title} />
             </Link>
           </div>          
                    

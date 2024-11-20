@@ -16,10 +16,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/product")
@@ -61,6 +58,7 @@ public class ProductController {
     // 특정 상품 정보를 요청받아 반환
     @GetMapping("/{product_idx}")
     public ResponseEntity<ApiResponse> getProductById(@PathVariable int product_idx) {
+        System.out.println("/product/"+product_idx+" request");
         ApiResponse apiResponse;
         try {
             Product product = productService.getProductById(product_idx);
@@ -85,6 +83,7 @@ public class ProductController {
             @RequestParam("sellerIndex") int sellerIndex,
             @RequestParam("buyerIndex") int buyerIndex,
             @RequestParam("reviewScore") String reviewScore) { // 좋음/나쁨 평가
+        System.out.println("/"+product_idx+"/review/write request");
         ApiResponse apiResponse;
         try {
             // 이미지 저장
@@ -118,6 +117,7 @@ public class ProductController {
     // 리뷰 읽기 기능
     @GetMapping("/{product_idx}/review/read")
     public ResponseEntity<ApiResponse> readReview(@PathVariable int product_idx) {
+        System.out.println("/"+product_idx+"/review/read request");
         ApiResponse apiResponse;
         try {
             Review review = productService.getReviewByProductId(product_idx);
@@ -144,6 +144,8 @@ public class ProductController {
             @RequestParam("keyword") String[] keywords,
             @RequestParam("sell") String sellType,
             @RequestParam("image") MultipartFile image) {
+
+        System.out.println("product /upload request");
 
         ApiResponse apiResponse;
         try {
@@ -174,17 +176,30 @@ public class ProductController {
         }
     }
 
-
+    //파일 시스템에 이미지 저장
     private String saveImage(MultipartFile image) {
         try {
             String uploadDir = "src/main/resources/static/uploads/";
-            String fileName = image.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir + fileName);
+            String originalFileName = image.getOriginalFilename();
+            String extension = ""; // 파일 확장자
+
+            // 파일 확장자 추출
+            if (originalFileName != null && originalFileName.contains(".")) {
+                extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            }
+
+            // 고유 파일명 생성: UUID 기반
+            String uniqueFileName = UUID.randomUUID().toString() + extension;
+
+            Path filePath = Paths.get(uploadDir + uniqueFileName);
             Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            return "/uploads/" + fileName;
+
+            return "/uploads/" + uniqueFileName;
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("이미지 저장 실패");
         }
     }
+
+
 }

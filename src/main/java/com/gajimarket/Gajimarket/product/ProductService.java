@@ -60,7 +60,7 @@ public class ProductService {
                         rs.getString("writer_name"),
                         rs.getString("status"),
                         // 필요하지 않은 정보는 가져오지 않음
-                        0, //rs.getInt("buyer_idx"),
+                        0, //rs.getInt("partner_idx"),
                         false, //rs.getBoolean("review"),
                         null //rs.getString("content")
                 )
@@ -89,7 +89,7 @@ public class ProductService {
                         rs.getInt("writer_idx"),
                         rs.getString("writer_name"),
                         rs.getString("status"),
-                        rs.getInt("buyer_idx"),
+                        rs.getInt("partner_idx"),
                         rs.getBoolean("review"),
                         rs.getString("content")
                 )

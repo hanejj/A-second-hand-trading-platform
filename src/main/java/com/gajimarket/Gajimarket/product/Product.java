@@ -20,15 +20,15 @@ public class Product {
     private Integer heartNum; //하트 수
     private String selling;  // 'sell' or 'get'
     private String image; //이미지
-    private Integer sellerIdx; // 판매자 인덱스
-    private String sellerName; //판매자 닉네임
+    private Integer writerIdx; // 상품 게시글 업로드 사용자 인덱스
+    private String writerName; // 닉네임
     private String status; // 거래 상태
-    private Integer buyerIdx; //구매자 인덱스
+    private Integer partnerIdx; // 거래 상대방 인덱스
     private Boolean review; //리뷰 존재 여부
     private String content; // 내용
     
 
-    public Product(int productIdx, String category, String title, int price, LocalDateTime createdAt, String location, int chatNum, int heartNum, String selling, String image, int sellerIdx, String sellerName, String status, Integer buyerIdx, boolean review, String content) {
+    public Product(int productIdx, String category, String title, int price, LocalDateTime createdAt, String location, int chatNum, int heartNum, String selling, String image, int writerIdx, String writerName, String status, Integer partnerIdx, boolean review, String content) {
         this.productIdx = productIdx;
         this.category = category;
         this.title = title;
@@ -39,10 +39,10 @@ public class Product {
         this.heartNum = heartNum;
         this.selling = selling;
         this.image = image;
-        this.sellerIdx = sellerIdx;
-        this.sellerName = sellerName;
+        this.writerIdx = writerIdx;
+        this.writerName = writerName;
         this.status = status;
-        this.buyerIdx = buyerIdx;
+        this.partnerIdx = partnerIdx;
         this.review = review;
         this.content=content;
     }

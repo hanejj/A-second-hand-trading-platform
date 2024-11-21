@@ -32,9 +32,11 @@ const ProductPage = () => {
 
     const formData = new FormData();
     formData.append('review', reviewContent);
-    formData.append('sellerIndex', 1); // 판매자 ID
-    formData.append('buyerIndex', 2); // 구매자 ID
-    formData.append('reviewScore', reviewScore);
+    formData.append('writerIndex', 1); // 상품 게시글 작성자 임의로 1로 설정
+    formData.append('partnerIndex', 2); // 거래 상대방 ID 임의로 2로 설정
+    formData.append('sellerIndex', 1); // 판매자 임의로 1로 설정
+    formData.append('buyerIndex', 2); // 구매자 ID 임의로 2로 설정
+    formData.append('reviewScore', reviewScore); // 거래 평가
 
     if (reviewImage) {
       formData.append('image', reviewImage);
@@ -128,10 +130,10 @@ const ProductPage = () => {
             <h1 className="product-page-h1">{product.title}</h1>
             <p>{product.price.toLocaleString()}원</p>
             <p>{product.location} / {new Date(product.createdAt).toLocaleDateString()}</p>
-            <p>{product.status === 'active' ? '판매 중' : '판매 완료'}</p>
+            <p>{product.status === 'active' ? '거래 중' : '거래 완료'}</p>
             <p>♡ 관심 {product.heartNum} · 💬 채팅 {product.chatNum}</p>
             <div className="product-page-seller-info">
-              <p>판매자 {product.sellerName}</p>
+              <p>판매자 {product.writerName}</p>
             </div>
           </div>
   

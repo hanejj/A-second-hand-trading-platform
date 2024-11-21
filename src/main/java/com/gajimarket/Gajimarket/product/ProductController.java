@@ -2,6 +2,7 @@ package com.gajimarket.Gajimarket.product;
 
 import com.gajimarket.Gajimarket.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -56,12 +58,15 @@ public class ProductController {
     }
 
     // 특정 상품 정보를 요청받아 반환
+    // 아직 로그인이 구현되지 않았으므로 클라리언트에서 보내는 임의의 user_idx 사용, 후에 session으로 변경
     @GetMapping("/{product_idx}")
-    public ResponseEntity<ApiResponse> getProductById(@PathVariable int product_idx) {
+    public ResponseEntity<ApiResponse> getProductById(
+            @PathVariable int product_idx,
+            @RequestParam("user_idx") int user_idx    ) {
         System.out.println("/product/"+product_idx+" request");
         ApiResponse apiResponse;
         try {
-            Product product = productService.getProductById(product_idx);
+            Product product = productService.getProductById(product_idx, user_idx);
             //response 생성 후 반환
             apiResponse = new ApiResponse("1000", null);
             apiResponse.setData(product);
@@ -199,6 +204,63 @@ public class ProductController {
             e.printStackTrace();
             throw new RuntimeException("이미지 저장 실패");
         }
+    }
+
+    // 상품 찜 추가 기능
+    @PostMapping("/{product_idx}/wish")
+    public ResponseEntity<ApiResponse> addWish(
+            @PathVariable int product_idx,
+            @RequestParam("user_idx") int user_idx){
+        System.out.println("/product"+product_idx+"/wish request");
+        ApiResponse apiResponse;
+        try {
+            // 생성일은 서버에서 처리
+            LocalDateTime createdAt = LocalDateTime.now();
+
+            // WishRequest 객체 생성
+            WishRequest wishRequest=new WishRequest();
+            wishRequest.setUserIdx(user_idx);
+            wishRequest.setProductIdx(product_idx);
+            wishRequest.setCreatedAt(createdAt);
+
+            // 서비스 호출
+            productService.addWish(wishRequest);
+            apiResponse = new ApiResponse("1000", "찜 추가 성공");
+            return ResponseEntity.ok().body(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            apiResponse = new ApiResponse("0", "찜 추가 실패");
+            return ResponseEntity.ok().body(apiResponse);
+        }
+
+    }
+
+    // 상품 찜 해제 기능
+    @PostMapping("/{product_idx}/wish/cancel")
+    public ResponseEntity<ApiResponse> cancelWish(
+            @PathVariable int product_idx,
+            @RequestParam("user_idx") int user_idx){
+        System.out.println("/product/"+product_idx+"/wish/cancel request");
+        ApiResponse apiResponse;
+        try {
+            LocalDateTime createdAt=null; // 찜 삭제 시간은 필요없음
+
+            // WishRequest 객체 생성
+            WishRequest wishRequest=new WishRequest();
+            wishRequest.setUserIdx(user_idx);
+            wishRequest.setProductIdx(product_idx);
+            wishRequest.setCreatedAt(createdAt);
+
+            // 서비스 호출
+            productService.cancelWish(wishRequest);
+            apiResponse = new ApiResponse("1000", "찜 취소 성공");
+            return ResponseEntity.ok().body(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            apiResponse = new ApiResponse("0", "찜 취소 실패");
+            return ResponseEntity.ok().body(apiResponse);
+        }
+
     }
 
 

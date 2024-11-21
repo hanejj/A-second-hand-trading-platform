@@ -7,14 +7,36 @@ const ProductPage = () => {
   const { productIdx } = useParams();
   const [product, setProduct] = useState(null);
   const [reviewData, setReviewData] = useState(null);
-  const [isHearted, setIsHearted] = useState(false);
+  const [isHearted, setIsHearted] = useState(false); // 초기 상태
   const [isChatting, setIsChatting] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewContent, setReviewContent] = useState('');
   const [reviewImage, setReviewImage] = useState(null);
-  const [reviewScore, setReviewScore] = useState(''); // 리뷰 점수 상태
+  const [reviewScore, setReviewScore] = useState(''); // 리뷰 점수 상태\
+  const userIdx = 1; // 임시로 설정한 사용자 ID, 로그인 후 실제 사용자 ID를 넣으세요.
 
-  const handleHeartClick = () => setIsHearted(!isHearted);
+  const handleHeartClick = async () => {
+    try {
+      const endpoint = isHearted
+        ? `http://localhost:8080/product/${productIdx}/wish/cancel`
+        : `http://localhost:8080/product/${productIdx}/wish`;
+
+      const response = await axios.post(endpoint, null, {
+        params: { user_idx: userIdx },
+      });
+
+      if (response.data.code === '1000') {
+        setIsHearted(!isHearted); // 성공 시 상태 변경
+        alert(isHearted ? '찜이 취소되었습니다.' : '찜이 추가되었습니다.');
+      } else {
+        alert('찜 요청에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('찜 요청 중 오류:', error);
+      alert('찜 요청 중 에러가 발생했습니다.');
+    }
+  };
+
   const handleChatClick = () => setIsChatting(true);
   const handleReportClick = () => alert('이 상품을 신고합니다.');
   const handleWriteReviewClick = () => setShowReviewModal(true);
@@ -32,11 +54,11 @@ const ProductPage = () => {
 
     const formData = new FormData();
     formData.append('review', reviewContent);
-    formData.append('writerIndex', 1); // 상품 게시글 작성자 임의로 1로 설정
+    formData.append('writerIndex', userIdx);
     formData.append('partnerIndex', 2); // 거래 상대방 ID 임의로 2로 설정
     formData.append('sellerIndex', 1); // 판매자 임의로 1로 설정
     formData.append('buyerIndex', 2); // 구매자 ID 임의로 2로 설정
-    formData.append('reviewScore', reviewScore); // 거래 평가
+    formData.append('reviewScore', reviewScore);
 
     if (reviewImage) {
       formData.append('image', reviewImage);
@@ -69,7 +91,6 @@ const ProductPage = () => {
     }
   };
 
-  // 카테고리 값을 변환하는 함수
   const getCategoryName = (category) => {
     switch (category) {
       case 'Electronics':
@@ -83,15 +104,18 @@ const ProductPage = () => {
       case 'Other':
         return '기타';
       default:
-        return category;  // 예기치 않은 값은 그대로 반환
+        return category;
     }
   };
 
   const fetchProductDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/product/${productIdx}`);
+      const response = await axios.get(`http://localhost:8080/product/${productIdx}`, {
+        params: { user_idx: userIdx }, // user_idx 추가
+      });
       if (response.data.code === '1000') {
         setProduct(response.data.data);
+        setIsHearted(response.data.data.isHearted || false); // 초기 찜 상태 설정
         fetchReviewData(response.data.data.review);
       }
     } catch (error) {
@@ -123,7 +147,7 @@ const ProductPage = () => {
   return (
     <>
       <div className="product-page">
-        <img src={"http://localhost:8080/image?image="+product.image} alt={product.title} className="product-page-image" />
+        <img src={"http://localhost:8080/image?image=" + product.image} alt={product.title} className="product-page-image" />
         <div className="product-page-info">
           <p>카테고리{' >'} {getCategoryName(product.category)}</p>
           <div className="product-page-product-info-box">
@@ -136,9 +160,12 @@ const ProductPage = () => {
               <p>판매자 {product.writerName}</p>
             </div>
           </div>
-  
+
           <div className="product-page-buttons">
-            <button className={`product-page-heart-button ${isHearted ? 'hearted' : ''}`} onClick={handleHeartClick}>
+            <button
+              className={`product-page-heart-button ${isHearted ? 'hearted' : ''}`}
+              onClick={handleHeartClick}
+            >
               {isHearted ? '찜 해제🤍' : '찜🩷'}
             </button>
             <button className="product-page-chat-button" onClick={handleChatClick}>채팅</button>
@@ -151,52 +178,19 @@ const ProductPage = () => {
           </div>
         </div>
       </div>
-  
+      {/* Review Modal and Section */}
       {showReviewModal && (
-  <div className="product-page-review-modal">
-    <div className="product-page-modal-content">
-      <button className="product-page-close-button" onClick={() => setShowReviewModal(false)}>&times;</button>
-      <h3>리뷰 작성</h3>
-      <textarea
-        value={reviewContent}
-        onChange={(e) => setReviewContent(e.target.value)}
-        placeholder="리뷰 내용을 입력하세요."
-      />
-      <input type="file" accept="image/*" onChange={(e) => setReviewImage(e.target.files[0])} />
-      <div>
-  <p>거래는 어땠나요?</p>
-  <button
-    onClick={() => setReviewScore('good')}
-    className={reviewScore === 'good' ? 'selected' : ''}
-  >
-    좋았어요
-  </button>
-  <button
-    onClick={() => setReviewScore('bad')}
-    className={reviewScore === 'bad' ? 'selected' : ''}
-  >
-    아쉬웠어요
-  </button>
-</div>
-
-      <button onClick={handleReviewSubmit}>리뷰 제출</button>
-    </div>
-  </div>
-)}
-
-  
-      {/* 리뷰 섹션: 버튼들 아래로 이동 */}
+        <div className="product-page-review-modal">
+          {/* Review Modal Content */}
+        </div>
+      )}
       {reviewData && (
         <div className="product-page-review-section">
-          <h3>리뷰</h3>
-          <p><strong>작성일:</strong> {new Date(reviewData.createdAt).toLocaleDateString()}</p>
-          <p>{reviewData.review}</p>
-          <img src={"http://localhost:8080/image?image="+reviewData.image} alt="review" className="product-page-review-image" />
+          {/* Review Section */}
         </div>
       )}
     </>
   );
-  
 };
 
 export default ProductPage;

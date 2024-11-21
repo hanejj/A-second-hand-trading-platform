@@ -62,19 +62,35 @@ public class ProductService {
                         // 필요하지 않은 정보는 가져오지 않음
                         0, //rs.getInt("partner_idx"),
                         false, //rs.getBoolean("review"),
-                        null //rs.getString("content")
+                        null, //rs.getString("content")
+                        false //rs.getBoolean("is_hearted")
                 )
         );
     }
 
 
     // 특정 상품 정보를 조회하는 메서드
-    public Product getProductById(int product_idx) {
-        String sql = "SELECT * FROM product WHERE product_idx = ?";
+    public Product getProductById(int product_idx, int user_idx) {
+        String sql = """
+        SELECT 
+            p.*, 
+            CASE 
+                WHEN w.wish_idx IS NOT NULL THEN TRUE 
+                ELSE FALSE 
+            END AS is_hearted
+        FROM 
+            product p
+        LEFT JOIN 
+            wishlist w 
+        ON 
+            p.product_idx = w.product_idx AND w.user_idx = ?
+        WHERE 
+            p.product_idx = ?
+    """;
 
         return jdbcTemplate.queryForObject(
                 sql,
-                new Object[]{product_idx},
+                new Object[]{user_idx, product_idx},
                 (rs, rowNum) -> new Product(
                         rs.getInt("product_idx"),
                         rs.getString("category"),
@@ -89,12 +105,14 @@ public class ProductService {
                         rs.getInt("writer_idx"),
                         rs.getString("writer_name"),
                         rs.getString("status"),
-                        rs.getInt("partner_idx"),
+                        rs.getObject("partner_idx", Integer.class),
                         rs.getBoolean("review"),
-                        rs.getString("content")
+                        rs.getString("content"),
+                        rs.getBoolean("is_hearted") // 찜 상태
                 )
         );
     }
+
 
     //작성된 리뷰를 데이터베이스에 등록
     public void writeReview(int product_idx, ReviewRequest reviewRequest) {
@@ -102,7 +120,7 @@ public class ProductService {
         String sql = "INSERT INTO Review (product_idx, review, image, seller_index, buyer_index, created_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, product_idx, reviewRequest.getReview(), reviewRequest.getImage(),
-                reviewRequest.getSellerIndex(), reviewRequest.getBuyerIndex(), new Date());
+                reviewRequest.getSellerIndex(), reviewRequest.getBuyerIndex(), reviewRequest.getCreatedAt());
 
         // Product 테이블에서 해당 product_idx에 대한 리뷰 상태를 true로 업데이트
         String updateProductSql = "UPDATE Product SET review = true WHERE product_idx = ?";
@@ -177,4 +195,20 @@ public class ProductService {
 
         return productIdx;
     }
+
+    // 상품 찜 기능
+    public void addWish(WishRequest wishRequest) {
+        // Wishlist에 추가
+        String sql = "INSERT INTO Wishlist (user_idx, product_idx, created_at) " +
+                "VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, wishRequest.getUserIdx(), wishRequest.getProductIdx(), wishRequest.getCreatedAt());
+    }
+
+    // 상품 찜 해제 기능
+    public void cancelWish(WishRequest wishRequest) {
+        // Wishlist에서 삭제
+        String sql = "DELETE FROM Wishlist WHERE user_idx = ? AND product_idx = ?";
+        jdbcTemplate.update(sql, wishRequest.getUserIdx(), wishRequest.getProductIdx());
+    }
+
 }

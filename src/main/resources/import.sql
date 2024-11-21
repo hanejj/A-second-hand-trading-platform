@@ -79,3 +79,7 @@ VALUES
 SET FOREIGN_KEY_CHECKS = 0;
 truncate table review;
 SET FOREIGN_KEY_CHECKS = 1;
+
+SET FOREIGN_KEY_CHECKS = 0;
+truncate table wishlist;
+SET FOREIGN_KEY_CHECKS = 1;

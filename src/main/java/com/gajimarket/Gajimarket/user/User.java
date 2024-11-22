@@ -1,70 +1,110 @@
 package com.gajimarket.Gajimarket.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import lombok.Getter;
-import lombok.Data;
-import jakarta.persistence.Column;
-
-
-@Entity
-@Getter  // 클래스에 @Getter 어노테이션을 적용하여 모든 필드에 대해 getter 메소드 자동 생성
-@Data
 public class User {
+
+    private String id; // id 필드
+    private String passwd; // passwd 필드
+    private String name; // name 필드
+    private String birth; // birth 필드
+    private String sex; // sex 필드 (ENUM('M', 'F'))
+    private String phone; // phone 필드
+    private String nickname; // nickname 필드
+    private String location; // location 필드
+    private String image; // image 필드 (NULL 가능)
+    private String message; // message 필드 (NULL 가능)
+    private Integer mannerPoint; // manner_point 필드 (NULL 가능)
+
+    // 생성자
+    public User(String id, String passwd, String name, String birth, String sex, String phone,
+                String nickname, String location, String image, String message, Integer mannerPoint) {
+        this.id = id;
+        this.passwd = passwd;
+        this.name = name;
+        this.birth = birth;
+        this.sex = sex;
+        this.phone = phone;
+        this.nickname = nickname;
+        this.location = location;
+        this.image = image;
+        this.message = message;
+        this.mannerPoint = mannerPoint;
+    }
+
+    // 기본 생성자
+    public User() {}
+
+    // Getter와 Setter 메소드
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getPasswd() {
         return passwd;
     }
-    // getId() 메서드 정의
-    public String getId() {
-        return id;
+
+    public void setPasswd(String passwd) {
+        this.passwd = passwd;
     }
 
     public String getName() {
         return name;
     }
 
-    // getNickname() 메서드 정의
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getBirth() {
+        return birth;
+    }
+
+    public void setBirth(String birth) {
+        this.birth = birth;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getNickname() {
         return nickname;
     }
 
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    //private int user_idx; // user_idx에 매핑
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
-    @Id
-    @Column(nullable = false, unique = true, length = 50)
-    private String id; // id에 매핑
+    public String getLocation() {
+        return location;
+    }
 
-    @Column(nullable = false, length = 50)
-    private String passwd; // passwd에 매핑
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-    @Column(nullable = false, length = 50)
-    private String name; // name에 매핑
+    public String getImage() {
+        return image;
+    }
 
-    @Column(nullable = false)
-    private String birth; // birth에 매핑
-
-    @Column(nullable = false, length = 1)
-    private String sex; // sex에 매핑 (ENUM('M', 'F'))
-
-    @Column(nullable = false, length = 50)
-    private String phone; // phone에 매핑
-
-    @Column(nullable = false, unique = true, length = 50)
-    private String nickname; // nickname에 매핑
-
-    @Column(nullable = false, length = 50)
-    private String location; // location에 매핑
-
-    @Column(length = 255)
-    private String image; // image에 매핑 (NULL 가능)
-
-    @Column(length = 50)
-    private String message; // message에 매핑 (NULL 가능)
-
-    private Integer mannerPoint; // manner_point에 매핑 (NULL 가능)
+    public void setImage(String image) {
+        this.image = image;
+    }
 
     public String getMessage() {
         return message;
@@ -74,11 +114,11 @@ public class User {
         this.message = message;
     }
 
-    public String getImage() {
-        return image;
+    public Integer getMannerPoint() {
+        return mannerPoint;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setMannerPoint(Integer mannerPoint) {
+        this.mannerPoint = mannerPoint;
     }
 }

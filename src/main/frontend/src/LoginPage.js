@@ -1,3 +1,4 @@
+// LoginPage.js
 import React, { useState } from 'react';
 import './LoginPage.css';
 import { useNavigate } from 'react-router-dom';
@@ -16,43 +17,24 @@ const LoginPage = () => {
     try {
       // 로그인 API 호출
       const response = await fetch("http://localhost:8080/user/signin", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-        id,
-        passwd
-    }),
-    credentials: "include",  // 세션을 쿠키로 포함시키기 위해 credentials 설정
-})
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error("서버 응답 에러: " + response.status);
-        }
-        return response.json(); // JSON 파싱
-    })
-    .then((data) => {
-        console.log("서버 응답:", data);
-        if (data.message === "로그인 성공") {
-            alert("로그인에 성공했습니다!");
-            navigate('/');  // MainPage로 이동
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch((error) => {
-        console.error("로그인 요청 중 에러 발생:", error);
-        alert("로그인 중 문제가 발생했습니다.");
-    });
-
-
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          passwd
+        }),
+      });
 
       if (response.ok) {
-        console.log("로그인 성공");
-        navigate('/');  // MainPage로 이동
+        const token = response.headers.get('Authorization');
+        if (token) {
+          localStorage.setItem('token', token); // 토큰 저장
+          alert("로그인에 성공했습니다!");
+          navigate('/');  // MainPage로 이동
+        }
       } else {
-        console.log("로그인 실패", response.status);
         alert('아이디나 비밀번호가 잘못되었습니다.');
       }
     } catch (error) {
@@ -67,7 +49,7 @@ const LoginPage = () => {
         <div className="input-group">
           <label htmlFor="id">아이디</label>
           <input
-            type="varchar(50)"
+            type="text"
             id="id"
             name="id"
             placeholder="아이디 입력"
@@ -78,7 +60,7 @@ const LoginPage = () => {
         <div className="input-group">
           <label htmlFor="passwd">비밀번호</label>
           <input
-            type="varchar(50)"
+            type="password"
             id="passwd"
             name="passwd"
             placeholder="비밀번호 입력"

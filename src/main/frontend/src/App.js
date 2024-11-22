@@ -7,7 +7,6 @@ import SignupPage from './SignupPage';
 import NoticePage from './NoticePage';
 import NoticeDetailPage from './NoticeDetailPage';
 import NavButton from './NavButton';
-import SetProfilePage from './SetProfilePage';
 
 const App = () => {
   return (
@@ -27,7 +26,6 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/notices" element={<NoticePage />} />
         <Route path="/notices/:id" element={<NoticeDetailPage />} />
-        <Route path="/set-profile" element={<SetProfilePage />} />
       </Routes>
     </Router>
   );

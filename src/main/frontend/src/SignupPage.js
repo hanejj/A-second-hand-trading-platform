@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위한 훅
 import './SignupPage.css';
 
 const SignupPage = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     id: '',
     passwd: '',
@@ -29,7 +27,7 @@ const SignupPage = () => {
 
     // Check if passwords match
     if (formData.passwd !== formData.confirmPasswd) {
-      alert('비밀번호가 일치하지 않습니다.');
+      alert("비밀번호가 일치하지 않습니다.");
       return;
     }
 
@@ -46,24 +44,23 @@ const SignupPage = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8080/user/signup', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8080/user/signup", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestData), // Send the data as JSON
       });
 
       if (response.ok) {
-        alert('회원가입 성공');
-        navigate('/set-profile'); // 프로필 설정 페이지로 이동
+        alert("회원가입 성공");
       } else if (response.status === 409) {
-        alert('이미 존재하는 아이디 또는 닉네임입니다.');
+        alert("이미 존재하는 아이디 또는 닉네임입니다.");
       } else {
-        alert('회원가입 실패');
+        alert("회원가입 실패");
       }
     } catch (error) {
-      console.error('회원가입 요청 중 에러 발생:', error);
+      console.error("회원가입 요청 중 에러 발생:", error);
     }
   };
 

@@ -2,7 +2,7 @@ package com.gajimarket.Gajimarket.user;
 
 public class UserRegisterRequest {
 
-    private String Id;
+    private String id;
     private String passwd;
     private String name;
     private String email;
@@ -11,8 +11,8 @@ public class UserRegisterRequest {
     private String region;
 
     // Constructor
-    public UserRegisterRequest(String Id, String passwd, String name, String email, String phone, String nickname, String region) {
-        this.Id = Id;
+    public UserRegisterRequest(String id, String passwd, String name, String email, String phone, String nickname, String region) {
+        this.id = id;
         this.passwd = passwd;
         this.name = name;
         this.email = email;
@@ -21,20 +21,20 @@ public class UserRegisterRequest {
         this.region = region;
     }
 
-    // Getters and setters
+    // Getters and Setters
     public String getId() {
-        return Id;
+        return id;
     }
 
-    public void setId(String Id) {
-        this.Id = Id;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getpasswd() {
+    public String getPasswd() {
         return passwd;
     }
 
-    public void setpasswd(String passwd) {
+    public void setPasswd(String passwd) {
         this.passwd = passwd;
     }
 

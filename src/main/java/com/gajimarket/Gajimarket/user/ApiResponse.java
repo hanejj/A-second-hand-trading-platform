@@ -35,4 +35,14 @@ public class ApiResponse {
     public void setData(Object data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "ApiResponse{" +
+                "code='" + code + '\'' +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
+    }
+
 }

@@ -1,25 +1,30 @@
+// UserController.java
 package com.gajimarket.Gajimarket.user;
 
-import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map; // Map 인터페이스 임포트
-import java.util.HashMap; // HashMap 클래스 임포트
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private static final String SECRET_KEY = "123321";
 
     @Autowired
     public UserController(UserService userService) {
@@ -27,26 +32,74 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<Map<String, String>> signin(@RequestBody UserLoginRequest userLoginRequest, HttpSession session) {
+    public ResponseEntity<Map<String, String>> signin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response) {
         logger.info("로그인 요청: 아이디 = {}", userLoginRequest.getId());
 
+        // 인증 처리
         boolean isAuthenticated = userService.authenticate(userLoginRequest.getId(), userLoginRequest.getPasswd());
 
-        Map<String, String> response = new HashMap<>();
+        Map<String, String> responseBody = new HashMap<>();
         if (isAuthenticated) {
-            // 세션에 사용자 정보 저장 (예: userIdx, nickname 등)
-            session.setAttribute("id", userLoginRequest.getId()); // 로그인한 아이디 저장
-            //session.setAttribute("name", userLoginRequest.getName()); // 이름 저장
             logger.info("로그인 성공: 아이디 = {}", userLoginRequest.getId());
-            response.put("message", "로그인 성공");
-            return ResponseEntity.ok(response); // JSON 형식으로 반환
+            responseBody.put("message", "로그인 성공");
+
+            // JWT 생성
+            String token = Jwts.builder()
+                    .setSubject(userLoginRequest.getId())
+                    .setIssuedAt(new Date())
+                    .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1시간 유효
+                    .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                    .compact();
+
+            // Authorization 헤더와 CORS 관련 헤더 설정
+            response.setHeader("Access-Control-Expose-Headers", "Authorization");
+            response.setHeader("Authorization", "Bearer " + token);
+
+            return ResponseEntity.ok(responseBody);
         } else {
             logger.warn("로그인 실패: 아이디 = {}", userLoginRequest.getId());
-            response.put("message", "아이디나 비밀번호가 잘못되었습니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            responseBody.put("message", "아이디나 비밀번호가 잘못되었습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
         }
     }
 
+
+    // 사용자 정보 조회
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 없습니다.");
+        }
+
+        try {
+            String jwtToken = token.substring(7);
+            Claims claims = Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(jwtToken)
+                    .getBody();
+
+            String userId = claims.getSubject();
+            User user = userService.findUserById(userId);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
+            }
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
+        }
+    }
+
+    // 로그아웃 처리 (토큰 기반 로그아웃은 클라이언트 측에서 토큰을 삭제하는 것으로 처리)
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout() {
+        logger.info("로그아웃 요청");
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "로그아웃 성공");
+        return ResponseEntity.ok(responseBody);
+    }
+
+    // 회원가입 처리
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody User user) {
         try {
@@ -56,57 +109,5 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("회원가입 처리 중 오류 발생");
         }
-    }
-
-    /*
-    @PostMapping("/profile")
-    public ResponseEntity<String> updateProfile(@RequestParam("image") MultipartFile image,
-                                                @RequestParam("message") String message,
-                                                HttpSession session) {
-        try {
-            // 세션에서 userIdx 가져오기
-            Int user_idx = (Long) session.getAttribute("userIdx");
-            if (userIdx == null) {
-                return ResponseEntity.status(401).body("사용자 인증 실패");
-            }
-
-            // 이미지 파일 저장
-            String imagePath = "uploads/" + image.getOriginalFilename();
-            File saveFile = new File(imagePath);
-            image.transferTo(saveFile);
-
-            // 데이터베이스에 message와 imagePath 저장
-            userService.updateProfile(userIdx, message, imagePath);
-
-            return ResponseEntity.ok("프로필 업데이트 성공");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("프로필 업데이트 실패");
-        }
-    }
-    */
-
-    // 로그아웃 API
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpSession session) {
-        session.invalidate();  // 세션 종료
-        return ResponseEntity.ok().body("로그아웃 성공");
-    }
-
-    // 세션 상태 확인 API
-    @GetMapping("/session")
-    public ResponseEntity<?> getSessionInfo(HttpSession session) {
-        Object userIdx = session.getAttribute("userIdx");
-        if (userIdx != null) {
-            return ResponseEntity.ok().body("세션 유효, 사용자 ID: " + userIdx);
-        } else {
-            return ResponseEntity.status(401).body("세션 없음");
-        }
-    }
-
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable String id) {
-        logger.info("사용자 정보 조회: 아이디 = {}", id); // 디버깅 로그 추가
-        return userService.findUserById(id);
     }
 }

@@ -1,7 +1,7 @@
 package com.gajimarket.Gajimarket.user;
 
 public class User {
-
+    private Integer user_idx;
     private String id; // id 필드
     private String passwd; // passwd 필드
     private String name; // name 필드
@@ -34,6 +34,14 @@ public class User {
     public User() {}
 
     // Getter와 Setter 메소드
+    public Integer getUserIdx() {
+        return user_idx;
+    }
+
+    public void setUserIdx(Integer user_idx) {
+        this.user_idx = user_idx;
+    }
+
     public String getId() {
         return id;
     }

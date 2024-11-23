@@ -62,22 +62,36 @@ public class ProductController {
     @GetMapping("/{product_idx}")
     public ResponseEntity<ApiResponse> getProductById(
             @PathVariable int product_idx,
-            @RequestParam("user_idx") int user_idx    ) {
-        System.out.println("/product/"+product_idx+" request");
-        ApiResponse apiResponse;
+            @RequestParam("user_idx") int user_idx) {
+        System.out.println("/product/" + product_idx + " request");
         try {
-            Product product = productService.getProductById(product_idx, user_idx);
-            //response 생성 후 반환
-            apiResponse = new ApiResponse("1000", null);
-            apiResponse.setData(product);
-            return ResponseEntity.ok()
-                    .body(apiResponse);
-        }catch (Exception e){
-            // 예외가 발생한 경우 코드 0으로 설정
-            apiResponse = new ApiResponse("0", "상품 정보 불러오기 실패");
+            // 서비스 호출
+            ProductPageResponse response = productService.getProductById(product_idx, user_idx);
+
+            // response가 null이거나 데이터가 없는 경우
+            if (response == null || response.getProduct() == null) {
+                throw new NoSuchElementException("상품 정보를 찾을 수 없습니다.");
+            }
+
+            // 정상적으로 데이터를 반환하는 경우
+            ApiResponse apiResponse = new ApiResponse("1000", null);
+            apiResponse.setData(response);
+            return ResponseEntity.ok().body(apiResponse);
+
+        } catch (NoSuchElementException e) {
+            System.out.println(e.getMessage());
+            // 상품이 없는 예외 발생 시
+            ApiResponse apiResponse = new ApiResponse("0", e.getMessage());
+            return ResponseEntity.ok().body(apiResponse);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            // 기타 예외 처리
+            ApiResponse apiResponse = new ApiResponse("0", "상품 정보 불러오기 실패");
             return ResponseEntity.ok().body(apiResponse);
         }
     }
+
 
     // 리뷰 쓰기 기능
     @PostMapping("/{product_idx}/review/write")

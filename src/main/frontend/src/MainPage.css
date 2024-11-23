@@ -71,8 +71,6 @@
 }
 
 
- 
-
 /* 상품 카드 */
 .product-card {
     height: 200px;
@@ -87,6 +85,9 @@
     text-align: left;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, background-color 0.3s;
+    overflow: hidden; /* 카드 내부의 내용이 넘칠 경우 숨김 처리 */
+    min-width: 500px;
+    text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
   }
 
     .product-card:hover {
@@ -100,6 +101,9 @@
     display: flex;
     flex-direction: column; /* 세로로 텍스트 배치 */
     justify-content: space-between; /* 텍스트 간 공간 분배 */
+    max-width: 100%; /* 이미지 너비를 제외한 최대 너비 설정 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
   }
 
 /* 상품 제목 */
@@ -107,9 +111,23 @@
     font-size: 20px;
     margin-bottom: 10px;
     color: black; /* 상품 제목 색상 유지 */
-    overflow: hidden;
-    text-overflow: ellipsis; /* 텍스트가 넘칠 경우 ... 처리 */
-    white-space: nowrap;
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
+    white-space: nowrap; /* 텍스트가 한 줄에만 표시되도록 설정 */
+    max-width: 300px; /* 제목이 이미지 침범하지 않도록 조정*/
+    height: 24px; /* 제목의 고정 높이 설정 */
+  }
+
+/* 상품 제목 */
+.product-card h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: black; /* 상품 제목 색상 유지 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
+    white-space: nowrap; /* 텍스트가 한 줄에만 표시되도록 설정 */
+    max-width: 300px; /* 제목이 이미지 침범하지 않도록 조정*/
+    height: 24px; /* 제목의 고정 높이 설정 */
   }
 
     /* 상품 설명 (가격, 위치, 좋아요, 채팅 수) */
@@ -117,6 +135,11 @@
         font-size: 16px;
         color: #555;
         margin: 0;
+        overflow: hidden; /* 넘치는 텍스트 숨김 */
+        text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
+        white-space: nowrap; /* 텍스트가 한 줄에만 표시되도록 설정 */
+        max-width: 100%; /* 최대 너비 설정 */
+        height: 20px; /* 설명의 고정 높이 설정 */
     }
   
   /* 상품 이미지 (오른쪽에 위치) */
@@ -137,3 +160,16 @@
 a{
     text-decoration: none; /* 링크에 밑줄을 제거 */
 }
+
+.product-card .product-info {
+    flex-grow: 1; /* 텍스트 영역이 여유 공간을 차지하도록 설정 */
+    margin-right: 20px; /* 이미지와의 간격 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
+  }
+
+/* 링크 스타일 제거 */
+.product-link {
+    text-decoration: none; /* 링크의 밑줄 제거 */
+    color: inherit; /* 부모 요소의 색상(검은색)을 상속받게 설정 */
+  }

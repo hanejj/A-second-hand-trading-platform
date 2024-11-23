@@ -5,9 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class ProductService {
@@ -70,8 +68,9 @@ public class ProductService {
 
 
     // 특정 상품 정보를 조회하는 메서드
-    public Product getProductById(int product_idx, int user_idx) {
-        String sql = """
+    public ProductPageResponse getProductById(int product_idx, int user_idx) {
+        // 1. 상품 정보 조회
+        String productSql = """
         SELECT 
             p.*, 
             CASE 
@@ -88,8 +87,8 @@ public class ProductService {
             p.product_idx = ?
     """;
 
-        return jdbcTemplate.queryForObject(
-                sql,
+        Product product = jdbcTemplate.queryForObject(
+                productSql,
                 new Object[]{user_idx, product_idx},
                 (rs, rowNum) -> new Product(
                         rs.getInt("product_idx"),
@@ -111,7 +110,77 @@ public class ProductService {
                         rs.getBoolean("is_hearted") // 찜 상태
                 )
         );
+
+        // 2. 현재 상품의 키워드 조회
+        String keywordSql = "SELECT keyword FROM keyword WHERE product_idx = ?";
+        List<String> keywords = jdbcTemplate.queryForList(keywordSql, new Object[]{product_idx}, String.class);
+
+        // 3. 키워드 기반으로 추천 상품 조회
+        if (!keywords.isEmpty()) {
+            String recommendedProductsSql = """
+                    SELECT DISTINCT\s
+                        p.*,
+                        CASE\s
+                            WHEN EXISTS (
+                                SELECT 1\s
+                                FROM wishlist w\s
+                                WHERE w.product_idx = p.product_idx AND w.user_idx = ?
+                            ) THEN TRUE\s
+                            ELSE FALSE\s
+                        END AS is_hearted
+                    FROM\s
+                        product p
+                    JOIN\s
+                        keyword k ON p.product_idx = k.product_idx
+                    WHERE\s
+                        k.keyword IN (%s)\s
+                        AND p.product_idx != ?
+
+                            """;
+
+            // 키워드 리스트를 IN 절에 사용할 수 있도록 변환
+            String placeholders = String.join(",", keywords.stream().map(k -> "?").toArray(String[]::new));
+            String finalSql = String.format(recommendedProductsSql, placeholders);
+
+            // 추천 상품 조회
+            List<Object> params = new ArrayList<>();
+            params.add(user_idx); // 첫 번째 파라미터 (찜 상태 체크)
+            params.addAll(keywords); // IN 절 파라미터
+            params.add(product_idx); // 현재 상품 제외
+
+            List<Product> recommendedProducts = jdbcTemplate.query(
+                    finalSql,
+                    params.toArray(),
+                    (rs, rowNum) -> new Product(
+                            rs.getInt("product_idx"),
+                            rs.getString("category"),
+                            rs.getString("title"),
+                            rs.getInt("price"),
+                            rs.getTimestamp("created_at").toLocalDateTime(),
+                            rs.getString("location"),
+                            rs.getInt("chat_num"),
+                            rs.getInt("heart_num"),
+                            rs.getString("selling"),
+                            rs.getString("image"),
+                            rs.getInt("writer_idx"),
+                            rs.getString("writer_name"),
+                            rs.getString("status"),
+                            rs.getObject("partner_idx", Integer.class),
+                            rs.getBoolean("review"),
+                            rs.getString("content"),
+                            rs.getBoolean("is_hearted") // 찜 상태
+                    )
+            );
+
+            // 응답 객체 생성
+            return new ProductPageResponse(product, recommendedProducts);
+        } else {
+            // 키워드가 없을 경우 빈 추천 목록 반환
+            return new ProductPageResponse(product, Collections.emptyList());
+        }
     }
+
+
 
 
     //작성된 리뷰를 데이터베이스에 등록

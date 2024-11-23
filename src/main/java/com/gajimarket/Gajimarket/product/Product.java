@@ -5,7 +5,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-// product 모델
+// product 상품 정보 조회
 @Getter
 @Setter
 public class Product {

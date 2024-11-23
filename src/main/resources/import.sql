@@ -50,6 +50,13 @@ VALUES
 ('Fashion', '여성 자켓 팝니다', '봄, 가을에 입기 좋은 자켓.', 25000, DATE_ADD(NOW(), INTERVAL -4 DAY), '대전광역시', 2, 4, 'sell', '/uploads/winter_jacket.jpg', 2, '짱구', 'active'),
 ('Fashion', '남성 티셔츠 판매', '사이즈 L, 상태 좋음.', 15000, DATE_ADD(NOW(), INTERVAL -6 DAY), '서울특별시', 5, 9, 'sell', '/uploads/mens_tshirt.jpg', 1, '길동이', 'active');
 
+INSERT INTO keyword(product_idx, keyword)
+VALUES
+(7,'정장'),(7,'남성복'),(7,'겨울옷')
+(8,'아우터'),(8,'여성복'),(8,'겨울옷')
+(9,'여성복'),(3,'아우터'),
+(10,'남성복');
+
 -- Books 카테고리 데이터
 INSERT INTO product (category, title, content, price, created_at, location, chat_num, heart_num, selling, image, writer_idx, writer_name, status)
 VALUES
@@ -59,6 +66,10 @@ VALUES
 ('Books', '소설 책 팔아요', '재미있는 소설, 상태 좋음.', 10000, DATE_ADD(NOW(), INTERVAL -7 DAY), '인천광역시', 0, 2, 'sell', '/uploads/novel_book.jpg', 4, '은진이', 'active'),
 ('Books', '채식주의자 구해요', '읽고 싶어요.', 18000, DATE_ADD(NOW(), INTERVAL -5 DAY), '서울특별시', 2, 4, 'get', '/uploads/채식주의자.jpg', 2, '짱구', 'active'),
 ('Books', '소년이 온다 구해요', '읽고 싶어요.', 10000, DATE_ADD(NOW(), INTERVAL -7 DAY), '인천광역시', 0, 2, 'get', '/uploads/소년이온다.jpg', 4, '은진이', 'active');
+
+INSERT INTO keyword(product_idx, keyword)
+VALUES
+(11,'코딩'),(11,'공부');
 
 -- Furniture 카테고리 데이터
 INSERT INTO product (category, title, content, price, created_at, location, chat_num, heart_num, selling, image, writer_idx, writer_name, status)

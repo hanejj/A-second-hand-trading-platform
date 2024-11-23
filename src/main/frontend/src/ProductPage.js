@@ -185,7 +185,7 @@ const ProductPage = () => {
       </div>
       {/* 추천 상품 섹션 */}
       <div className="recommended-gallery-title">
-        <h3>추천 상품</h3>
+        <h3>키워드 기반 추천 상품</h3>
         </div>
       <div className="recommended-gallery">
   {recommendedProducts.length > 0 ? (

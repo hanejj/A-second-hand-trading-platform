@@ -7,6 +7,9 @@ import SignupPage from './SignupPage';
 import NoticePage from './NoticePage';
 import NoticeDetailPage from './NoticeDetailPage';
 import NavButton from './NavButton';
+import AdminMainPage from "./AdminMainPage";
+import UserManagemnetPage from "./UserManagementPage";
+import AdminManagemnetPage from "./AdminManagementPage";
 
 const App = () => {
   return (
@@ -26,6 +29,9 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/notices" element={<NoticePage />} />
         <Route path="/notices/:id" element={<NoticeDetailPage />} />
+        <Route path="/admin" element={<AdminMainPage />} />
+        <Route path="/management/user" element={<UserManagemnetPage />} />
+        <Route path="/management/admin" element={<AdminManagemnetPage />} />
       </Routes>
     </Router>
   );

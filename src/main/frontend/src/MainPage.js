@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import './MainPage.css';
 
 const MainPage = () => {
+  const navigate = useNavigate();
   const [popularProducts, setPopularProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
 
+  //const isAdmin = JSON.parse(localStorage.getItem("isAdmin")); // 또는 Redux/Context에서 가져옴
+  
+  //개발환경에서 임의로 관리자 상태로 설정
+  const isAdmin=true;
+
   useEffect(() => {
+    if (isAdmin) {
+      navigate("/admin"); // AdminMainPage로 이동
+    }
+
     const productData = [
       { id: 1, title: 'MacBook Pro 2019', price: 1500, description: '중고 맥북 프로, 2019년형, 좋은 상태' },
       { id: 2, title: 'iPhone 12', price: 800, description: '중고 아이폰 12, 블랙, 128GB' },
@@ -19,7 +30,7 @@ const MainPage = () => {
 
     setPopularProducts(productData.slice(0, 6)); // 인기순
     setLatestProducts(productData.slice(6)); // 최신순
-  }, []);
+  }, [isAdmin, navigate]);
 
   return (
     <div className="main-page">

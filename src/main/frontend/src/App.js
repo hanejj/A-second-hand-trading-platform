@@ -10,7 +10,7 @@ import NavButton from './NavButton';
 import CategoryPage from './CategoryPage'; // CategoryPage 추가
 import ProductPage from './ProductPage'; // ProductPage 추가
 import ProductUploadPage from './ProductUploadPage'; // ProductPage 추가
-
+z
 const App = () => {
   return (
     <Router>
@@ -19,7 +19,7 @@ const App = () => {
           <img src="/logo.png" alt="가지마켓 로고" />
         </Link>
         <nav className="nav">
-          <NavButton to="/login">로그인</NavButton>
+          <NavButton to="/login"zz>로그인</NavButton>
           <NavButton to="/notices">공지사항</NavButton>
           <NavButton to="/inquiries">문의사항</NavButton>
           <NavButton to="/mypage">마이페이지</NavButton>

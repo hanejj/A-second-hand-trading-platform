@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안 함 (Stateless)
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/report/**").permitAll() // /image/** 경로 인증 없이 허용
                         .requestMatchers("/image/**").permitAll() // /image/** 경로 인증 없이 허용
                         .requestMatchers("/product/**").permitAll() // /product/** 경로 인증 없이 허용
                         .anyRequest().authenticated()); // 나머지 요청은 인증 필요

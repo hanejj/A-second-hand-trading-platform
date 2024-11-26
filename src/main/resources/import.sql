@@ -6,7 +6,6 @@ truncate table user;
 SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO `user` (id, passwd, name, birth, sex, phone, nickname, location, image, message, manner_point)
 VALUES
-('admin1@gaji.com', 'admin1', '김관리', '1990-05-15', 'M', '010-0000-0000', '관리자', '서울특별시', '/uploads/user.png', '관리자입니다.', 1000),
 ('user1@gmail.com', 'passwd1', '홍길동', '1990-05-15', 'M', '010-1234-5678', '길동이', '서울특별시', '/uploads/user.png', '안녕하세요!', 50),
 ('user2@gmail.com', 'passwd2', '김철수', '1995-10-20', 'M', '010-9876-5432', '짱구', '부산광역시', '/uploads/user.png', '좋은 하루 되세요!', 50),
 ('user3@gmail.com', 'passwd3', '이소영', '1988-03-12', 'F', '010-5555-4444', '소영이', '대구광역시', '/uploads/user.png', '오늘도 화이팅!', 50),
@@ -77,8 +76,8 @@ VALUES
 ('Other', '캠핑 장비 판매', '캠핑용 텐트와 용품들', 80000, DATE_ADD(NOW(), INTERVAL -5 DAY), '인천광역시', 3, 6, 'sell', '/uploads/camping_gear.jpg', 4, '은진이', 'active'),
 ('Other', '고양이 장난감 팝니다', '고양이를 위한 다양한 장난감', 15000, DATE_ADD(NOW(), INTERVAL -7 DAY), '광주광역시', 2, 5, 'sell', '/uploads/cat_toy.jpg', 5, '슬램덩크', 'active');
 
---INSERT INTO Wishlist (user_idx, product_idx, created_at)
---VALUES
-    --((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 1, NOW()),
-    --((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 2, NOW()),
-    --((SELECT user_idx FROM User WHERE id = 'user2@gmail.com'), 3, NOW());
+INSERT INTO Wishlist (user_idx, product_idx, created_at)
+VALUES
+    ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 1, NOW()),
+    ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 2, NOW()),
+    ((SELECT user_idx FROM User WHERE id = 'user2@gmail.com'), 3, NOW());

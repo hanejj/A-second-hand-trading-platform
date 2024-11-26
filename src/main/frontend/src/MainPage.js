@@ -7,6 +7,7 @@ const MainPage = () => {
   const [popularProducts, setPopularProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
   const [sessionInfo, setSessionInfo] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,15 +28,22 @@ const MainPage = () => {
 
     // 로컬 스토리지에서 JWT 토큰 가져오기
     const token = localStorage.getItem('token');
+    const isAdminValue = localStorage.getItem('isAdmin');
+    setIsAdmin(isAdminValue);
+
     if (token) {
       // 사용자 정보 요청
       axios.get('http://localhost:8080/user/profile', {
         headers: {
-          Authorization: token
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then(response => {
-        setSessionInfo(response.data);
+        if (response.data && response.data.code === 1000) {
+          setSessionInfo(response.data.user);
+        } else {
+          throw new Error('사용자 정보를 가져오는 중 오류 발생');
+        }
       })
       .catch(error => {
         console.error('토큰 정보를 가져오는 중 오류 발생:', error);
@@ -52,8 +60,9 @@ const MainPage = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    // 로그아웃 시 로컬 스토리지에서 토큰 삭제
+    // 로그아웃 시 로컬 스토리지에서 토큰 및 isAdmin 삭제
     localStorage.removeItem('token');
+    localStorage.removeItem('isAdmin');
     alert('로그아웃 되었습니다.');
     navigate('/login'); // 로그인 페이지로 이동
   };
@@ -66,6 +75,7 @@ const MainPage = () => {
           {sessionInfo && sessionInfo.id ? (
             <div>
               <p>로그인된 사용자: {sessionInfo.id}</p>
+              <p>관리자 여부: {isAdmin === 'true' ? '관리자' : '일반 사용자'}</p>
               <button onClick={handleLogout}>로그아웃</button>
             </div>
           ) : (

@@ -5,21 +5,31 @@ public class UserRegisterRequest {
     private String id;
     private String passwd;
     private String name;
-    private String email;
+    private String birth;
+    private String sex;
     private String phone;
     private String nickname;
-    private String region;
+    private String location;
+    private String image;
+    private String message;
 
     // Constructor
-    public UserRegisterRequest(String id, String passwd, String name, String email, String phone, String nickname, String region) {
+    public UserRegisterRequest(String id, String passwd, String name, String birth, String sex, String phone,
+                               String nickname, String location, String image, String message) {
         this.id = id;
         this.passwd = passwd;
         this.name = name;
-        this.email = email;
+        this.birth = birth;
+        this.sex = sex;
         this.phone = phone;
         this.nickname = nickname;
-        this.region = region;
+        this.location = location;
+        this.image = image;
+        this.message = message;
     }
+
+    // 기본 생성자
+    public UserRegisterRequest() {}
 
     // Getters and Setters
     public String getId() {
@@ -46,12 +56,20 @@ public class UserRegisterRequest {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getBirth() {
+        return birth;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setBirth(String birth) {
+        this.birth = birth;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 
     public String getPhone() {
@@ -70,11 +88,27 @@ public class UserRegisterRequest {
         this.nickname = nickname;
     }
 
-    public String getRegion() {
-        return region;
+    public String getLocation() {
+        return location;
     }
 
-    public void setRegion(String region) {
-        this.region = region;
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

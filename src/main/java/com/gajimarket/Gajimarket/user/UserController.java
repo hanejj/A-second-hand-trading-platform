@@ -1,6 +1,7 @@
 // UserController.java
 package com.gajimarket.Gajimarket.user;
 
+import com.gajimarket.Gajimarket.config.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,17 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -38,112 +35,161 @@ public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
-    private static final String SECRET_KEY = "123321";
+    private final JwtTokenProvider jwtTokenProvider;
+    private final DataSource dataSource;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtTokenProvider jwtTokenProvider, DataSource dataSource) {
         this.userService = userService;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.dataSource = dataSource;
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<Map<String, String>> signin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response) {
+    public ResponseEntity<Map<String, Object>> signin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response) {
         logger.info("로그인 요청: 아이디 = {}", userLoginRequest.getId());
+        Map<String, Object> responseBody = new HashMap<>();
 
-        // 인증 처리
-        boolean isAuthenticated = userService.authenticate(userLoginRequest.getId(), userLoginRequest.getPasswd());
+        try (Connection connection = dataSource.getConnection()) {
+            String userQuery = "SELECT * FROM user WHERE id = ? AND passwd = ?";
+            PreparedStatement userStmt = connection.prepareStatement(userQuery);
+            userStmt.setString(1, userLoginRequest.getId());
+            userStmt.setString(2, userLoginRequest.getPasswd());
+            ResultSet userResult = userStmt.executeQuery();
 
-        Map<String, String> responseBody = new HashMap<>();
-        if (isAuthenticated) {
-            logger.info("로그인 성공: 아이디 = {}", userLoginRequest.getId());
-            responseBody.put("message", "로그인 성공");
+            if (userResult.next()) {
+                String token = jwtTokenProvider.generateToken(userLoginRequest.getId());
+                responseBody.put("code", 1000);
+                responseBody.put("message", "로그인 성공");
+                responseBody.put("token", token);
+                responseBody.put("isAdmin", false);
+                return ResponseEntity.ok(responseBody);
+            }
 
-            // JWT 생성
-            String token = Jwts.builder()
-                    .setSubject(userLoginRequest.getId())
-                    .setIssuedAt(new Date())
-                    .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1시간 유효
-                    .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                    .compact();
+            String adminQuery = "SELECT * FROM admin WHERE id = ? AND passwd = ?";
+            PreparedStatement adminStmt = connection.prepareStatement(adminQuery);
+            adminStmt.setString(1, userLoginRequest.getId());
+            adminStmt.setString(2, userLoginRequest.getPasswd());
+            ResultSet adminResult = adminStmt.executeQuery();
 
-            // Authorization 헤더와 CORS 관련 헤더 설정
-            response.setHeader("Access-Control-Expose-Headers", "Authorization");
-            response.setHeader("Authorization", "Bearer " + token);
+            if (adminResult.next()) {
+                String token = jwtTokenProvider.generateToken(userLoginRequest.getId());
+                responseBody.put("code", 1000);
+                responseBody.put("message", "로그인 성공");
+                responseBody.put("token", token);
+                responseBody.put("isAdmin", true);
+                return ResponseEntity.ok(responseBody);
+            }
 
-            return ResponseEntity.ok(responseBody);
-        } else {
-            logger.warn("로그인 실패: 아이디 = {}", userLoginRequest.getId());
+            responseBody.put("code", 0);
             responseBody.put("message", "아이디나 비밀번호가 잘못되었습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
-        }
-    }
-
-
-    // 사용자 정보 조회
-    @GetMapping("/profile")
-    public ResponseEntity<?> getUserProfile(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 없습니다.");
-        }
-
-        try {
-            String jwtToken = token.substring(7);
-            Claims claims = Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
-                    .parseClaimsJws(jwtToken)
-                    .getBody();
-
-            String userId = claims.getSubject();
-            User user = userService.findUserById(userId);
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
-            }
-            return ResponseEntity.ok(user);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
+            logger.error("로그인 중 오류 발생: ", e);
+            responseBody.put("code", 0);
+            responseBody.put("message", "로그인 처리 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
 
-    // 로그아웃 처리 (토큰 기반 로그아웃은 클라이언트 측에서 토큰을 삭제하는 것으로 처리)
+    @GetMapping("/profile")
+    public ResponseEntity<Map<String, Object>> getUserProfile(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        Map<String, Object> responseBody = new HashMap<>();
+
+        if (token == null || !token.startsWith("Bearer ")) {
+            responseBody.put("code", 0);
+            responseBody.put("message", "토큰이 없습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
+        }
+
+        token = token.substring(7);
+        if (!jwtTokenProvider.validateToken(token)) {
+            responseBody.put("code", 0);
+            responseBody.put("message", "유효하지 않은 토큰입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
+        }
+
+        String userId = jwtTokenProvider.getUserIdFromToken(token);
+        User user = userService.findUserById(userId);
+
+        if (user == null) {
+            responseBody.put("code", 0);
+            responseBody.put("message", "사용자를 찾을 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
+        }
+
+        responseBody.put("code", 1000);
+        responseBody.put("user", user);
+        return ResponseEntity.ok(responseBody);
+    }
+
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout() {
+    public ResponseEntity<Map<String, Object>> logout() {
         logger.info("로그아웃 요청");
-        Map<String, String> responseBody = new HashMap<>();
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("code", 1000);
         responseBody.put("message", "로그아웃 성공");
         return ResponseEntity.ok(responseBody);
     }
 
-    // 회원가입 처리
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody User user) {
-        try {
+    public ResponseEntity<Map<String, Object>> signUp(@RequestBody UserRegisterRequest userRegisterRequest) {
+        Map<String, Object> responseBody = new HashMap<>();
+
+        try (Connection connection = dataSource.getConnection()) {
+            String checkUserQuery = "SELECT * FROM user WHERE id = ?";
+            PreparedStatement checkUserStmt = connection.prepareStatement(checkUserQuery);
+            checkUserStmt.setString(1, userRegisterRequest.getId());
+            ResultSet userResult = checkUserStmt.executeQuery();
+
+            if (userResult.next()) {
+                responseBody.put("code", 0);
+                responseBody.put("message", "이미 존재하는 사용자입니다.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(responseBody);
+            }
+
+            String checkAdminQuery = "SELECT * FROM admin WHERE id = ?";
+            PreparedStatement checkAdminStmt = connection.prepareStatement(checkAdminQuery);
+            checkAdminStmt.setString(1, userRegisterRequest.getId());
+            ResultSet adminResult = checkAdminStmt.executeQuery();
+
+            if (adminResult.next()) {
+                responseBody.put("code", 0);
+                responseBody.put("message", "이미 존재하는 관리자입니다.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(responseBody);
+            }
+
+            User user = new User();
+            user.setId(userRegisterRequest.getId());
+            user.setPasswd(userRegisterRequest.getPasswd());
+            user.setName(userRegisterRequest.getName());
+            user.setBirth(userRegisterRequest.getBirth());
+            user.setSex(userRegisterRequest.getSex());
+            user.setPhone(userRegisterRequest.getPhone());
+            user.setNickname(userRegisterRequest.getNickname());
+            user.setLocation(userRegisterRequest.getLocation());
+
             userService.signUp(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
+            responseBody.put("code", 1000);
+            responseBody.put("message", "회원가입 성공");
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("회원가입 처리 중 오류 발생");
+            logger.error("회원가입 처리 중 오류 발생: ", e);
+            responseBody.put("code", 0);
+            responseBody.put("message", "회원가입 처리 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
 
-    // 특정 사용자의 정보 조회 (이메일로 user_idx 조회)
     @GetMapping("/{email}")
-    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try {
-            // 데이터베이스 연결
-            String url = "jdbc:mysql://localhost:3306/gajimarket";
-            String username = "root";
-            String password = "1234";
-            connection = DriverManager.getConnection(url, username, password);
-
-            // 사용자 정보 조회 쿼리 실행
+    public ResponseEntity<Map<String, Object>> getUserByEmail(@PathVariable String email) {
+        Map<String, Object> responseBody = new HashMap<>();
+        try (Connection connection = dataSource.getConnection()) {
             String query = "SELECT user_idx, id, name, message, manner_point FROM user WHERE id = ?";
-            preparedStatement = connection.prepareStatement(query);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, email);
-            resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 User user = new User();
@@ -152,42 +198,30 @@ public class UserController {
                 user.setName(resultSet.getString("name"));
                 user.setMessage(resultSet.getString("message"));
                 user.setMannerPoint(resultSet.getInt("manner_point"));
-                return ResponseEntity.ok(user);
+                responseBody.put("code", 1000);
+                responseBody.put("user", user);
+                return ResponseEntity.ok(responseBody);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
+                responseBody.put("code", 0);
+                responseBody.put("message", "사용자를 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 정보를 가져오는 중 오류 발생");
-        } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            responseBody.put("code", 0);
+            responseBody.put("message", "사용자 정보를 가져오는 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
 
     // 특정 사용자의 판매 상품 조회 (이메일로 판매 상품 조회)
     @GetMapping("/{email}/selling")
-    public ResponseEntity<?> getUserSellingProducts(@PathVariable String email) {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try {
-            // 데이터베이스 연결
-            String url = "jdbc:mysql://localhost:3306/gajimarket";
-            String username = "root";
-            String password = "1234";
-            connection = DriverManager.getConnection(url, username, password);
-
-            // 판매 상품 조회 쿼리 실행
+    public ResponseEntity<Map<String, Object>> getUserSellingProducts(@PathVariable String email) {
+        Map<String, Object> responseBody = new HashMap<>();
+        try (Connection connection = dataSource.getConnection()) {
             String query = "SELECT product_idx, title, price, location, heart_num, chat_num, image FROM product WHERE writer_idx = (SELECT user_idx FROM user WHERE id = ?)";
-            preparedStatement = connection.prepareStatement(query);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, email);
-            resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             List<Map<String, Object>> products = new ArrayList<>();
             while (resultSet.next()) {
@@ -202,37 +236,24 @@ public class UserController {
                 products.add(product);
             }
 
-            return ResponseEntity.ok(products);
+            responseBody.put("code", 1000);
+            responseBody.put("products", products);
+            return ResponseEntity.ok(responseBody);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("판매 상품 정보를 가져오는 중 오류 발생");
-        } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            responseBody.put("code", 0);
+            responseBody.put("message", "판매 상품 정보를 가져오는 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
 
-    // 포인트 업데이트 API 추가
+    // 포인트 업데이트 API
     @PostMapping("/{email}/point/update")
-    public ResponseEntity<?> updateUserPoint(@PathVariable String email, @RequestBody Map<String, Integer> requestBody) {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-
-        try {
-            // 데이터베이스 연결
-            String url = "jdbc:mysql://localhost:3306/gajimarket";
-            String username = "root";
-            String password = "1234";
-            connection = DriverManager.getConnection(url, username, password);
-
-            // 포인트 업데이트 쿼리 실행
+    public ResponseEntity<Map<String, Object>> updateUserPoint(@PathVariable String email, @RequestBody Map<String, Integer> requestBody) {
+        Map<String, Object> responseBody = new HashMap<>();
+        try (Connection connection = dataSource.getConnection()) {
             String updateQuery = "INSERT INTO point (user_idx, point) VALUES ((SELECT user_idx FROM user WHERE id = ?), ?) "
                     + "ON DUPLICATE KEY UPDATE point = point + ?";
-            preparedStatement = connection.prepareStatement(updateQuery);
+            PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
             preparedStatement.setString(1, email);
             preparedStatement.setInt(2, requestBody.get("amount"));
             preparedStatement.setInt(3, requestBody.get("amount"));
@@ -240,88 +261,58 @@ public class UserController {
             int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {
-                return ResponseEntity.ok("포인트가 성공적으로 업데이트되었습니다.");
+                responseBody.put("code", 1000);
+                responseBody.put("message", "포인트가 성공적으로 업데이트되었습니다.");
+                return ResponseEntity.ok(responseBody);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
+                responseBody.put("code", 0);
+                responseBody.put("message", "사용자를 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("포인트 업데이트 중 오류 발생");
-        } finally {
-            try {
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            responseBody.put("code", 0);
+            responseBody.put("message", "포인트 업데이트 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
 
     // 특정 사용자의 포인트 조회
     @GetMapping("/{email}/point")
-    public ResponseEntity<?> getUserPoint(@PathVariable String email) {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try {
-            // 데이터베이스 연결
-            // 데이터베이스 연결
-            String url = "jdbc:mysql://localhost:3306/gajimarket";
-            String username = "root";
-            String password = "1234";
-            connection = DriverManager.getConnection(url, username, password);
-
-            // 포인트 조회 쿼리 실행
-            String query = "SELECT point FROM Point WHERE user_idx = (SELECT user_idx FROM User WHERE id = ?)";
-            preparedStatement = connection.prepareStatement(query);
+    public ResponseEntity<Map<String, Object>> getUserPoint(@PathVariable String email) {
+        Map<String, Object> responseBody = new HashMap<>();
+        try (Connection connection = dataSource.getConnection()) {
+            String query = "SELECT point FROM point WHERE user_idx = (SELECT user_idx FROM user WHERE id = ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, email);
-            resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-            int point = 0;
             if (resultSet.next()) {
-                point = resultSet.getInt("point");
+                responseBody.put("code", 1000);
+                responseBody.put("point", resultSet.getInt("point"));
+            } else {
+                responseBody.put("code", 1000);
+                responseBody.put("point", 0);
             }
-
-            Map<String, Integer> response = new HashMap<>();
-            response.put("point", point);
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(responseBody);
         } catch (Exception e) {
-            logger.error("포인트 정보를 가져오는 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("포인트 정보를 가져오는 중 오류 발생");
-        } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            responseBody.put("code", 0);
+            responseBody.put("message", "포인트 정보를 가져오는 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
 
-    // Wishlist 조회 API 추가
+    // Wishlist 조회 API
     @GetMapping("/{email}/get/wishlist")
-    public ResponseEntity<?> getUserWishlist(@PathVariable String email) {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try {
-            // 데이터베이스 연결
-            String url = "jdbc:mysql://localhost:3306/gajimarket";
-            String username = "root";
-            String password = "1234";
-            connection = DriverManager.getConnection(url, username, password);
-
-            // 찜 목록 조회 쿼리 실행
+    public ResponseEntity<Map<String, Object>> getUserWishlist(@PathVariable String email) {
+        Map<String, Object> responseBody = new HashMap<>();
+        try (Connection connection = dataSource.getConnection()) {
             String query = "SELECT p.product_idx, p.title, p.price, p.location, p.heart_num, p.chat_num, p.image " +
                     "FROM Wishlist w " +
                     "JOIN Product p ON w.product_idx = p.product_idx " +
                     "WHERE w.user_idx = (SELECT user_idx FROM User WHERE id = ?)";
-            preparedStatement = connection.prepareStatement(query);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, email);
-            resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             List<Map<String, Object>> wishlist = new ArrayList<>();
             while (resultSet.next()) {
@@ -336,43 +327,43 @@ public class UserController {
                 wishlist.add(product);
             }
 
-            return ResponseEntity.ok(wishlist);
+            responseBody.put("code", 1000);
+            responseBody.put("wishlist", wishlist);
+            return ResponseEntity.ok(responseBody);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("찜 목록 정보를 가져오는 중 오류 발생");
-        } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            responseBody.put("code", 0);
+            responseBody.put("message", "찜 목록 정보를 가져오는 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
 
     // 비밀번호 인증 API
     @PostMapping("/{email}/auth")
-    public ResponseEntity<?> authenticateUser(@PathVariable String email, @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<Map<String, Object>> authenticateUser(@PathVariable String email, @RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
         boolean authenticated = userService.authenticate(email, password);
+        Map<String, Object> responseBody = new HashMap<>();
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("authenticated", authenticated);
-
+        responseBody.put("authenticated", authenticated);
         if (authenticated) {
-            return ResponseEntity.ok(response);
+            responseBody.put("code", 1000);
+            responseBody.put("message", "비밀번호 인증 성공");
+            return ResponseEntity.ok(responseBody);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            responseBody.put("code", 0);
+            responseBody.put("message", "비밀번호 인증 실패");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
         }
     }
 
+    // 사용자 정보 업데이트 API
     @PutMapping("/{email}/edit")
-    public ResponseEntity<?> updateUserDetails(
+    public ResponseEntity<Map<String, Object>> updateUserDetails(
             @PathVariable String email,
             @RequestPart("user") User updatedUser,
             @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+        Map<String, Object> responseBody = new HashMap<>();
         try {
-            // 이미지 파일이 있는 경우 파일을 저장하고 사용자 데이터에 반영
             if (imageFile != null && !imageFile.isEmpty()) {
                 String imagePath = saveImage(imageFile);
                 updatedUser.setImage(imagePath);
@@ -380,17 +371,23 @@ public class UserController {
 
             User user = userService.updateUserDetails(email, updatedUser);
             if (user != null) {
-                return ResponseEntity.ok(user);
+                responseBody.put("code", 1000);
+                responseBody.put("user", user);
+                return ResponseEntity.ok(responseBody);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
+                responseBody.put("code", 0);
+                responseBody.put("message", "사용자를 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 정보를 수정하는 중 오류 발생");
+            responseBody.put("code", 0);
+            responseBody.put("message", "사용자 정보를 수정하는 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
 
+    // 이미지 저장 로직
     private String saveImage(MultipartFile file) throws IOException {
-        // 이미지 파일 저장 로직을 작성합니다.
         String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
         Path imagePath = Paths.get("images/" + fileName);
         Files.copy(file.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
@@ -399,18 +396,24 @@ public class UserController {
 
     // 기존 사용자 정보 조회 API
     @GetMapping("/{email}/get")
-    public ResponseEntity<User> getUserDetails(@PathVariable String email) {
+    public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable String email) {
+        Map<String, Object> responseBody = new HashMap<>();
         try {
             User user = userService.findUserById(email);
             if (user != null) {
-                return ResponseEntity.ok(user);
+                responseBody.put("code", 1000);
+                responseBody.put("user", user);
+                return ResponseEntity.ok(responseBody);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                responseBody.put("code", 0);
+                responseBody.put("message", "사용자를 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
             }
         } catch (Exception e) {
-            logger.error("Error during getting user details: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            responseBody.put("code", 0);
+            responseBody.put("message", "사용자 정보를 가져오는 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
-
 }
+

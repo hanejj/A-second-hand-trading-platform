@@ -19,19 +19,26 @@ const UserEditPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 로컬 스토리지에서 토큰 가져오기
+    const token = localStorage.getItem('token');
+
     // 사용자 정보를 가져오기 위한 API 호출
-    axios.get(`http://localhost:8080/user/${email}/get`)
+    axios.get(`http://localhost:8080/user/${email}/get`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,  // 헤더에 토큰 추가
+      },
+    })
       .then(response => {
-        const data = response.data;
+        const data = response.data.user;
 
         // 기존 사용자 정보를 가져와서 상태 업데이트
         setUserData({
           name: data.name || '',
           phone: data.phone || '',
           nickname: data.nickname || '',
-          message: data.message || '', // 기본 소개글이 빈값일 경우에도 올바르게 설정
+          message: data.message || '',
           location: data.location || '',
-          passwd: '', // 비밀번호는 빈칸으로 유지
+          passwd: '',
           confirmPassword: '',
           image: data.image || '',
         });
@@ -64,7 +71,7 @@ const UserEditPage = () => {
       alert('비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
       return;
     }
-  
+
     // FormData를 사용하여 이미지 파일과 다른 데이터를 함께 전송
     const formData = new FormData();
     formData.append('name', userData.name);
@@ -76,10 +83,14 @@ const UserEditPage = () => {
     if (imageFile) {
       formData.append('image', imageFile);
     }
-  
+
+    // 로컬 스토리지에서 토큰 가져오기
+    const token = localStorage.getItem('token');
+
     axios.put(`http://localhost:8080/user/${email}/edit`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,
       },
     })
       .then(response => {
@@ -112,16 +123,14 @@ const UserEditPage = () => {
             <button className="image-remove-button" onClick={() => setUserData(prevState => ({ ...prevState, image: '' }))}>현재 사진 삭제</button>
           </div>
           <div className="nickname-section">
-            <span className="nickname-label">닉네임 (변경 불가)</span>
+            <span className="nickname-label">닉네임</span>
             <input
               type="text"
               name="nickname"
               value={userData.nickname}
               onChange={handleChange}
               className="nickname-input"
-              disabled // 닉네임 수정 불가
             />
-            <p className="nickname-note">닉네임은 변경할 수 없습니다.</p>
           </div>
           <div className="message-section">
             <span className="message-label">소개글</span>

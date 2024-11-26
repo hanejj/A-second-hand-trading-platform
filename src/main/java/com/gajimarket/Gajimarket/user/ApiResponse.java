@@ -1,4 +1,4 @@
-package com.gajimarket.Gajimarket;
+package com.gajimarket.Gajimarket.user;
 
 public class ApiResponse {
 

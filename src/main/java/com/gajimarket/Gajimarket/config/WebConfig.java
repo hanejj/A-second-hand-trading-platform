@@ -12,14 +12,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000") // React 개발 서버
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowCredentials(true); // 인증 정보 포함
+                .allowCredentials(true)
+                .maxAge(3600);
     }
-    /*
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
-    }
-    */
 }
 

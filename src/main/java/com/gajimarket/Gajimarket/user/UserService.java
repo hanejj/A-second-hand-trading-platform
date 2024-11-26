@@ -147,5 +147,4 @@ public class UserService {
             throw new RuntimeException("Database error during user update", e);
         }
     }
-
 }

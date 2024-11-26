@@ -1,5 +1,3 @@
-// MyPage.js
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './MyPage.css';
@@ -26,60 +24,56 @@ const MyPage = () => {
     }
 
     // 사용자 프로필 정보에서 이메일을 추출해서 특정 사용자 정보 요청
-    axios.get('http://localhost:8080/user/profile', {
-      headers: {
-        Authorization: token,
-      },
-    })
-    .then(response => {
-      if (response.data && response.data.id) {
-        const userEmail = response.data.id; // 로그인된 사용자의 이메일
-        // 이메일을 사용해 특정 사용자 정보 가져오기
-        return axios.get(`http://localhost:8080/user/${userEmail}`, {
-          headers: {
-            Authorization: token,
-          },
+    const getUserProfile = async () => {
+      try {
+        const profileResponse = await axios.get('http://localhost:8080/user/profile', {
+          headers: { Authorization: `Bearer ${token}` },
         });
-      } else {
-        throw new Error("유효하지 않은 사용자 데이터입니다.");
-      }
-    })
-    .then(response => {
-      const userData = response.data;
-      // 사용자의 포인트 정보 가져오기
-      return axios.get(`http://localhost:8080/user/${userData.id}/point`, {
-        headers: {
-          Authorization: token,
-        },
-      }).then(pointResponse => {
-        setUserInfo({ ...userData, points: pointResponse.data.point || 0 });
-        // 사용자의 판매 상품 정보 가져오기
-        return axios.get(`http://localhost:8080/user/${userData.id}/selling`, {
-          headers: {
-            Authorization: token,
-          },
-        }).then(sellingResponse => {
-          setProducts(sellingResponse.data);
-          // 사용자의 찜 목록 정보 가져오기
-          return axios.get(`http://localhost:8080/user/${userData.id}/get/wishlist`, {
-            headers: {
-              Authorization: token,
-            },
+
+        if (profileResponse.data && profileResponse.data.code === 1000) {
+          const userEmail = profileResponse.data.user.id;
+          const encodedEmail = encodeURIComponent(userEmail); // 이메일 인코딩 추가
+
+          // 이메일을 사용하여 다른 사용자 정보 요청
+          const userResponse = await axios.get(`http://localhost:8080/user/${encodedEmail}`, {
+            headers: { Authorization: `Bearer ${token}` },
           });
-        });
-      });
-    })
-    .then(response => {
-      setWishlist(response.data);
-    })
-    .catch(error => {
-      console.error('사용자 정보를 가져오는 중 오류 발생:', error);
-      if (error.response && error.response.status === 401) {
-        alert('로그인 정보가 만료되었습니다. 다시 로그인 해주세요.');
-        localStorage.removeItem('token');
-        navigate('/login');
+
+          // 포인트 정보 요청
+          const pointResponse = await axios.get(`http://localhost:8080/user/${encodedEmail}/point`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          // 판매 상품 정보 요청
+          const sellingResponse = await axios.get(`http://localhost:8080/user/${encodedEmail}/selling`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          // 찜 목록 정보 요청
+          const wishlistResponse = await axios.get(`http://localhost:8080/user/${encodedEmail}/get/wishlist`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          setUserInfo({
+            ...userResponse.data.user,
+            points: pointResponse.data.point || 0,
+          });
+          setProducts(sellingResponse.data.products || []);
+          setWishlist(wishlistResponse.data.wishlist || []);
+        } else {
+          throw new Error('사용자 정보를 가져오는 중 오류 발생');
+        }
+      } catch (error) {
+        console.error('사용자 정보를 가져오는 중 오류 발생:', error);
+        if (error.response && error.response.status === 401) {
+          alert('로그인 정보가 만료되었습니다. 다시 로그인 해주세요.');
+          localStorage.removeItem('token');
+          navigate('/login');
+        }
       }
-    });
+    };
+
+    getUserProfile();
   }, [navigate]);
 
   const handleTabClick = (tab) => {
@@ -128,11 +122,11 @@ const MyPage = () => {
       return;
     }
 
-    axios.post(`http://localhost:8080/user/${userInfo.id}/auth`, {
+    axios.post(`http://localhost:8080/user/${encodeURIComponent(userInfo.id)}/auth`, {
       password: password
     }, {
       headers: {
-        Authorization: token,
+        Authorization: `Bearer ${token}`,
       },
     })
     .then(response => {
@@ -163,17 +157,21 @@ const MyPage = () => {
     }
 
     const amount = parseInt(pointAmount, 10);
+    if (isWithdraw && userInfo.points < amount) {
+      alert('포인트가 부족합니다. 인출할 수 없습니다.');
+      return;
+    }
     const finalAmount = isWithdraw ? -amount : amount;
 
-    axios.post(`http://localhost:8080/user/${userInfo.id}/point/update`, {
+    axios.post(`http://localhost:8080/user/${encodeURIComponent(userInfo.id)}/point/update`, {
       amount: finalAmount
     }, {
       headers: {
-        Authorization: token,
+        Authorization: `Bearer ${token}`,
       },
     })
     .then(response => {
-      alert(response.data);
+      alert(response.data.message);
       setUserInfo(prevState => ({
         ...prevState,
         points: prevState.points + finalAmount
@@ -272,45 +270,39 @@ const MyPage = () => {
       )}
 
       {isAuthModalOpen && (
-        <div className="auth-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255, 255, 255, 1)', zIndex: '999' }}>
-          <div className="auth-modal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: '1000' }}>
-            <div className="auth-modal-content">
-              <h2>비밀번호 인증</h2>
-              <p>내 정보를 수정하려면 비밀번호를 입력해주세요.</p>
-              <input type="password" value={password} onChange={handlePasswordChange} />
-              <button onClick={handleAuthSubmit}>인증</button>
-              <button onClick={handleCloseAuthModal}>닫기</button>
-            </div>
+        <div className="auth-modal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: '1000', width: '300px', padding: '20px', backgroundColor: 'white', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>
+          <div className="auth-modal-content">
+            <h2>비밀번호 인증</h2>
+            <p>내 정보를 수정하려면 비밀번호를 입력해주세요.</p>
+            <input type="password" value={password} onChange={handlePasswordChange} style={{ width: '100%', marginBottom: '10px' }} />
+            <button onClick={handleAuthSubmit} style={{ marginRight: '10px' }}>인증</button>
+            <button onClick={handleCloseAuthModal}>닫기</button>
           </div>
         </div>
       )}
 
       {isPointModalOpen && (
-        <div className="point-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255, 255, 255, 1)', zIndex: '999' }}>
-          <div className="point-modal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: '1000' }}>
-            <div className="point-modal-content">
-              <h2>포인트 충전</h2>
-              <p>현재 포인트: {userInfo.points || 0}</p>
-              <p>충전할 금액을 입력해주세요.</p>
-              <input type="number" value={pointAmount} onChange={handlePointChange} />
-              <button onClick={() => handlePointSubmit(false)}>충전</button>
-              <button onClick={handleClosePointModal}>닫기</button>
-            </div>
+        <div className="point-modal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: '1000', width: '300px', padding: '20px', backgroundColor: 'white', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>
+          <div className="point-modal-content">
+            <h2>포인트 충전</h2>
+            <p>현재 포인트: {userInfo.points || 0}</p>
+            <p>충전할 금액을 입력해주세요.</p>
+            <input type="number" value={pointAmount} onChange={handlePointChange} style={{ width: '100%', marginBottom: '10px' }} />
+            <button onClick={() => handlePointSubmit(false)} style={{ marginRight: '10px' }}>충전</button>
+            <button onClick={handleClosePointModal}>닫기</button>
           </div>
         </div>
       )}
 
       {isWithdrawModalOpen && (
-        <div className="point-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255, 255, 255, 1)', zIndex: '999' }}>
-          <div className="point-modal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: '1000' }}>
-            <div className="point-modal-content">
-              <h2>포인트 인출</h2>
-              <p>현재 포인트: {userInfo.points || 0}</p>
-              <p>인출할 금액을 입력해주세요.</p>
-              <input type="number" value={pointAmount} onChange={handlePointChange} />
-              <button onClick={() => handlePointSubmit(true)}>인출</button>
-              <button onClick={handleCloseWithdrawModal}>닫기</button>
-            </div>
+        <div className="point-modal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: '1000', width: '300px', padding: '20px', backgroundColor: 'white', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>
+          <div className="point-modal-content">
+            <h2>포인트 인출</h2>
+            <p>현재 포인트: {userInfo.points || 0}</p>
+            <p>인출할 금액을 입력해주세요.</p>
+            <input type="number" value={pointAmount} onChange={handlePointChange} style={{ width: '100%', marginBottom: '10px' }} />
+            <button onClick={() => handlePointSubmit(true)} style={{ marginRight: '10px' }}>인출</button>
+            <button onClick={handleCloseWithdrawModal}>닫기</button>
           </div>
         </div>
       )}

@@ -7,10 +7,28 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 @Service
 public class ProductService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final DataSource dataSource;
+  
+  @Autowired
+  public ProductService(DataSource dataSource, JdbcTemplate jdbcTemplate) {
+    this.dataSource = dataSource;
+    this.jdbcTemplate = jdbcTemplate;
+  }
+
+    @Autowired
+    public ProductService(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     @Autowired
     public ProductService(JdbcTemplate jdbcTemplate) {
@@ -280,4 +298,35 @@ public class ProductService {
         jdbcTemplate.update(sql, wishRequest.getUserIdx(), wishRequest.getProductIdx());
     }
 
+}
+    
+
+    public List<Product> searchProductsByTitle(String title) {
+        String sql = "SELECT * FROM Product WHERE title LIKE ?";
+        List<Product> productList = new ArrayList<>();
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + title + "%");
+            ResultSet resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                Product product = new Product();
+                product.setProductIdx(resultSet.getInt("product_idx"));
+                product.setTitle(resultSet.getString("title"));
+                product.setContent(resultSet.getString("content"));
+                product.setPrice(resultSet.getInt("price"));
+                product.setLocation(resultSet.getString("location"));
+                product.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+
+                productList.add(product);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error during product search", e);
+        }
+
+        return productList;
+    }
 }

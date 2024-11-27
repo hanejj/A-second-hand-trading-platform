@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './MainPage.css';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 import { Link } from 'react-router-dom';
 
 const MainPage = () => {
   const [popularProducts, setPopularProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
+  const [sessionInfo, setSessionInfo] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(null);
+  const navigate = useNavigate();
 
   // 페이지 접속 시 API 요청
   useEffect(() => {
@@ -60,7 +65,7 @@ const MainPage = () => {
 
   return (
     <div className="main-page">
-      
+
       {/* 인기 상품 섹션 */}
       <section>
         <div className="main-page-title">

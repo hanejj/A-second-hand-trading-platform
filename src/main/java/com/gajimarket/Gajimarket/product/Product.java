@@ -49,3 +49,4 @@ public class Product {
         this.isHearted = isHearted;
     }
 }
+

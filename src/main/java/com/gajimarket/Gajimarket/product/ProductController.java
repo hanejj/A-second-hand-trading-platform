@@ -277,5 +277,10 @@ public class ProductController {
 
     }
 
-
+    // 검색 API 추가
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam String title) {
+        List<Product> products = productService.searchProductsByTitle(title);
+        return ResponseEntity.ok(products);
+    }
 }

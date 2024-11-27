@@ -2,37 +2,40 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(90deg, #6a0dad, #8a2be2); /* 그라디언트 배경 */
+    background: linear-gradient(90deg, #C87BD6, #9c1db2); /* �׶���Ʈ ��� */
     padding: 15px 20px;
 }
 
 .logo {
-    font-size: 40px; /* 로고 크기 */
-    font-weight: bold; /* 로고 굵기 */
-    color: white;
-    text-decoration: none; /* 밑줄 제거 */
+    font-size: 40px; /* ���ϴ� ũ��� ���� */
+    font-weight: bold; /* ���� ���� */
+    color: black;
+    text-decoration: none; /* ���� ���� */
 }
 
 .nav {
     display: flex;
-    gap: 15px; /* 버튼 사이의 간격 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    gap: 15px; /* ��ư ���� */
 }
 
 .nav-button {
-    background-color: #6a0dad; /* 버튼 배경색 */
-    color: white; /* 버튼 텍스트 색상 */
+    display: flex;
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    background-color: #C87BD6; /* ��ư ���� */
+    color: white; /* ��ư �۾��� */
     border: none;
-    border-radius: 25px; /* 둥근 모서리 */
-    padding: 10px 20px; /* 여백 */
+    border-radius: 25px; /* �ձ� �𼭸� */
+    padding: 10px 20px; /* ���� */
     cursor: pointer;
-    font-size: 16px; /* 텍스트 크기 */
-    transition: all 0.3s ease; /* 애니메이션 효과 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-    text-decoration: none; /* 링크 밑줄 제거 */
+    font-size: 16px; /* �۾� ũ�� */
+    transition: all 0.3s ease; /* �ִϸ��̼� */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* �׸��� ȿ�� */
+    text-decoration: none; /* ��ũ ������� ���� */
 }
 
-.nav-button:hover {
-    background-color: #8a2be2; /* 호버 시 배경색 변경 */
-    transform: translateY(-2px); /* 호버 시 약간 올라가는 효과 */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* 호버 시 그림자 효과 변화 */
-}
+    .nav-button:hover {
+        background-color: #C87BD6; /* ȣ�� �� ���� ��ȭ */
+        transform: translateY(-2px); /* ȣ�� �� �ణ �ö󰡴� ȿ�� */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* ȣ�� �� �׸��� ��ȭ */
+    }

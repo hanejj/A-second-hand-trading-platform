@@ -1,4 +1,3 @@
-// UserController.java
 package com.gajimarket.Gajimarket.user;
 
 import com.gajimarket.Gajimarket.config.JwtTokenProvider;

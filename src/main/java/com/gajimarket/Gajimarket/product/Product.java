@@ -1,62 +1,52 @@
 package com.gajimarket.Gajimarket.product;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+// product 상품 정보 조회
+@Getter
+@Setter
 public class Product {
-    private int productIdx;
-    private String title;
-    private String content;
-    private int price;
-    private String location;
-    private LocalDateTime createdAt;
 
-    // Getters and Setters
-    public int getProductIdx() {
-        return productIdx;
-    }
+    private Integer productIdx; // 인덱스
+    private String category; // 카테고리
+    private String title; // 글 제목
+    private Integer price; // 상품 가격
+    private LocalDateTime createdAt; // 게시글 업로드 시간
+    private String location; // 위치
+    private Integer chatNum; // 채팅 수
+    private Integer heartNum; //하트 수
+    private String selling;  // 'sell' or 'get'
+    private String image; //이미지
+    private Integer writerIdx; // 상품 게시글 업로드 사용자 인덱스
+    private String writerName; // 닉네임
+    private String status; // 거래 상태
+    private Integer partnerIdx; // 거래 상대방 인덱스
+    private Boolean review; //리뷰 존재 여부
+    private String content; // 내용
+    private Boolean isHearted; // 찜 상태
+    
 
-    public void setProductIdx(int productIdx) {
+    public Product(int productIdx, String category, String title, int price, LocalDateTime createdAt, String location, int chatNum, int heartNum, String selling, String image, int writerIdx, String writerName, String status, Integer partnerIdx, boolean review, String content, boolean isHearted) {
         this.productIdx = productIdx;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
+        this.category = category;
         this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
         this.price = price;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+        this.location = location;
+        this.chatNum = chatNum;
+        this.heartNum = heartNum;
+        this.selling = selling;
+        this.image = image;
+        this.writerIdx = writerIdx;
+        this.writerName = writerName;
+        this.status = status;
+        this.partnerIdx = partnerIdx;
+        this.review = review;
+        this.content=content;
+        this.isHearted = isHearted;
     }
 }
 

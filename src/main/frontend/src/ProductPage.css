@@ -1,0 +1,251 @@
+.product-page {
+    display: flex;
+    flex-direction: row; /* 기본적으로 가로로 배치 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    align-items: flex-start; /* 위쪽 정렬 */
+    gap: 20px; /* 이미지와 텍스트 간의 간격 */
+    margin: 20px;
+    padding-top:30px;
+    padding-left:30px;
+  }
+  
+  .product-page-image {
+    width: 600px; /* 이미지 크기 제한 */
+    height: auto;
+    object-fit: cover; /* 이미지 비율 유지하며 영역에 맞게 조정 */
+    margin-right:20px;
+  }
+  
+  .product-page-info {
+    flex: 1; /* 텍스트 영역을 남은 공간에 맞게 확장 */
+    display: flex;
+    flex-direction: column; /* 텍스트를 세로로 배치 */
+    gap: 10px; /* 텍스트 간 간격 */
+  }
+  
+  .product-page-h1, .product-page-h2 {
+    margin: 0;
+  }
+  
+  .product-page-p {
+    line-height: 1.5;
+  }
+  
+  .product-page-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .product-page-heart-button, .product-page-chat-button, .product-page-report-button, .product-page-write-review-button  {
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: #C87BD6;
+    color: white;
+  }
+  
+  .product-page-heart-button.hearted {
+    background-color: #9a26af; 
+    color: white;
+  }
+  
+  .product-page-chat-button {
+    background-color: #C87BD6; 
+    color: white;
+  }
+  
+  .product-page-report-button {
+    background-color: #C87BD6;
+    color: white;
+  }
+  
+  .product-page-heart-button:hover, .product-page-chat-button:hover, .product-page-report-button:hover {
+    opacity: 0.8;
+  }
+
+  .product-page-review-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6); /* 어두운 배경 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* 모달을 최상단에 표시 */
+  }
+  
+  .product-page-modal-content {
+    background: #fefefe; /* 부드러운 흰색 */
+    padding: 30px;
+    border-radius: 15px; /* 둥근 모서리 */
+    width: 500px; /* 모달 너비 */
+    max-width: 90%; /* 화면 작을 때 유연하게 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* 깊이감 있는 그림자 */
+    position: relative; /* 닫기 버튼 위치 */
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* 제목 스타일 */
+  .product-page-modal-content h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center; /* 제목 중앙 정렬 */
+  }
+  
+  /* 텍스트 입력란 */
+  .product-page-modal-content textarea {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none; /* 크기 조정 비활성화 */
+    font-size: 1rem;
+    font-family: inherit;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* 텍스트박스 안쪽 그림자 */
+  }
+  
+  /* 파일 업로드 */
+  .product-page-modal-content input[type="file"] {
+    display: block;
+    margin: 10px 0 20px;
+    font-size: 0.9rem;
+  }
+  
+  /* 버튼 기본 스타일 */
+  .product-page-modal-content button {
+    background-color: #C87BD6; /* 주요 색상 */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* 색상 & 크기 변화 */
+  }
+  
+  .product-page-modal-content button:hover {
+    background-color: #A25FAF; /* 호버 색상 */
+    transform: scale(1.05); /* 살짝 커지는 효과 */
+  }
+  
+  /* 선택된 버튼 스타일 */
+  .product-page-modal-content button.selected {
+    background-color: #cd40cd; /* 선택된 버튼 색상 */
+    color: #fff;
+  }
+  
+  /* '좋았어요'와 '아쉬웠어요' 버튼 정렬 */
+  .product-page-modal-content div {
+    display: flex;
+    justify-content: space-around; /* 버튼 간격 좁히기 */
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  /* 설명 텍스트 */
+  .product-page-modal-content p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #555;
+  }
+  
+  /* 닫기 버튼 */
+  .product-page-modal-content .product-page-close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .product-page-modal-content .product-page-close-button:hover {
+    color: #000;
+    background:none;
+  }
+  
+  
+  .product-page-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px; /* 항목들 간의 간격 */
+  }
+  
+  .product-page-product-info-box {
+    background-color: #fff;
+    border: 2px solid #c19cd9; /* 테두리 색 */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%; /* 부모 컨테이너에 맞게 크기 조절 */
+    max-width: 800px; /* 최대 너비 제한 */
+    text-align: left;
+  }
+  
+  .product-page-product-info-box p, .product-page-product-info-box h1 {
+    margin: 5px 0;
+  }
+  
+  .product-page-product-info-box h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .product-page-seller-info {
+    display: flex;
+    justify-content: flex-end; /* 판매자 정보를 오른쪽으로 배치 */
+    margin-top: 10px; /* 위쪽 여백 */
+  }
+
+  .product-page-review-section {
+    padding: 50px;
+    background-color: #fff; /* 흰색 배경 */
+    border-top: 2px solid #c19cd9; /* 테두리 색상 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-page-review-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #6a2f91;
+  }
+  
+  .product-page-review-image {
+    max-width: 800px; /* 이미지 크기를 부모 컨테이너에 맞게 */
+    height: auto; /* 비율 유지 */
+    margin-top: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 추천 상품 갤러리 */
+.recommended-gallery {
+  display: flex; /* 상품들이 가로로 나열되도록 설정 */
+  overflow-x: auto; /* 가로 스크롤 가능하게 설정 */
+  gap: 20px; /* 상품 간 간격 */
+  padding: 20px; /* 양옆에 20px 여백 */
+}
+
+.recommended-gallery-title {
+  padding: 20px;
+  border-top: 2px solid #c19cd9; /* 테두리 색상 */
+}
+
+.recommended-gallery-title h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #6a2f91;
+}

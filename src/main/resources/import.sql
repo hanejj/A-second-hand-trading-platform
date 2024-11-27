@@ -4,7 +4,8 @@ use gajimarket;
 SET FOREIGN_KEY_CHECKS = 0;
 truncate table user;
 SET FOREIGN_KEY_CHECKS = 1;
-INSERT INTO `user` (id, passwd, name, birth, sex, phone, nickname, location, image, message, manner_point)
+
+INSERT INTO user (id, passwd, name, birth, sex, phone, nickname, location, image, message, manner_point)
 VALUES
 ('user1@gmail.com', 'passwd1', '홍길동', '1990-05-15', 'M', '010-1234-5678', '길동이', '서울특별시', '/uploads/user.png', '안녕하세요!', 50),
 ('user2@gmail.com', 'passwd2', '김철수', '1995-10-20', 'M', '010-9876-5432', '짱구', '부산광역시', '/uploads/user.png', '좋은 하루 되세요!', 50),
@@ -50,6 +51,13 @@ VALUES
 ('Fashion', '여성 자켓 팝니다', '봄, 가을에 입기 좋은 자켓.', 25000, DATE_ADD(NOW(), INTERVAL -4 DAY), '대전광역시', 2, 4, 'sell', '/uploads/winter_jacket.jpg', 2, '짱구', 'active'),
 ('Fashion', '남성 티셔츠 판매', '사이즈 L, 상태 좋음.', 15000, DATE_ADD(NOW(), INTERVAL -6 DAY), '서울특별시', 5, 9, 'sell', '/uploads/mens_tshirt.jpg', 1, '길동이', 'active');
 
+INSERT INTO keyword(product_idx, keyword)
+VALUES
+(7,'정장'),(7,'남성복'),(7,'겨울옷'),
+(8,'아우터'),(8,'여성복'),(8,'겨울옷'),
+(9,'여성복'),(9,'아우터'),
+(10,'남성복');
+
 -- Books 카테고리 데이터
 INSERT INTO product (category, title, content, price, created_at, location, chat_num, heart_num, selling, image, writer_idx, writer_name, status)
 VALUES
@@ -59,6 +67,10 @@ VALUES
 ('Books', '소설 책 팔아요', '재미있는 소설, 상태 좋음.', 10000, DATE_ADD(NOW(), INTERVAL -7 DAY), '인천광역시', 0, 2, 'sell', '/uploads/novel_book.jpg', 4, '은진이', 'active'),
 ('Books', '채식주의자 구해요', '읽고 싶어요.', 18000, DATE_ADD(NOW(), INTERVAL -5 DAY), '서울특별시', 2, 4, 'get', '/uploads/채식주의자.jpg', 2, '짱구', 'active'),
 ('Books', '소년이 온다 구해요', '읽고 싶어요.', 10000, DATE_ADD(NOW(), INTERVAL -7 DAY), '인천광역시', 0, 2, 'get', '/uploads/소년이온다.jpg', 4, '은진이', 'active');
+
+INSERT INTO keyword(product_idx, keyword)
+VALUES
+(11,'코딩'),(11,'공부');
 
 -- Furniture 카테고리 데이터
 INSERT INTO product (category, title, content, price, created_at, location, chat_num, heart_num, selling, image, writer_idx, writer_name, status)
@@ -76,8 +88,17 @@ VALUES
 ('Other', '캠핑 장비 판매', '캠핑용 텐트와 용품들', 80000, DATE_ADD(NOW(), INTERVAL -5 DAY), '인천광역시', 3, 6, 'sell', '/uploads/camping_gear.jpg', 4, '은진이', 'active'),
 ('Other', '고양이 장난감 팝니다', '고양이를 위한 다양한 장난감', 15000, DATE_ADD(NOW(), INTERVAL -7 DAY), '광주광역시', 2, 5, 'sell', '/uploads/cat_toy.jpg', 5, '슬램덩크', 'active');
 
+SET FOREIGN_KEY_CHECKS = 0;
+truncate table review;
+SET FOREIGN_KEY_CHECKS = 1;
+
+SET FOREIGN_KEY_CHECKS = 0;
+truncate table wishlist;
+SET FOREIGN_KEY_CHECKS = 1;
+
 INSERT INTO Wishlist (user_idx, product_idx, created_at)
 VALUES
     ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 1, NOW()),
     ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 2, NOW()),
     ((SELECT user_idx FROM User WHERE id = 'user2@gmail.com'), 3, NOW());
+

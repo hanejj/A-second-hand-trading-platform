@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import './MainPage.css';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const MainPage = () => {
   const [popularProducts, setPopularProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
+  const [sessionInfo, setSessionInfo] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // 샘플 상품 데이터 설정
     const productData = [
       { id: 1, title: 'MacBook Pro 2019', price: 1500, description: '중고 맥북 프로, 2019년형, 좋은 상태' },
       { id: 2, title: 'iPhone 12', price: 800, description: '중고 아이폰 12, 블랙, 128GB' },
@@ -19,10 +25,64 @@ const MainPage = () => {
 
     setPopularProducts(productData.slice(0, 6)); // 인기순
     setLatestProducts(productData.slice(6)); // 최신순
-  }, []);
+
+    // 로컬 스토리지에서 JWT 토큰 가져오기
+    const token = localStorage.getItem('token');
+    const isAdminValue = localStorage.getItem('isAdmin');
+    setIsAdmin(isAdminValue);
+
+    if (token) {
+      // 사용자 정보 요청
+      axios.get('http://localhost:8080/user/profile', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(response => {
+        if (response.data && response.data.code === 1000) {
+          setSessionInfo(response.data.user);
+        } else {
+          throw new Error('사용자 정보를 가져오는 중 오류 발생');
+        }
+      })
+      .catch(error => {
+        console.error('토큰 정보를 가져오는 중 오류 발생:', error);
+        if (error.response && error.response.status === 401) {
+          alert('로그인 토큰이 만료되었습니다. 다시 로그인해주세요.');
+          localStorage.removeItem('token');
+          navigate('/login'); // 로그인 페이지로 이동
+        }
+      });
+    } else {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    // 로그아웃 시 로컬 스토리지에서 토큰 및 isAdmin 삭제
+    localStorage.removeItem('token');
+    localStorage.removeItem('isAdmin');
+    alert('로그아웃 되었습니다.');
+    navigate('/login'); // 로그인 페이지로 이동
+  };
 
   return (
     <div className="main-page">
+      {/* 토큰 정보 섹션 */}
+      <header className="header">
+        <div className="session-info">
+          {sessionInfo && sessionInfo.id ? (
+            <div>
+              <p>로그인된 사용자: {sessionInfo.id}</p>
+              <p>관리자 여부: {isAdmin === 'true' ? '관리자' : '일반 사용자'}</p>
+              <button onClick={handleLogout}>로그아웃</button>
+            </div>
+          ) : (
+            <p>로그인이 필요합니다</p>
+          )}
+        </div>
+      </header>
 
       {/* 카테고리 섹션 */}
       <section className="category-section">

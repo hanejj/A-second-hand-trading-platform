@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 
 const ProductPage = () => {
+  const [user, setUser] = useState(null); // 현재 로그인한 사용자 정보 저장
   const { productIdx } = useParams();
   const [product, setProduct] = useState(null);
   const [reviewData, setReviewData] = useState(null);
@@ -15,7 +16,7 @@ const ProductPage = () => {
   const [reviewContent, setReviewContent] = useState('');
   const [reviewImage, setReviewImage] = useState(null);
   const [reviewScore, setReviewScore] = useState(''); // 리뷰 점수 상태\
-  const userIdx = 1; // 임시로 설정한 사용자 ID, 로그인 후 실제 사용자 ID를 넣으세요.
+  const [userIdx, setUserIdx] = useState(null); // 로그인한 사용자가 있을 때만 userIdx 설정
   const [recommendedProducts, setRecommendedProducts] = useState([]); // 추천 상품
 
 
@@ -58,10 +59,17 @@ const ProductPage = () => {
 
     const formData = new FormData();
     formData.append('review', reviewContent);
-    formData.append('writerIndex', userIdx);
-    formData.append('partnerIndex', 2); // 거래 상대방 ID 임의로 2로 설정
-    formData.append('sellerIndex', 1); // 판매자 임의로 1로 설정
-    formData.append('buyerIndex', 2); // 구매자 ID 임의로 2로 설정
+    // `writerIndex`는 product.writer_idx와 동일
+    formData.append('writerIndex', product.writer_idx);
+
+    // `partnerIndex`는 현재 로그인한 사용자(user.userIdx)
+    formData.append('partnerIndex', user.userIdx);
+  
+    // `sellerIndex`도 현재 로그인한 사용자(user.userIdx)
+    formData.append('sellerIndex', user.userIdx);
+  
+    // `buyerIndex`는 product.partner_idx와 동일
+    formData.append('buyerIndex', product.partner_idx);
     formData.append('reviewScore', reviewScore);
 
     if (reviewImage) {
@@ -142,6 +150,28 @@ const ProductPage = () => {
   };
 
   useEffect(() => {
+    // 현재 로그인한 사용자 정보 가져오기
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios
+        .get('http://localhost:8080/user/profile', {
+          headers: {
+            Authorization: "Bearer "+token, // JWT 토큰을 Authorization 헤더에 추가
+          },
+        })
+        .then((response) => {
+          if (response.data && response.data.user) {
+            setUser(response.data.user); // 사용자 정보 저장
+            setUserIdx(response.data.user.user_idx);
+            console.log('User:', response.data.user);
+          }
+        })
+        .catch((error) => {
+          console.error('사용자 정보를 가져오는 중 오류 발생:', error);
+        });
+    }
+
+    //상품 정보 가져오기
     fetchProductDetails();
   }, [productIdx]);
 
@@ -175,10 +205,15 @@ const ProductPage = () => {
             </button>
             <button className="product-page-chat-button" onClick={handleChatClick}>채팅</button>
             <button className="product-page-report-button" onClick={handleReportClick}>신고</button>
-            {!reviewData && (
-              <button className="product-page-write-review-button" onClick={handleWriteReviewClick}>
-                리뷰 작성
-              </button>
+            
+            {/*현재 로그인 유저가 거래 상대방일 때이고, 거래가 이미 완료된 상태일 때만 리뷰 작성 버튼이 보임*/}
+            {!reviewData && user && user.userIdx === product.partner_idx && product.status === 'completed' (
+            <button
+              className="product-page-write-review-button"
+              onClick={handleWriteReviewClick}
+            >
+              리뷰 작성
+            </button>
             )}
           </div>
         </div>

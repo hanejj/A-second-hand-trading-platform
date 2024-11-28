@@ -120,4 +120,22 @@ public class AdminController {
         }
     }
 
+
+    // 신고 목록 가져오기
+    @GetMapping("/get/reportList")
+    public ResponseEntity<ApiResponse> getReportList(){
+        System.out.println("/get/reportList request");
+        ApiResponse apiResponse;
+        try{
+            //서비스 호출
+            List<ReportInfo> reportList = adminService.getReportList();
+            apiResponse=new ApiResponse("1000", null);
+            apiResponse.setData(reportList);
+            return ResponseEntity.ok().body(apiResponse);
+
+        } catch (Exception e){
+            apiResponse = new ApiResponse("0", "리스트 불러오기 실패");
+            return ResponseEntity.ok().body(apiResponse);
+        }
+    }
 }

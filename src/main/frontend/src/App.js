@@ -10,6 +10,7 @@ import NavButton from './NavButton';
 import AdminMainPage from "./AdminMainPage";
 import UserManagemnetPage from "./UserManagementPage";
 import AdminManagemnetPage from "./AdminManagementPage";
+import ReportListPage from "./ReportListPage";
 
 const App = () => {
   return (
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="/admin" element={<AdminMainPage />} />
         <Route path="/management/user" element={<UserManagemnetPage />} />
         <Route path="/management/admin" element={<AdminManagemnetPage />} />
+        <Route path="/admin/report" element={<ReportListPage />} />
       </Routes>
     </Router>
   );

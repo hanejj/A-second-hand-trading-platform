@@ -99,4 +99,28 @@ public class AdminService {
         String deleteQuery = "DELETE FROM admin WHERE admin_index = ?";
         jdbcTemplate.update(deleteQuery, admin_idx);
     }
+
+    // 신고 목록 가져오기
+    public List<ReportInfo> getReportList() {
+        // SQL 쿼리 작성: Report 테이블에서 필요한 정보를 조회
+        String sql = "SELECT report_idx, title, content, reporting_idx, status, reported_user, reported_product, created_at FROM report";
+
+        // 데이터베이스에서 결과를 조회하고 DTO(ReportInfo)로 매핑
+        List<ReportInfo> reportList = jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new ReportInfo(
+                        rs.getInt("report_idx"),
+                        rs.getString("title"),
+                        rs.getString("content"),
+                        rs.getInt("reporting_idx"),
+                        rs.getString("status"),
+                        rs.getInt("reported_user"),
+                        rs.getInt("reported_product"),
+                        rs.getTimestamp("created_at")
+                )
+        );
+
+        return reportList;
+    }
+
 }

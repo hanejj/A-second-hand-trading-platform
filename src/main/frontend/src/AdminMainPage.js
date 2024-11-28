@@ -12,6 +12,9 @@ const AdminMainPage = () => {
     else if (section==="관리자 관리"){
       navigate("/management/admin");
     }
+    else if(section==="신고 내역"){
+      navigate("/admin/report");
+    }
     else {
       console.log(`${section} 버튼 클릭됨`);
       // 다른 섹션별로 로직 추가 가능

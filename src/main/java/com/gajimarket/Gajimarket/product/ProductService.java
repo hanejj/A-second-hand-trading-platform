@@ -19,21 +19,13 @@ public class ProductService {
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
   
-  @Autowired
-  public ProductService(DataSource dataSource, JdbcTemplate jdbcTemplate) {
-    this.dataSource = dataSource;
-    this.jdbcTemplate = jdbcTemplate;
-  }
-
     @Autowired
-    public ProductService(DataSource dataSource) {
+    public ProductService(DataSource dataSource, JdbcTemplate jdbcTemplate) {
         this.dataSource = dataSource;
-    }
-
-    @Autowired
-    public ProductService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+
 
     // "/product" 요청 시 상품 목록 조회
     public List<Product> getProductList(ProductRequest productRequest) {
@@ -297,9 +289,6 @@ public class ProductService {
         String sql = "DELETE FROM Wishlist WHERE user_idx = ? AND product_idx = ?";
         jdbcTemplate.update(sql, wishRequest.getUserIdx(), wishRequest.getProductIdx());
     }
-
-}
-    
 
     public List<Product> searchProductsByTitle(String title) {
         String sql = "SELECT * FROM Product WHERE title LIKE ?";

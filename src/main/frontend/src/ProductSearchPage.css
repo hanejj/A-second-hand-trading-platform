@@ -46,12 +46,12 @@ body {
     padding: 40px;
   }
   
-  .category-bar {
+  /* .category-bar {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
     padding: 0 20px;
-  }
+  } */
   
   .category-list {
     display: flex;
@@ -104,7 +104,7 @@ body {
     justify-content: flex-start;
   }
   
-  .product-card {
+  /* .product-card {
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -142,7 +142,7 @@ body {
   .product-card .product-info {
     font-size: 14px;
     color: #777;
-  }
+  } */
   
   .product-card .likes-comments {
     margin-top: 10px;

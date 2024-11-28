@@ -162,7 +162,7 @@ const ProductPage = () => {
             <p>{product.status === 'active' ? '거래 중' : '거래 완료'}</p>
             <p>♡ 관심 {product.heartNum} · 💬 채팅 {product.chatNum}</p>
             <div className="product-page-seller-info">
-              <p>판매자 {product.writerName}</p>
+              <p>작성자 {product.writerName}</p>
             </div>
           </div>
 

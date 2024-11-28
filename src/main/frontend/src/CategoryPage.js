@@ -73,19 +73,18 @@ const CategoryPage = () => {
       <div className="product-gallery">
         {products.length > 0 ? (
           products.map((product) => (
-            <div key={product.productIdx} className="product-card">
-            <Link to={`/product/${product.productIdx}`} className="product-link">
+            <div key={product.product_idx}>
+            <Link to={`/product/${product.productIdx}`} className="product-card">
               <div className="product-info">
                 <h3>{product.title}</h3>
                 <p>{product.price}원</p>
                 <p>{product.location}</p>
                 <p>♡ {product.heartNum} 💬 {product.chatNum}</p>
               </div>
+              <img src={`http://localhost:8080/image?image=${product.image}`} alt={product.title} />
             </Link>
-            <Link to={`/product/${product.productIdx}`} className="product-link">
-              <img src={"http://localhost:8080/image?image="+product.image} alt={product.title} />
-            </Link>
-          </div> 
+          </div>
+
           ))
         ) : (
           <p>상품이 없습니다.</p>

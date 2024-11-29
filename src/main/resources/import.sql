@@ -18,7 +18,8 @@ truncate table admin;
 SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO admin (id, passwd, name)
 values
-('admin1@gaji.com','admin1','김관리');
+('admin1@gaji.com','admin1','김관리'),
+('admin2@gaji.com','admin2','나관리');
 
 SET FOREIGN_KEY_CHECKS = 0;
 truncate table product;
@@ -102,3 +103,7 @@ VALUES
     ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 2, NOW()),
     ((SELECT user_idx FROM User WHERE id = 'user2@gmail.com'), 3, NOW());
 
+INSERT INTO Notice (admin_index, title, content, created_at, image)
+VALUES
+(1, '첫 번째 공지사항', '첫 번째 공지 내용입니다.', NOW(), NULL),
+(2, '두 번째 공지사항', '두 번째 공지 내용입니다.', NOW(), NULL);

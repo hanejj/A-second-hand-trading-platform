@@ -13,6 +13,8 @@ import ProductPage from './ProductPage'; // ProductPage 추가
 import ProductUploadPage from './ProductUploadPage'; // ProductPage 추가
 import UserEditPage from './UserEditPage'; 
 import ProductSearchPage from './ProductSearchPage';
+import NoticeWritePage from './NoticeWritePage';
+import NoticeEditPage from './NoticeEditPage';
 
 const App = () => {
   const token = localStorage.getItem('token'); // 토큰을 통해 로그인 여부 확인
@@ -79,6 +81,8 @@ const App = () => {
         <Route path="/mypage" element={<MyPage />} /> 
         <Route path="/user/:email/edit" element={<UserEditPage />} />
         <Route path="/search" element={<ProductSearchPage />} />
+        <Route path="/notices/new" element={<NoticeWritePage />} />
+        <Route path="/notices/edit/:id" element={<NoticeEditPage />} />
       </Routes>
     </Router>
   );

@@ -6,18 +6,19 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 const MainPage = () => {
-  const navigate = useNavigate();
   const [popularProducts, setPopularProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
   const [sessionInfo, setSessionInfo] = useState(null);
   const [isAdmin, setIsAdmin] = useState(null);
   const navigate = useNavigate();
-
   
   // 페이지 접속 시 API 요청
   useEffect(() => {
+    const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
     if (isAdmin) {
       navigate("/admin"); // AdminMainPage로 이동
+    } else {
+      navigate("/"); // MainPage로 이동
     }
     // 인기순 상품 목록 요청
     const fetchPopularProducts = async () => {
@@ -65,7 +66,7 @@ const MainPage = () => {
 
     fetchPopularProducts();
     fetchLatestProducts();
-  }, []); // 빈 배열은 컴포넌트 마운트 시 한 번만 실행
+  }, [isAdmin, navigate]); 
 
 
   return (

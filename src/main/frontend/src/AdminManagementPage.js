@@ -30,7 +30,9 @@ const AdminManagementPage = () => {
   const handleDeleteAdmin = (adminIdx, adminName) => {
     const isConfirmed = window.confirm(`${adminName} 계정을 삭제하시겠습니까?`);
     if (isConfirmed) {
-      fetch(`http://localhost:8080/admin/delete/${adminIdx}`, {
+      // 로컬 스토리지에서 isAdmin 값을 가져오기
+      const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+      fetch(`http://localhost:8080/admin/delete/${adminIdx}?isAdmin=${isAdmin}`, {
         method: "DELETE",
       })
         .then((response) => response.json())
@@ -56,7 +58,9 @@ const AdminManagementPage = () => {
       return;
     }
 
-    fetch("http://localhost:8080/admin/add", {
+    // 로컬 스토리지에서 isAdmin 값을 가져오기
+    const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+    fetch(`http://localhost:8080/admin/add?isAdmin=${isAdmin}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

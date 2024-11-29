@@ -42,7 +42,9 @@ const UserManagementPage = () => {
     const isConfirmed = window.confirm(`${userName} 회원을 영구 정지하시겠습니까?`);
 
     if (isConfirmed) {
-      fetch(`http://localhost:8080/admin/ban/${userIdx}`, {
+      // 로컬 스토리지에서 isAdmin 값을 가져오기
+      const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+      fetch(`http://localhost:8080/admin/ban/${userIdx}?isAdmin=${isAdmin}`, {
         method: "PATCH", 
       })
         .then((response) => response.json())

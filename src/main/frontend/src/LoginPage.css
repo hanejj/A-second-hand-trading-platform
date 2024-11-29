@@ -1,4 +1,4 @@
-/* ·Î±×ÀÎ ÆäÀÌÁö ÀüÃ¼ ÄÁÅ×ÀÌ³Ê */
+/* ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½Ì³ï¿½ */
 .login-container {
     display: flex;
     flex-direction: column;
@@ -8,15 +8,15 @@
     background-color: #f8f8f8;
 }
 
-/* °¡Áö¸¶ÄÏ ·Î°í */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î°ï¿½ */
 .logo {
     font-size: 36px;
-    color: #800080; /* º¸¶ó»ö */
+    color: #800080; /* ï¿½ï¿½ï¿½ï¿½ï¿½ */
     margin-bottom: 30px;
     font-weight: bold;
 }
 
-/* ·Î±×ÀÎ Æû */
+/* ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½ */
 .login-form {
     display: flex;
     flex-direction: column;
@@ -27,7 +27,7 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* ÀÔ·Â ÇÊµå ±×·ì */
+/* ï¿½Ô·ï¿½ ï¿½Êµï¿½ ï¿½×·ï¿½ */
 .input-group {
     display: flex;
     flex-direction: column;
@@ -46,10 +46,10 @@
         border-radius: 5px;
     }
 
-/* ·Î±×ÀÎ ¹öÆ° */
+/* ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½Æ° */
 .login-button {
     padding: 10px;
-    background-color: #800080; /* º¸¶ó»ö */
+    background-color: #800080; /* ï¿½ï¿½ï¿½ï¿½ï¿½ */
     color: white;
     border: none;
     border-radius: 5px;
@@ -58,10 +58,10 @@
 }
 
     .login-button:hover {
-        background-color: #c19cd9; /* ¿¬ÇÑ º¸¶ó»ö */
+        background-color: #c19cd9; /* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ */
     }
 
-/* ·Î±×ÀÎ ÆäÀÌÁö ¸µÅ©µé */
+/* ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½ */
 .login-links {
     margin-top: 20px;
     text-align: center;

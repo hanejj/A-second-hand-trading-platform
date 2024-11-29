@@ -4,6 +4,7 @@ use gajimarket;
 SET FOREIGN_KEY_CHECKS = 0;
 truncate table user;
 SET FOREIGN_KEY_CHECKS = 1;
+
 INSERT INTO user (id, passwd, name, birth, sex, phone, nickname, location, image, message, manner_point)
 VALUES
 ('user1@gmail.com', 'passwd1', '홍길동', '1990-05-15', 'M', '010-1234-5678', '길동이', '서울특별시', '/uploads/user.png', '안녕하세요!', 50),
@@ -101,3 +102,8 @@ VALUES
 ('거래 조건 불이행', '구매자가 약속된 거래 조건을 지키지 않았습니다.', 5, 'rejected', 2, 10, '2024-11-27 14:00:00'),
 ('허위 광고 신고', '해당 상품이 과장 광고로 판매되고 있습니다.', 4, 'pending', 1, 15, '2024-11-26 12:15:00'),
 ('상품 이미지 도용', '다른 판매자의 상품 이미지를 무단으로 사용한 것으로 보입니다.', 2, 'resolved', 3, 20, '2024-11-25 09:00:00');
+
+SET FOREIGN_KEY_CHECKS = 0;
+truncate table wishlist;
+SET FOREIGN_KEY_CHECKS = 1;
+

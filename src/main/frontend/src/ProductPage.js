@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate  } from 'react-router-dom';
 import axios from 'axios';
 import './ProductPage.css';
 import { Link } from 'react-router-dom';
@@ -18,9 +18,15 @@ const ProductPage = () => {
   const [reviewScore, setReviewScore] = useState(''); // 리뷰 점수 상태\
   const [userIdx, setUserIdx] = useState(null); // 로그인한 사용자가 있을 때만 userIdx 설정
   const [recommendedProducts, setRecommendedProducts] = useState([]); // 추천 상품
+  const navigate = useNavigate();
 
-
+  //찜 버튼 클릭 시
   const handleHeartClick = async () => {
+    if (!userIdx) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
     try {
       const endpoint = isHearted
         ? `http://localhost:8080/product/${productIdx}/wish/cancel`
@@ -42,10 +48,40 @@ const ProductPage = () => {
     }
   };
 
-  const handleChatClick = () => setIsChatting(true);
-  const handleReportClick = () => alert('이 상품을 신고합니다.');
+  //상품 삭제 버튼 클릭 시
+  const handleDeleteClick = () => {
+    if (!userIdx) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+    // 상품 삭제 구현 필요
+  };
+
+  //채팅 버튼 클릭 시
+  const handleChatClick = () => {
+    if (!userIdx) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+    setIsChatting(true);
+  };
+
+  //신고 버튼 클릭 시
+  const handleReportClick = () => {
+    if (!userIdx) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+    // 상품 신고 기능 연결 필요
+  };
+
+  // 리뷰 작성 버튼 클릭 시
   const handleWriteReviewClick = () => setShowReviewModal(true);
 
+  // 리뷰 작성하기
   const handleReviewSubmit = async () => {
     if (!reviewContent) {
       alert('리뷰 내용을 입력하세요.');
@@ -59,17 +95,12 @@ const ProductPage = () => {
 
     const formData = new FormData();
     formData.append('review', reviewContent);
-    // `writerIndex`는 product.writer_idx와 동일
-    formData.append('writerIndex', product.writer_idx);
-
-    // `partnerIndex`는 현재 로그인한 사용자(user.userIdx)
     formData.append('partnerIndex', user.userIdx);
   
-    // `sellerIndex`도 현재 로그인한 사용자(user.userIdx)
+    // `sellerIndex`는 현재 로그인한 사용자(user.userIdx)
     formData.append('sellerIndex', user.userIdx);
-  
     // `buyerIndex`는 product.partner_idx와 동일
-    formData.append('buyerIndex', product.partner_idx);
+    formData.append('buyerIndex', product.partnerIdx);
     formData.append('reviewScore', reviewScore);
 
     if (reviewImage) {
@@ -103,6 +134,7 @@ const ProductPage = () => {
     }
   };
 
+  // 카테고리 이름 한글화
   const getCategoryName = (category) => {
     switch (category) {
       case 'Electronics':
@@ -120,6 +152,7 @@ const ProductPage = () => {
     }
   };
 
+  // 상품 정보 가져오기
   const fetchProductDetails = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/product/${productIdx}`, {
@@ -129,13 +162,16 @@ const ProductPage = () => {
         setProduct(response.data.data.product); // 상품 정보
         setRecommendedProducts(response.data.data.recommendedProducts); // 추천 상품
         setIsHearted(response.data.data.product.isHearted || false); // 초기 찜 상태 설정
-        fetchReviewData(response.data.data.product.review);
+        // 상품 정보 변경 시 리뷰 데이터 초기화
+        setReviewData(null);  // 리뷰 데이터 초기화
+        fetchReviewData(response.data.data.product.review);  // 리뷰 데이터를 새로 가져오기
       }
     } catch (error) {
       console.error('Error fetching product details:', error);
     }
   };
 
+  // 리뷰 정보 가져오기
   const fetchReviewData = async (hasReview) => {
     if (hasReview) {
       try {
@@ -162,8 +198,8 @@ const ProductPage = () => {
         .then((response) => {
           if (response.data && response.data.user) {
             setUser(response.data.user); // 사용자 정보 저장
-            setUserIdx(response.data.user.user_idx);
-            console.log('User:', response.data.user);
+            setUserIdx(response.data.user.userIdx);
+            console.log('UserIdx:', response.data.user.userIdx);
           }
         })
         .catch((error) => {
@@ -173,7 +209,7 @@ const ProductPage = () => {
 
     //상품 정보 가져오기
     fetchProductDetails();
-  }, [productIdx]);
+  }, [userIdx, productIdx]);
 
   if (!product) {
     return <div>Loading...</div>;
@@ -205,15 +241,18 @@ const ProductPage = () => {
             </button>
             <button className="product-page-chat-button" onClick={handleChatClick}>채팅</button>
             <button className="product-page-report-button" onClick={handleReportClick}>신고</button>
-            
+            {/*현재 로그인한 유저의 게시글인 경우 삭제 가능*/}
+            {user && userIdx===product.writerIdx && (
+              <button className="product-page-report-button" onClick={handleDeleteClick}> 삭제</button>
+            )}
             {/*현재 로그인 유저가 거래 상대방일 때이고, 거래가 이미 완료된 상태일 때만 리뷰 작성 버튼이 보임*/}
-            {!reviewData && user && user.userIdx === product.partner_idx && product.status === 'completed' (
-            <button
-              className="product-page-write-review-button"
-              onClick={handleWriteReviewClick}
-            >
-              리뷰 작성
-            </button>
+            {!reviewData && user && userIdx === product.partnerIdx && product.status === 'completed' && (
+              <button
+                className="product-page-write-review-button"
+                onClick={handleWriteReviewClick}
+              >
+                리뷰 작성
+              </button>
             )}
           </div>
         </div>
@@ -225,19 +264,18 @@ const ProductPage = () => {
       <div className="recommended-gallery">
   {recommendedProducts.length > 0 ? (
     recommendedProducts.map((product) => (
-      <div key={product.productIdx} className="product-card">
-        <Link to={`/product/${product.productIdx}`} className="product-link">
-          <div className="product-info">
-            <h2>{product.title}</h2>
-            <p>{product.price}원</p>
-            <p>{product.location}</p>
-            <p>♡ {product.heartNum} 💬 {product.chatNum}</p>
-          </div>
-        </Link>
-        <Link to={`/product/${product.productIdx}`} className="product-link">
-          <img src={"http://localhost:8080/image?image=" + product.image} alt={product.title} />
-        </Link>
-      </div>
+      <div key={product.product_idx}>
+  <Link to={`/product/${product.productIdx}`} className="product-card">
+    <div className="product-info">
+      <h3>{product.title}</h3>
+      <p>{product.price}원</p>
+      <p>{product.location}</p>
+      <p>♡ {product.heartNum} 💬 {product.chatNum}</p>
+    </div>
+    <img src={`http://localhost:8080/image?image=${product.image}`} alt={product.title} />
+  </Link>
+</div>
+
     ))
   ) : (
     <p>추천 상품이 없습니다.</p>

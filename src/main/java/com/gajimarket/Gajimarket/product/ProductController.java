@@ -62,9 +62,15 @@ public class ProductController {
     @GetMapping("/{product_idx}")
     public ResponseEntity<ApiResponse> getProductById(
             @PathVariable int product_idx,
-            @RequestParam("user_idx") int user_idx) {
+            @RequestParam(value = "user_idx", required = false) Integer user_idx) { // user_idx를 선택적 파라미터로 변경
         System.out.println("/product/" + product_idx + " request");
+
         try {
+            // user_idx가 null인 경우 기본값 -1로 설정 (비로그인 처리)
+            if (user_idx == null) {
+                user_idx = -1;
+            }
+
             // 서비스 호출
             ProductPageResponse response = productService.getProductById(product_idx, user_idx);
 
@@ -91,6 +97,7 @@ public class ProductController {
             return ResponseEntity.ok().body(apiResponse);
         }
     }
+
 
 
     // 리뷰 쓰기 기능

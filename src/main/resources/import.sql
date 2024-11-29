@@ -96,9 +96,5 @@ SET FOREIGN_KEY_CHECKS = 0;
 truncate table wishlist;
 SET FOREIGN_KEY_CHECKS = 1;
 
-INSERT INTO Wishlist (user_idx, product_idx, created_at)
-VALUES
-    ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 1, NOW()),
-    ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 2, NOW()),
-    ((SELECT user_idx FROM User WHERE id = 'user2@gmail.com'), 3, NOW());
+
 

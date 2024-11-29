@@ -78,28 +78,30 @@ public class ProductService {
 
 
     // 특정 상품 정보를 조회하는 메서드
-    public ProductPageResponse getProductById(int product_idx, int user_idx) {
+    public ProductPageResponse getProductById(int product_idx, Integer user_idx) { // user_idx는 Integer로 변경 (null 허용)
         // 1. 상품 정보 조회
         String productSql = """
-        SELECT 
-            p.*, 
-            CASE 
-                WHEN w.wish_idx IS NOT NULL THEN TRUE 
-                ELSE FALSE 
-            END AS is_hearted
-        FROM 
-            product p
-        LEFT JOIN 
-            wishlist w 
-        ON 
-            p.product_idx = w.product_idx AND w.user_idx = ?
-        WHERE 
-            p.product_idx = ?
+    SELECT 
+        p.*, 
+        CASE 
+            WHEN w.wish_idx IS NOT NULL THEN TRUE 
+            ELSE FALSE 
+        END AS is_hearted
+    FROM 
+        product p
+    LEFT JOIN 
+        wishlist w 
+    ON 
+        p.product_idx = w.product_idx AND w.user_idx = ?
+    WHERE 
+        p.product_idx = ?
     """;
 
+        // 찜 상태를 처리할 user_idx를 설정 (비로그인 상태면 기본값 사용)
+        Object userIdxParam = (user_idx != null) ? user_idx : -1; // 로그인하지 않은 경우 -1 사용
         Product product = jdbcTemplate.queryForObject(
                 productSql,
-                new Object[]{user_idx, product_idx},
+                new Object[]{userIdxParam, product_idx},
                 (rs, rowNum) -> new Product(
                         rs.getInt("product_idx"),
                         rs.getString("category"),
@@ -121,44 +123,42 @@ public class ProductService {
                 )
         );
 
-        // 2. 현재 상품의 키워드 조회
+        // 2. 키워드 조회
         String keywordSql = "SELECT keyword FROM keyword WHERE product_idx = ?";
         List<String> keywords = jdbcTemplate.queryForList(keywordSql, new Object[]{product_idx}, String.class);
 
-        // 3. 키워드 기반으로 추천 상품 조회
+        // 3. 추천 상품 조회 (user_idx가 null이면 기본값 처리)
+        List<Product> recommendedProducts = Collections.emptyList();
         if (!keywords.isEmpty()) {
             String recommendedProductsSql = """
-                    SELECT DISTINCT\s
-                        p.*,
-                        CASE\s
-                            WHEN EXISTS (
-                                SELECT 1\s
-                                FROM wishlist w\s
-                                WHERE w.product_idx = p.product_idx AND w.user_idx = ?
-                            ) THEN TRUE\s
-                            ELSE FALSE\s
-                        END AS is_hearted
-                    FROM\s
-                        product p
-                    JOIN\s
-                        keyword k ON p.product_idx = k.product_idx
-                    WHERE\s
-                        k.keyword IN (%s)\s
-                        AND p.product_idx != ?
+            SELECT DISTINCT 
+                p.*,
+                CASE
+                    WHEN EXISTS (
+                        SELECT 1
+                        FROM wishlist w
+                        WHERE w.product_idx = p.product_idx AND w.user_idx = ?
+                    ) THEN TRUE
+                    ELSE FALSE
+                END AS is_hearted
+            FROM
+                product p
+            JOIN
+                keyword k ON p.product_idx = k.product_idx
+            WHERE
+                k.keyword IN (%s)
+                AND p.product_idx != ?
+        """;
 
-                            """;
-
-            // 키워드 리스트를 IN 절에 사용할 수 있도록 변환
             String placeholders = String.join(",", keywords.stream().map(k -> "?").toArray(String[]::new));
             String finalSql = String.format(recommendedProductsSql, placeholders);
 
-            // 추천 상품 조회
             List<Object> params = new ArrayList<>();
-            params.add(user_idx); // 첫 번째 파라미터 (찜 상태 체크)
+            params.add(userIdxParam); // user_idx 또는 -1
             params.addAll(keywords); // IN 절 파라미터
-            params.add(product_idx); // 현재 상품 제외
+            params.add(product_idx);
 
-            List<Product> recommendedProducts = jdbcTemplate.query(
+            recommendedProducts = jdbcTemplate.query(
                     finalSql,
                     params.toArray(),
                     (rs, rowNum) -> new Product(
@@ -181,14 +181,12 @@ public class ProductService {
                             rs.getBoolean("is_hearted") // 찜 상태
                     )
             );
-
-            // 응답 객체 생성
-            return new ProductPageResponse(product, recommendedProducts);
-        } else {
-            // 키워드가 없을 경우 빈 추천 목록 반환
-            return new ProductPageResponse(product, Collections.emptyList());
         }
+
+        // 응답 객체 생성
+        return new ProductPageResponse(product, recommendedProducts);
     }
+
 
 
 

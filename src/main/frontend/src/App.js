@@ -8,11 +8,16 @@ import NoticePage from './NoticePage';
 import NoticeDetailPage from './NoticeDetailPage';
 import MyPage from './MyPage';
 import NavButton from './NavButton';
+import AdminMainPage from "./AdminMainPage";
+import UserManagemnetPage from "./UserManagementPage";
+import AdminManagemnetPage from "./AdminManagementPage";
+import ReportListPage from "./ReportListPage";
 import CategoryPage from './CategoryPage'; // CategoryPage 추가
 import ProductPage from './ProductPage'; // ProductPage 추가
 import ProductUploadPage from './ProductUploadPage'; // ProductPage 추가
 import UserEditPage from './UserEditPage'; 
 import ProductSearchPage from './ProductSearchPage';
+
 
 const App = () => {
   const token = localStorage.getItem('token'); // 토큰을 통해 로그인 여부 확인
@@ -76,6 +81,10 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/notices" element={<NoticePage />} />
         <Route path="/notices/:id" element={<NoticeDetailPage />} />
+        <Route path="/admin" element={<AdminMainPage />} />
+        <Route path="/management/user" element={<UserManagemnetPage />} />
+        <Route path="/management/admin" element={<AdminManagemnetPage />} />
+        <Route path="/admin/report" element={<ReportListPage />} />
         <Route path="/mypage" element={<MyPage />} /> 
         <Route path="/user/:email/edit" element={<UserEditPage />} />
         <Route path="/search" element={<ProductSearchPage />} />

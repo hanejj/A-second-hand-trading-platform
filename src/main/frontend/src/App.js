@@ -10,7 +10,7 @@ import NavButton from './NavButton';
 import CategoryPage from './CategoryPage'; // CategoryPage 추가
 import ProductPage from './ProductPage'; // ProductPage 추가
 import ProductUploadPage from './ProductUploadPage'; // ProductPage 추가
-z
+
 const App = () => {
   return (
     <Router>

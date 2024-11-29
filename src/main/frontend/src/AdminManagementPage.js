@@ -8,7 +8,9 @@ const AdminManagementPage = () => {
 
   // 관리자 목록 가져오기
   const fetchAdminList = () => {
-    fetch("http://localhost:8080/admin/get/adminList")
+    // 로컬 스토리지에서 isAdmin 값을 가져오기
+    const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+    fetch(`http://localhost:8080/admin/get/adminList?isAdmin=${isAdmin}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.code === "1000") {

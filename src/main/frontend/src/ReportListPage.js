@@ -6,7 +6,9 @@ const ReportListPage = () => {
 
   // 서버에서 신고 목록 불러오기
   const fetchReportList = () => {
-    fetch("http://localhost:8080/admin/get/reportList")
+    // 로컬 스토리지에서 isAdmin 값을 가져오기
+    const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+    fetch(`http://localhost:8080/admin/get/reportList?isAdmin=${isAdmin}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.code === "1000") {

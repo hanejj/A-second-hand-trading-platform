@@ -22,7 +22,7 @@ public class SecurityConfig {
     public CorsConfigurationSource configurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true); // 인증 정보 허용
-        config.addAllowedOriginPattern("*"); // 프론트엔드 Origin 허용
+        config.addAllowedOriginPattern("http://localhost:3000"); // 프론트엔드 Origin 허용
         config.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH")); // 허용 메서드
         config.setAllowedHeaders(Arrays.asList("*")); // 모든 헤더 허용
         config.setMaxAge(3600L); // preflight 요청 캐싱 시간 (1시간)

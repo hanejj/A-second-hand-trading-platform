@@ -19,7 +19,9 @@ const UserManagementPage = () => {
 
   // 서버에서 회원 목록 불러오기
   const fetchUserList = () => {
-    fetch("http://localhost:8080/admin/get/userList")
+    // 로컬 스토리지에서 isAdmin 값을 가져오기
+    const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+    fetch(`http://localhost:8080/admin/get/userList?isAdmin=${isAdmin}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.code === "1000") {

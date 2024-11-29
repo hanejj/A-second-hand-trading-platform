@@ -7,11 +7,11 @@ const MainPage = () => {
   const [popularProducts, setPopularProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
 
-  //const isAdmin = JSON.parse(localStorage.getItem("isAdmin")); // 또는 Redux/Context에서 가져옴
   
   //개발환경에서 임의로 관리자 상태로 설정
-  const isAdmin=true;
-
+  // isAdmin 값을 true로 로컬 스토리지에 저장
+  localStorage.setItem("isAdmin", JSON.stringify(true));
+  const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
   useEffect(() => {
     if (isAdmin) {
       navigate("/admin"); // AdminMainPage로 이동

@@ -1,5 +1,6 @@
 package com.gajimarket.Gajimarket.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gajimarket.Gajimarket.config.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -355,19 +356,24 @@ public class UserController {
         }
     }
 
-    // 사용자 정보 업데이트 API
     @PutMapping("/{email}/edit")
     public ResponseEntity<Map<String, Object>> updateUserDetails(
             @PathVariable String email,
-            @RequestPart("user") User updatedUser,
+            @RequestPart("user") String userJson,
             @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         Map<String, Object> responseBody = new HashMap<>();
         try {
+            // JSON 데이터를 User 객체로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            User updatedUser = objectMapper.readValue(userJson, User.class);
+
+            // 이미지 파일 저장 처리
             if (imageFile != null && !imageFile.isEmpty()) {
-                String imagePath = saveImage(imageFile);
+                String imagePath = saveImage(imageFile); // 이미지 저장 로직
                 updatedUser.setImage(imagePath);
             }
 
+            // 사용자 정보 업데이트
             User user = userService.updateUserDetails(email, updatedUser);
             if (user != null) {
                 responseBody.put("code", 1000);
@@ -379,18 +385,20 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             responseBody.put("code", 0);
             responseBody.put("message", "사용자 정보를 수정하는 중 오류 발생");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
 
-    // 이미지 저장 로직
-    private String saveImage(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-        Path imagePath = Paths.get("images/" + fileName);
-        Files.copy(file.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-        return imagePath.toString();
+    private String saveImage(MultipartFile imageFile) throws IOException {
+        String uploadDir = "uploads/"; // 실제 경로로 변경 필요
+        String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+        Path filePath = Paths.get(uploadDir, fileName);
+        Files.createDirectories(filePath.getParent());
+        Files.write(filePath, imageFile.getBytes());
+        return fileName;
     }
 
     // 기존 사용자 정보 조회 API

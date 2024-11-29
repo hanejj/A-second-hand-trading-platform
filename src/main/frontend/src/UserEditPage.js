@@ -5,6 +5,7 @@ import './UserEditPage.css';
 
 const UserEditPage = () => {
   const { email } = useParams();
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({
     name: '',
     phone: '',
@@ -16,22 +17,21 @@ const UserEditPage = () => {
     image: '',
   });
   const [imageFile, setImageFile] = useState(null);
-  const navigate = useNavigate();
 
+  // 사용자 데이터 가져오기
   useEffect(() => {
-    // 로컬 스토리지에서 토큰 가져오기
     const token = localStorage.getItem('token');
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
 
-    // 사용자 정보를 가져오기 위한 API 호출
     axios.get(`http://localhost:8080/user/${email}/get`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,  // 헤더에 토큰 추가
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(response => {
+      .then((response) => {
         const data = response.data.user;
-
-        // 기존 사용자 정보를 가져와서 상태 업데이트
         setUserData({
           name: data.name || '',
           phone: data.phone || '',
@@ -43,63 +43,53 @@ const UserEditPage = () => {
           image: data.image || '',
         });
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('사용자 정보를 가져오는 중 오류 발생:', error);
-        alert('사용자 정보를 가져오는 중 오류가 발생했습니다.');
+        alert('사용자 정보를 가져오는 중 문제가 발생했습니다.');
       });
-  }, [email]);
+  }, [email, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setUserData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImageFile(file);
-    setUserData(prevState => ({
-      ...prevState,
-      image: URL.createObjectURL(file),
-    }));
+    setUserData((prevState) => ({ ...prevState, image: URL.createObjectURL(file) }));
   };
 
   const handleSubmit = () => {
     if (userData.passwd && userData.passwd !== userData.confirmPassword) {
-      alert('비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
+      alert('비밀번호가 일치하지 않습니다.');
       return;
     }
 
-    // FormData를 사용하여 이미지 파일과 다른 데이터를 함께 전송
+    const token = localStorage.getItem('token');
     const formData = new FormData();
-    formData.append('name', userData.name);
-    formData.append('phone', userData.phone);
-    formData.append('nickname', userData.nickname);
-    formData.append('message', userData.message);
-    formData.append('location', userData.location);
-    formData.append('passwd', userData.passwd || '');
+    formData.append('user', JSON.stringify({
+      name: userData.name,
+      phone: userData.phone,
+      nickname: userData.nickname,
+      message: userData.message,
+      location: userData.location,
+      passwd: userData.passwd || '',
+    }));
     if (imageFile) {
       formData.append('image', imageFile);
     }
 
-    // 로컬 스토리지에서 토큰 가져오기
-    const token = localStorage.getItem('token');
-
     axios.put(`http://localhost:8080/user/${email}/edit`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
     })
-      .then(response => {
+      .then(() => {
         alert('정보가 성공적으로 수정되었습니다.');
         navigate('/mypage');
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('사용자 정보를 업데이트하는 중 오류 발생:', error);
-        alert('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');
+        alert('정보 수정 중 문제가 발생했습니다.');
       });
   };
 

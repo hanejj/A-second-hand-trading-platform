@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './SignupPage.css';
 
 const SignupPage = () => {
@@ -13,6 +14,8 @@ const SignupPage = () => {
     nickname: '',
     location: '',
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,6 +57,7 @@ const SignupPage = () => {
 
       if (response.ok) {
         alert("회원가입 성공");
+        navigate("/login");
       } else if (response.status === 409) {
         alert("이미 존재하는 아이디 또는 닉네임입니다.");
       } else {

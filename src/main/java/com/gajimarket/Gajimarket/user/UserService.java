@@ -58,14 +58,18 @@ public class UserService {
             }
 
             User foundUser = new User();
+            foundUser.setUserIdx(Integer.valueOf(resultSet.getString("user_idx")));
             foundUser.setId(resultSet.getString("id"));
             foundUser.setName(resultSet.getString("name"));
             foundUser.setPhone(resultSet.getString("phone"));
             foundUser.setNickname(resultSet.getString("nickname"));
             foundUser.setLocation(resultSet.getString("location"));
-            foundUser.setPasswd(resultSet.getString("passwd")); // 추가된 필드
-            foundUser.setImage(resultSet.getString("image")); // 추가된 필드
+            foundUser.setPasswd(resultSet.getString("passwd"));
+            foundUser.setImage(resultSet.getString("image"));
             foundUser.setMessage(resultSet.getString("message"));
+            foundUser.setBirth(resultSet.getString("birth"));
+            foundUser.setSex(resultSet.getString("sex"));
+            foundUser.setMannerPoint(Integer.valueOf(resultSet.getString("manner_point")));
 
             return foundUser;
         } catch (SQLException e) {

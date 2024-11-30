@@ -422,5 +422,37 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
+
+    @PatchMapping("/{user_idx}/mannerpoint/update")
+    public ResponseEntity<Map<String, Object>> updateUserMannerPoint(
+            @PathVariable("user_idx") int userIdx, // user_idx로 변경
+            @RequestBody Map<String, Integer> requestBody) {
+        Map<String, Object> responseBody = new HashMap<>();
+
+        try (Connection connection = dataSource.getConnection()) {
+            // 사용자 매너 지수 업데이트 쿼리
+            String updateQuery = "UPDATE user SET manner_point = ? WHERE user_idx = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+            preparedStatement.setInt(1, requestBody.get("mannerPoint"));
+            preparedStatement.setInt(2, userIdx);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                responseBody.put("code", 1000);
+                responseBody.put("message", "매너 지수가 성공적으로 업데이트되었습니다.");
+                return ResponseEntity.ok(responseBody);
+            } else {
+                responseBody.put("code", 0);
+                responseBody.put("message", "사용자를 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
+            }
+        } catch (Exception e) {
+            logger.error("매너 지수 업데이트 중 오류 발생: ", e);
+            responseBody.put("code", 0);
+            responseBody.put("message", "매너 지수 업데이트 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+        }
+    }
 }
 

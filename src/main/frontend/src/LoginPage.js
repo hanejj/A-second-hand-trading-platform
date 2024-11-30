@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import './LoginPage.css';
 import { useNavigate } from 'react-router-dom';
 
-const LoginPage = () => {
+const LoginPage = ({ setIsLoggedIn }) => {
   const [id, setId] = useState('');
   const [passwd, setPasswd] = useState('');
   const navigate = useNavigate();
@@ -35,6 +35,7 @@ const LoginPage = () => {
         if (token) {
           localStorage.setItem('token', token); // 토큰 저장
           localStorage.setItem('isAdmin', isAdmin); // isAdmin 정보 저장
+          setIsLoggedIn(true); // 로그인 상태 업데이트
           alert("로그인에 성공했습니다!");
           navigate('/');  // MainPage로 이동
         }

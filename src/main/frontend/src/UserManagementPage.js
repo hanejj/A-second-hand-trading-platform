@@ -63,6 +63,45 @@ const UserManagementPage = () => {
     }
   };
 
+  //매너 포인트 설정 함수
+  const handleEditMannerPoint = (userIdx, userName, currentMannerPoint) => {
+    const newMannerPoint = prompt(
+      `${userName} 회원의 새로운 매너 지수를 입력하세요 (0 ~ 100):`,
+      currentMannerPoint
+    );
+  
+    if (newMannerPoint === null) return; // 취소 버튼 클릭 시 아무 작업도 하지 않음
+  
+    const parsedPoint = parseInt(newMannerPoint, 10);
+  
+    if (isNaN(parsedPoint) || parsedPoint < 0 || parsedPoint > 100) {
+      alert("유효한 매너 지수를 입력해주세요 (0 ~ 100 사이의 숫자)");
+      return;
+    }
+
+    const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+    fetch(`http://localhost:8080/user/${userIdx}/mannerpoint/update`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ mannerPoint: parsedPoint }), // 새 매너 지수 전송
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 1000) {
+          alert("매너 지수 수정 성공");
+          fetchUserList(); // 매너 지수 수정 후 회원 목록 갱신
+        } else {
+          alert("매너 지수 수정 실패");
+        }
+      })
+      .catch((error) => {
+        console.error("에러 발생:", error);
+        alert("매너 지수 수정 요청 중 에러가 발생했습니다.");
+      });
+  };   
+
   return (
     <div className="user-management-page">
       <h1>회원 관리</h1>
@@ -100,7 +139,12 @@ const UserManagementPage = () => {
                 )}
               </td>
               <td>
-                <button className="user-management-page-action-button">매너 지수 수정</button>
+                <button
+                  className="user-management-page-action-button"
+                  onClick={() => handleEditMannerPoint(user.idx, user.name, user.manner_point)}
+                >
+                  매너 지수 수정
+                </button>
                 <button
                   className="user-management-page-action-button action-button-danger"
                   onClick={() => handleBanUser(user.idx, user.name)} // 영구 정지 요청

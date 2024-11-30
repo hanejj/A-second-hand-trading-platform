@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './MyPage.css';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [products, setProducts] = useState([]);
   const [wishlist, setWishlist] = useState([]);
+  const [chatList, setChatList] = useState([]); // 채팅 목록
   const [activeTab, setActiveTab] = useState('판매내역');
   const [isPointModalOpen, setIsPointModalOpen] = useState(false);
   const [pointAmount, setPointAmount] = useState(0);
@@ -75,6 +77,29 @@ const MyPage = () => {
 
     getUserProfile();
   }, [navigate]);
+
+  // 채팅 목록 불러오기
+  useEffect(() => {
+    if (userInfo) {
+      const token = localStorage.getItem('token');
+      const userId = userInfo.userIdx; // 로그인된 유저의 ID를 가져옴
+      axios
+        .get('http://localhost:8080/chat/get/chatList', {
+          params: { userId: userId }, // userId를 쿼리 파라미터로 보내기
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          if (response.data && response.data.chats) {
+            setChatList(response.data.chats || []); // 채팅 내역을 채팅 목록에 저장
+          } else {
+            setChatList([]); // 채팅이 없는 경우 빈 배열로 설정
+          }
+        })
+        .catch((error) => {
+          console.error('채팅 목록을 불러오는 중 오류 발생:', error);
+        });
+    }
+  }, [userInfo]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -216,7 +241,7 @@ const MyPage = () => {
           </div>
         </div>
         <button className="edit-button" onClick={handleOpenAuthModal}>내 정보 수정</button>
-        <button className="logout-button" onClick={handleLogout}>로그아웃</button>
+        {/*<button className="logout-button" onClick={handleLogout}>로그아웃</button>*/}
       </div>
 
       <div className="tabs-section">
@@ -268,6 +293,53 @@ const MyPage = () => {
           )}
         </div>
       )}
+
+{activeTab === '채팅' && (
+  <div className="chat-list">
+    {Object.keys(chatList).length > 0 ? (
+      Object.keys(chatList).map((productId) => (
+        <div key={productId} className="product-chat-group">
+          <h3>
+            {/* 상품 ID를 클릭하면 상품 상세 페이지로 이동 */}
+            <Link to={`/product/${productId}`} style={{ textDecoration: 'none', color: '#000' }}>
+              상품 ID: {productId}
+            </Link>
+          </h3>
+          <div className="chat-messages">
+            {chatList[productId].map((chat, index) => (
+              <div key={index} className="chat-card">
+                <div
+                  className={`chat-message ${
+                    chat.senderId === userInfo.userIdx
+                      ? 'own-message'
+                      : chat.receiverId === userInfo.userIdx
+                      ? 'receiver-message'
+                      : 'other-message'
+                  }`}
+                >
+                  <strong>
+                    {chat.senderId === userInfo.userIdx
+                      ? '나'
+                      : chat.receiverId === userInfo.userIdx
+                      ? '다른 사람'
+                      : chat.senderId}
+                    :
+                  </strong>
+                  <span>{chat.messageContent}</span>
+                </div>
+                <div className="chat-time">
+                  {new Date(chat.sentAt).toLocaleString()}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))
+    ) : (
+      <div>채팅 내역이 없습니다.</div>
+    )}
+  </div>
+)}
 
       {isAuthModalOpen && (
         <div className="auth-modal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: '1000', width: '300px', padding: '20px', backgroundColor: 'white', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>

@@ -1,0 +1,70 @@
+/* 페이지 스타일 */
+.user-management-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .user-management-page h1 {
+    text-align: center;
+    color: #cd40cd;
+  }
+  
+  /* 테이블 스타일 */
+  .user-management-page-user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .user-management-page-user-table th,
+  .user-management-page-user-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .user-management-page-user-table th {
+    background-color: #d5a0e2;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .user-management-page-user-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .user-management-page-user-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* 버튼 스타일 */
+  .user-management-page-action-button {
+    background-color: #d5a0e2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    margin: 0 5px;
+    font-size: 14px;
+  }
+  
+  .user-management-page-action-button:hover {
+    background-color: #a472c3;
+  }
+  
+  .user-management-page-action-button:active {
+    background-color: #a472c3;
+  }
+
+  .manner-heart {
+    margin-left: 8px;
+    font-size: 30px;
+  }
+  
+  .user-management-page-action-button:disabled {
+    background-color: #ccc;
+    color: #888;
+    cursor: not-allowed;
+  }
+  

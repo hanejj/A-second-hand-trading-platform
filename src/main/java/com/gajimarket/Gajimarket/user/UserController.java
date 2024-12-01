@@ -367,9 +367,9 @@ public class UserController {
             ObjectMapper objectMapper = new ObjectMapper();
             User updatedUser = objectMapper.readValue(userJson, User.class);
 
-            // 이미지 파일 저장 처리
+            // 이미지 파일 처리
             if (imageFile != null && !imageFile.isEmpty()) {
-                String imagePath = saveImage(imageFile); // 이미지 저장 로직
+                String imagePath = saveImage(imageFile); // 이미지 저장 메서드 호출
                 updatedUser.setImage(imagePath);
             }
 
@@ -377,6 +377,7 @@ public class UserController {
             User user = userService.updateUserDetails(email, updatedUser);
             if (user != null) {
                 responseBody.put("code", 1000);
+                responseBody.put("message", "사용자 정보 수정 성공");
                 responseBody.put("user", user);
                 return ResponseEntity.ok(responseBody);
             } else {
@@ -392,13 +393,29 @@ public class UserController {
         }
     }
 
-    private String saveImage(MultipartFile imageFile) throws IOException {
-        String uploadDir = "uploads/"; // 실제 경로로 변경 필요
-        String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, fileName);
-        Files.createDirectories(filePath.getParent());
-        Files.write(filePath, imageFile.getBytes());
-        return fileName;
+    //파일 시스템에 이미지 저장
+    private String saveImage(MultipartFile image) {
+        try {
+            String uploadDir = "src/main/resources/static/uploads/";
+            String originalFileName = image.getOriginalFilename();
+            String extension = ""; // 파일 확장자
+
+            // 파일 확장자 추출
+            if (originalFileName != null && originalFileName.contains(".")) {
+                extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            }
+
+            // 고유 파일명 생성: UUID 기반
+            String uniqueFileName = UUID.randomUUID().toString() + extension;
+
+            Path filePath = Paths.get(uploadDir + uniqueFileName);
+            Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return "/uploads/" + uniqueFileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("이미지 저장 실패");
+        }
     }
 
     // 기존 사용자 정보 조회 API
@@ -419,6 +436,38 @@ public class UserController {
         } catch (Exception e) {
             responseBody.put("code", 0);
             responseBody.put("message", "사용자 정보를 가져오는 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
+        }
+    }
+
+    @PatchMapping("/{user_idx}/mannerpoint/update")
+    public ResponseEntity<Map<String, Object>> updateUserMannerPoint(
+            @PathVariable("user_idx") int userIdx, // user_idx로 변경
+            @RequestBody Map<String, Integer> requestBody) {
+        Map<String, Object> responseBody = new HashMap<>();
+
+        try (Connection connection = dataSource.getConnection()) {
+            // 사용자 매너 지수 업데이트 쿼리
+            String updateQuery = "UPDATE user SET manner_point = ? WHERE user_idx = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+            preparedStatement.setInt(1, requestBody.get("mannerPoint"));
+            preparedStatement.setInt(2, userIdx);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                responseBody.put("code", 1000);
+                responseBody.put("message", "매너 지수가 성공적으로 업데이트되었습니다.");
+                return ResponseEntity.ok(responseBody);
+            } else {
+                responseBody.put("code", 0);
+                responseBody.put("message", "사용자를 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
+            }
+        } catch (Exception e) {
+            logger.error("매너 지수 업데이트 중 오류 발생: ", e);
+            responseBody.put("code", 0);
+            responseBody.put("message", "매너 지수 업데이트 중 오류 발생");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }

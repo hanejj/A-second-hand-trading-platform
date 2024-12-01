@@ -1,0 +1,37 @@
+.report-management-page {
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .report-management-page h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .report-management-page-report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .report-management-page-report-table th,
+  .report-management-page-report-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .report-management-page-report-table th {
+    background-color: #d5a0e2;
+    color: white;
+  font-weight: bold;
+  }
+  
+  .report-management-page-report-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .report-management-page-report-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  

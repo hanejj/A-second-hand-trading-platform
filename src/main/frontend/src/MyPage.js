@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './MyPage.css';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [products, setProducts] = useState([]);
   const [wishlist, setWishlist] = useState([]);
+  const [chatList, setChatList] = useState([]); // 채팅 목록
   const [activeTab, setActiveTab] = useState('판매내역');
   const [isPointModalOpen, setIsPointModalOpen] = useState(false);
   const [pointAmount, setPointAmount] = useState(0);
@@ -30,26 +32,22 @@ const MyPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (profileResponse.data && profileResponse.data.code === 1000) {
+        if (profileResponse.data?.code === 1000) {
           const userEmail = profileResponse.data.user.id;
-          const encodedEmail = encodeURIComponent(userEmail); // 이메일 인코딩 추가
+          const encodedEmail = encodeURIComponent(userEmail); // 이메일 인코딩
 
-          // 이메일을 사용하여 다른 사용자 정보 요청
-          const userResponse = await axios.get(`http://localhost:8080/user/${encodedEmail}`, {
+          const userResponse = await axios.get(`http://localhost:8080/user/${encodedEmail}/get`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
-          // 포인트 정보 요청
           const pointResponse = await axios.get(`http://localhost:8080/user/${encodedEmail}/point`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
-          // 판매 상품 정보 요청
           const sellingResponse = await axios.get(`http://localhost:8080/user/${encodedEmail}/selling`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
-          // 찜 목록 정보 요청
           const wishlistResponse = await axios.get(`http://localhost:8080/user/${encodedEmail}/get/wishlist`, {
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -57,6 +55,9 @@ const MyPage = () => {
           setUserInfo({
             ...userResponse.data.user,
             points: pointResponse.data.point || 0,
+            image: userResponse.data.user.image
+              ? `http://localhost:8080/image?image=${userResponse.data.user.image}`
+              : 'default-avatar.png',
           });
           setProducts(sellingResponse.data.products || []);
           setWishlist(wishlistResponse.data.wishlist || []);
@@ -65,7 +66,7 @@ const MyPage = () => {
         }
       } catch (error) {
         console.error('사용자 정보를 가져오는 중 오류 발생:', error);
-        if (error.response && error.response.status === 401) {
+        if (error.response?.status === 401) {
           alert('로그인 정보가 만료되었습니다. 다시 로그인 해주세요.');
           localStorage.removeItem('token');
           navigate('/login');
@@ -75,6 +76,29 @@ const MyPage = () => {
 
     getUserProfile();
   }, [navigate]);
+
+  // 채팅 목록 불러오기
+  useEffect(() => {
+    if (userInfo) {
+      const token = localStorage.getItem('token');
+      const userId = userInfo.userIdx; // 로그인된 유저의 ID를 가져옴
+      axios
+        .get('http://localhost:8080/chat/get/chatList', {
+          params: { userId: userId }, // userId를 쿼리 파라미터로 보내기
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          if (response.data && response.data.chats) {
+            setChatList(response.data.chats || []); // 채팅 내역을 채팅 목록에 저장
+          } else {
+            setChatList([]); // 채팅이 없는 경우 빈 배열로 설정
+          }
+        })
+        .catch((error) => {
+          console.error('채팅 목록을 불러오는 중 오류 발생:', error);
+        });
+    }
+  }, [userInfo]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -196,7 +220,14 @@ const MyPage = () => {
     <div className="my-page">
       <div className="header-section">
         <div className="user-info">
-          <div className="user-avatar"></div>
+        <div className="user-avatar">
+        <img
+              src={userInfo.image}
+              alt="User Avatar"
+              className="avatar-img"
+            />
+</div>
+
           <div className="user-details">
             <div className="user-email">{userInfo.id}</div>
             <div className="user-name">{userInfo.name}</div>
@@ -216,7 +247,7 @@ const MyPage = () => {
           </div>
         </div>
         <button className="edit-button" onClick={handleOpenAuthModal}>내 정보 수정</button>
-        <button className="logout-button" onClick={handleLogout}>로그아웃</button>
+        {/*<button className="logout-button" onClick={handleLogout}>로그아웃</button>*/}
       </div>
 
       <div className="tabs-section">
@@ -232,42 +263,111 @@ const MyPage = () => {
       </div>
 
       {activeTab === '판매내역' && (
-        <div className="product-list">
-          {products.length > 0 ? (
-            products.map(product => (
-              <div key={product.product_idx} className="product-card">
-                <img src={product.image} alt={product.title} />
-                <div className="product-title">{product.title}</div>
-                <div className="product-info">
-                  <span>{product.location}</span>
-                  <span>❤ {product.heart_num} 💬 {product.chat_num}</span>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div>판매한 상품이 없습니다.</div>
-          )}
-        </div>
-      )}
+  <div className="product-list">
+    {products.length > 0 ? (
+      [...products]
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // 최신 순 정렬
+        .map(product => (
+          <Link 
+            to={`/product/${product.product_idx}`} 
+            className="product-card" 
+            key={product.product_idx}
+          >
+            <div className="product-info">
+              <h3>{product.title}</h3>
+              <p>{product.price}원</p>
+              <p>{product.location}</p>
+              <p>♡ {product.heart_num} 💬 {product.chat_num}</p>
+            </div>
+            <img 
+              src={`http://localhost:8080/image?image=${product.image}`} 
+              alt={product.title} 
+              className="product-image"
+            />
+          </Link>
+        ))
+    ) : (
+      <div>판매한 상품이 없습니다.</div>
+    )}
+  </div>
+)}
 
-      {activeTab === '찜 목록' && (
-        <div className="product-list">
-          {wishlist.length > 0 ? (
-            wishlist.map(item => (
-              <div key={item.product_idx} className="product-card">
-                <img src={item.image} alt={item.title} />
-                <div className="product-title">{item.title}</div>
-                <div className="product-info">
-                  <span>{item.location}</span>
-                  <span>❤ {item.heart_num} 💬 {item.chat_num}</span>
+{activeTab === '찜 목록' && (
+  <div className="product-list">
+    {wishlist.length > 0 ? (
+      [...wishlist]
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // 최신 순 정렬
+        .map(item => (
+          <Link 
+            to={`/product/${item.product_idx}`} 
+            className="product-card" 
+            key={item.product_idx}
+          >
+            <div className="product-info">
+              <h3>{item.title}</h3>
+              <p>{item.price}원</p>
+              <p>{item.location}</p>
+              <p>♡ {item.heart_num} 💬 {item.chat_num}</p>
+            </div>
+            <img 
+              src={`http://localhost:8080/image?image=${item.image}`} 
+              alt={item.title} 
+              className="product-image"
+            />
+          </Link>
+        ))
+    ) : (
+      <div>찜한 상품이 없습니다.</div>
+    )}
+  </div>
+)}
+
+{activeTab === '채팅' && (
+  <div className="chat-list">
+    {Object.keys(chatList).length > 0 ? (
+      Object.keys(chatList).map((productId) => (
+        <div key={productId} className="product-chat-group">
+          <h3>
+            {/* 상품 ID를 클릭하면 상품 상세 페이지로 이동 */}
+            <Link to={`/product/${productId}`} style={{ textDecoration: 'none', color: '#000' }}>
+              상품 ID: {productId}
+            </Link>
+          </h3>
+          <div className="chat-messages">
+            {chatList[productId].map((chat, index) => (
+              <div key={index} className="chat-card">
+                <div
+                  className={`chat-message ${
+                    chat.senderId === userInfo.userIdx
+                      ? 'own-message'
+                      : chat.receiverId === userInfo.userIdx
+                      ? 'receiver-message'
+                      : 'other-message'
+                  }`}
+                >
+                  <strong>
+                    {chat.senderId === userInfo.userIdx
+                      ? '나'
+                      : chat.receiverId === userInfo.userIdx
+                      ? '다른 사람'
+                      : chat.senderId}
+                    :
+                  </strong>
+                  <span>{chat.messageContent}</span>
+                </div>
+                <div className="chat-time">
+                  {new Date(chat.sentAt).toLocaleString()}
                 </div>
               </div>
-            ))
-          ) : (
-            <div>찜한 상품이 없습니다.</div>
-          )}
+            ))}
+          </div>
         </div>
-      )}
+      ))
+    ) : (
+      <div>채팅 내역이 없습니다.</div>
+    )}
+  </div>
+)}
 
       {isAuthModalOpen && (
         <div className="auth-modal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: '1000', width: '300px', padding: '20px', backgroundColor: 'white', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>

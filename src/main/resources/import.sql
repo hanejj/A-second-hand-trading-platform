@@ -93,6 +93,17 @@ truncate table review;
 SET FOREIGN_KEY_CHECKS = 1;
 
 SET FOREIGN_KEY_CHECKS = 0;
+truncate table report;
+SET FOREIGN_KEY_CHECKS = 1;
+INSERT INTO `Report` (`title`, `content`, `reporting_idx`, `status`, `reported_user`, `reported_product`, `created_at`)
+VALUES
+('상품 사기 신고', '이 상품은 사기를 치고 있는 것으로 보입니다. 구매자에게 피해를 입히고 있습니다.', 1, 'pending', 2, 5, '2024-11-29 10:30:00'),
+('욕설 및 불법 내용 포함', '해당 사용자가 게시글에서 욕설을 사용하고 있습니다.', 3, 'resolved', 4, NULL, '2024-11-28 15:45:00'),
+('거래 조건 불이행', '구매자가 약속된 거래 조건을 지키지 않았습니다.', 5, 'rejected', 2, 10, '2024-11-27 14:00:00'),
+('허위 광고 신고', '해당 상품이 과장 광고로 판매되고 있습니다.', 4, 'pending', 1, 15, '2024-11-26 12:15:00'),
+('상품 이미지 도용', '다른 판매자의 상품 이미지를 무단으로 사용한 것으로 보입니다.', 2, 'resolved', 3, 20, '2024-11-25 09:00:00');
+
+SET FOREIGN_KEY_CHECKS = 0;
 truncate table wishlist;
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -101,4 +112,3 @@ VALUES
     ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 1, NOW()),
     ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 2, NOW()),
     ((SELECT user_idx FROM User WHERE id = 'user2@gmail.com'), 3, NOW());
-

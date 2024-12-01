@@ -28,8 +28,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO product (category, title, content, price, created_at, location, chat_num, heart_num, selling, image, writer_idx, writer_name, status)
 VALUES
 ('Electronics', '아이폰 13 미니 팝니다', '거의 새 제품입니다. 정품 박스 포함.', 850000, DATE_ADD(NOW(), INTERVAL -1 DAY), '부산광역시', 5, 10, 'sell', '/uploads/iphone13mini.jpg', 1, '길동이', 'active'),
-('Electronics', '아이패드 10세대 판매', '정품, 거의 새 제품입니다.', 500000, DATE_ADD(NOW(), INTERVAL -2 DAY), '서울특별시', 3, 7, 'sell', '/uploads/ipad10.jpg', 1, '길동이', 'active'),
-('Electronics', '삼성 모니터 팔아요', '24인치 LED 모니터, 상태 양호.', 70000, DATE_ADD(NOW(), INTERVAL -3 DAY), '광주광역시', 0, 2, 'sell', '/uploads/monitor.jpg', 3, '소영이', 'active'),
+('Electronics', '아이패드 10세대 판매', '정품, 거의 새 제품입니다.', 500000, DATE_ADD(NOW(), INTERVAL -2 DAY), '서울특별시', 3, 7, 'sell', '/uploads/ipad10.jpg', 1, '길동이', 'completed'),
+('Electronics', '삼성 모니터 팔아요', '24인치 LED 모니터, 상태 양호.', 70000, DATE_ADD(NOW(), INTERVAL -3 DAY), '광주광역시', 0, 2, 'sell', '/uploads/monitor.jpg', 3, '소영이', 'removed'),
 ('Electronics', 'PS5 팝니다', '플레이스테이션 5, 게임 포함.', 450000, DATE_ADD(NOW(), INTERVAL -5 DAY), '서울특별시 노원구', 6, 12, 'sell', '/uploads/ps5.jpg', 2, '짱구', 'active'),
 ('Electronics', '맥북 구해요', '간절히 필요합니다.', 200000, DATE_ADD(NOW(), INTERVAL -3 DAY), '광주광역시', 0, 2, 'get', '/uploads/macbook.jpg', 3, '소영이', 'active'),
 ('Electronics', '스위치 구해요', '닌텐도 스위치 구해요', 450000, DATE_ADD(NOW(), INTERVAL -5 DAY), '서울특별시 노원구', 6, 12, 'get', '/uploads/nintendo.jpg', 2, '짱구', 'active');

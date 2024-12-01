@@ -52,16 +52,16 @@ const ProductPage = () => {
   const handleDeleteClick = async () => {
     const confirmation = window.confirm("정말로 이 상품을 삭제하시겠습니까?");
     if (!confirmation) return; // 사용자가 취소하면 삭제하지 않음
-  
+
     try {
       const response = await axios.put(
-        `http://localhost:8080/product/${productIdx}/delete`
+        `http://localhost:8080/product/${productIdx}/delete`,
       );
-  
+
       if (response.data.code === "1000") {
         // 삭제 완료 메시지 표시 및 페이지 이동
         alert("상품 삭제가 완료되었습니다.");
-        navigate("/"); // 메인 페이지로 리디렉션
+        navigate("/category/all"); // 메인 페이지로 리디렉션
       } else {
         alert("상품 삭제에 실패했습니다.");
       }
@@ -70,7 +70,6 @@ const ProductPage = () => {
       alert("상품 삭제 중 오류가 발생했습니다.");
     }
   };
-  
 
   //채팅 버튼 클릭 시
   const handleChatClick = () => {
@@ -169,10 +168,14 @@ const ProductPage = () => {
   // 상품 정보 가져오기
   const fetchProductDetails = async () => {
     try {
+      if (isAdmin === null) return; // isAdmin 상태가 null인 경우 요청하지 않음
       const response = await axios.get(
         `http://localhost:8080/product/${productIdx}`,
         {
-          params: { user_idx: userIdx }, // user_idx 추가
+          params: {
+            user_idx: userIdx,
+            isAdmin: isAdmin,
+          },
         },
       );
       if (response.data.code === "1000") {
@@ -182,6 +185,13 @@ const ProductPage = () => {
         // 상품 정보 변경 시 리뷰 데이터 초기화
         setReviewData(null); // 리뷰 데이터 초기화
         fetchReviewData(response.data.data.product.review); // 리뷰 데이터를 새로 가져오기
+      } else if (response.data.code === "500") {
+        // 접근 불가 상품 처리
+        alert("접근 불가 상품입니다.");
+        navigate("/"); // 메인 페이지로 이동
+      } else {
+        console.error("Unexpected response code:", response.data.code);
+        alert("상품 정보를 불러오는 중 문제가 발생했습니다.");
       }
     } catch (error) {
       console.error("Error fetching product details:", error);
@@ -229,7 +239,7 @@ const ProductPage = () => {
 
     //상품 정보 가져오기
     fetchProductDetails();
-  }, [userIdx, productIdx]);
+  }, [userIdx, productIdx, isAdmin]);
 
   if (!product) {
     return <div>Loading...</div>;
@@ -254,7 +264,14 @@ const ProductPage = () => {
               {product.location} /{" "}
               {new Date(product.createdAt).toLocaleDateString()}
             </p>
-            <p>{product.status === "active" ? "거래 중" : "거래 완료"}</p>
+            {/* 상태에 따른 텍스트 표시 */}
+            {product.status === "active" && <p>거래 중</p>}
+            {product.status === "removed" && (
+              <p className="product-status">삭제</p>
+            )}
+            {product.status === "completed" && (
+              <p className="product-status">거래 완료</p>
+            )}
             <p>
               ♡ 관심 {product.heartNum} · 💬 채팅 {product.chatNum}
             </p>
@@ -282,15 +299,17 @@ const ProductPage = () => {
             >
               신고
             </button>
-            {/*현재 로그인한 유저의 게시글이거나 관리자인 경우 삭제 가능*/}
-            {(user && userIdx === product.writerIdx) || isAdmin === true ? (
-              <button
-                className="product-page-report-button"
-                onClick={handleDeleteClick}
-              >
-                삭제
-              </button>
-            ) : null}
+            {/* 현재 로그인한 유저의 게시글이거나 관리자인 경우 삭제 가능, product.status가 "removed"가 아닐 때 */}
+            {(user && userIdx === product.writerIdx) || isAdmin === true
+              ? product.status !== "removed" && (
+                  <button
+                    className="product-page-report-button"
+                    onClick={handleDeleteClick}
+                  >
+                    삭제
+                  </button>
+                )
+              : null}
             {/*현재 로그인 유저가 거래 상대방일 때이고, 거래가 이미 완료된 상태일 때만 리뷰 작성 버튼이 보임*/}
             {!reviewData &&
               user &&

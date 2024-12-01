@@ -151,4 +151,38 @@ public class UserService {
             throw new RuntimeException("Database error during user update", e);
         }
     }
+
+    public User findUserByIdx(int userIdx) {
+        logger.info("사용자 정보 조회: user_idx = {}", userIdx);
+
+        String sql = "SELECT * FROM user WHERE user_idx = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, userIdx);
+            var resultSet = stmt.executeQuery();
+
+            if (!resultSet.next()) {
+                return null;
+            }
+
+            User foundUser = new User();
+            foundUser.setUserIdx(resultSet.getInt("user_idx"));
+            foundUser.setId(resultSet.getString("id"));
+            foundUser.setName(resultSet.getString("name"));
+            foundUser.setPhone(resultSet.getString("phone"));
+            foundUser.setNickname(resultSet.getString("nickname"));
+            foundUser.setLocation(resultSet.getString("location"));
+            foundUser.setPasswd(resultSet.getString("passwd"));
+            foundUser.setImage(resultSet.getString("image"));
+            foundUser.setMessage(resultSet.getString("message"));
+            foundUser.setBirth(resultSet.getString("birth"));
+            foundUser.setSex(resultSet.getString("sex"));
+            foundUser.setMannerPoint(resultSet.getInt("manner_point"));
+
+            return foundUser;
+        } catch (SQLException e) {
+            logger.error("SQL Error during user lookup by user_idx: " + e.getMessage());
+            throw new RuntimeException("Database error during user lookup by user_idx", e);
+        }
+    }
 }

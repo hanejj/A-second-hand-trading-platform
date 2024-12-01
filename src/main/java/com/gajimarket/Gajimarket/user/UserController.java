@@ -367,9 +367,9 @@ public class UserController {
             ObjectMapper objectMapper = new ObjectMapper();
             User updatedUser = objectMapper.readValue(userJson, User.class);
 
-            // 이미지 파일 저장 처리
+            // 이미지 파일 처리
             if (imageFile != null && !imageFile.isEmpty()) {
-                String imagePath = saveImage(imageFile); // 이미지 저장 로직
+                String imagePath = saveImage(imageFile); // 이미지 저장 메서드 호출
                 updatedUser.setImage(imagePath);
             }
 
@@ -377,6 +377,7 @@ public class UserController {
             User user = userService.updateUserDetails(email, updatedUser);
             if (user != null) {
                 responseBody.put("code", 1000);
+                responseBody.put("message", "사용자 정보 수정 성공");
                 responseBody.put("user", user);
                 return ResponseEntity.ok(responseBody);
             } else {
@@ -392,13 +393,29 @@ public class UserController {
         }
     }
 
-    private String saveImage(MultipartFile imageFile) throws IOException {
-        String uploadDir = "uploads/"; // 실제 경로로 변경 필요
-        String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, fileName);
-        Files.createDirectories(filePath.getParent());
-        Files.write(filePath, imageFile.getBytes());
-        return fileName;
+    //파일 시스템에 이미지 저장
+    private String saveImage(MultipartFile image) {
+        try {
+            String uploadDir = "src/main/resources/static/uploads/";
+            String originalFileName = image.getOriginalFilename();
+            String extension = ""; // 파일 확장자
+
+            // 파일 확장자 추출
+            if (originalFileName != null && originalFileName.contains(".")) {
+                extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            }
+
+            // 고유 파일명 생성: UUID 기반
+            String uniqueFileName = UUID.randomUUID().toString() + extension;
+
+            Path filePath = Paths.get(uploadDir + uniqueFileName);
+            Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return "/uploads/" + uniqueFileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("이미지 저장 실패");
+        }
     }
 
     // 기존 사용자 정보 조회 API

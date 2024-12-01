@@ -290,12 +290,29 @@ public class ProductController {
 
     // 상품 삭제
     @PutMapping("/{product_idx}/delete")
+    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable("product_idx") Long productIdx) {
+        ApiResponse apiResponse;
+        try {
+            boolean isDeleted = productService.deleteProduct(productIdx);
+            if (isDeleted) {
+                apiResponse = new ApiResponse("1000", "상품 삭제 완료");
+                return ResponseEntity.ok().body(apiResponse);
+            }
+            else throw new Exception();
+        } catch (Exception e) {
+            apiResponse = new ApiResponse("0", e.getMessage());
+            return ResponseEntity.ok().body(apiResponse);
+        }
+    }
+
+    // 상품 거래 완료 처리
+    @PutMapping("/{product_idx}/complete")
     public ResponseEntity<ApiResponse> completeProduct(@PathVariable("product_idx") Long productIdx) {
         ApiResponse apiResponse;
         try {
-            boolean isCompleted = productService.deleteProduct(productIdx);
+            boolean isCompleted = productService.completeProduct(productIdx);
             if (isCompleted) {
-                apiResponse = new ApiResponse("1000", "상품 삭제 완료");
+                apiResponse = new ApiResponse("1000", "거래 완료 처리 완료");
                 return ResponseEntity.ok().body(apiResponse);
             }
             else throw new Exception();

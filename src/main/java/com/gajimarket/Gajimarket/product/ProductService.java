@@ -346,4 +346,15 @@ public class ProductService {
         // 업데이트된 행의 수가 1 이상이면 성공, 아니면 실패
         return rowsUpdated > 0;
     }
+
+    //상품 거래 완료 처리
+    public boolean completeProduct(Long productIdx) {
+        // SQL 쿼리로 상품 상태를 completed로 업데이트
+        String sql = "UPDATE product SET status = ? WHERE product_idx = ?";
+
+        int rowsUpdated = jdbcTemplate.update(sql, "completed", productIdx);
+
+        // 업데이트된 행의 수가 1 이상이면 성공, 아니면 실패
+        return rowsUpdated > 0;
+    }
 }

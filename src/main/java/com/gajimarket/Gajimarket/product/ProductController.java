@@ -36,7 +36,8 @@ public class ProductController {
     public ResponseEntity<ApiResponse> getProductList(
             @RequestParam(required = false) String selling,  // 팔아요/구해요
             @RequestParam(required = false) String category, // 카테고리
-            @RequestParam(required = false) String order     // 정렬기준
+            @RequestParam(required = false) String order,     // 정렬기준
+            @RequestParam(required = false, defaultValue = "false") boolean isAdmin // 관리자 여부
     ) {
         System.out.println("/product request");
         System.out.println("sell: "+selling);
@@ -46,7 +47,7 @@ public class ProductController {
         try {
             // Request에서 받은 파라미터를 ProductRequest 객체에 세팅
             ProductRequest productRequest = new ProductRequest(selling, category, order);
-            List<Product> product_list = productService.getProductList(productRequest);
+            List<Product> product_list = productService.getProductList(productRequest, isAdmin);
             apiResponse = new ApiResponse("1000", null);
             apiResponse.setData(product_list);
             return ResponseEntity.ok().body(apiResponse);
@@ -58,15 +59,17 @@ public class ProductController {
     }
 
     // 특정 상품 정보를 요청받아 반환
-    // 아직 로그인이 구현되지 않았으므로 클라리언트에서 보내는 임의의 user_idx 사용, 후에 session으로 변경
     @GetMapping("/{product_idx}")
     public ResponseEntity<ApiResponse> getProductById(
             @PathVariable int product_idx,
-            @RequestParam("user_idx") int user_idx) {
+            @RequestParam(value = "user_idx", required = false) Integer user_idx,
+            @RequestParam(value = "isAdmin", required = false, defaultValue = "false") boolean isAdmin) {
         System.out.println("/product/" + product_idx + " request");
+        System.out.println("userIdx: "+user_idx+" isAdmin: "+isAdmin);
         try {
+
             // 서비스 호출
-            ProductPageResponse response = productService.getProductById(product_idx, user_idx);
+            ProductPageResponse response = productService.getProductById(product_idx, user_idx, isAdmin);
 
             // response가 null이거나 데이터가 없는 경우
             if (response == null || response.getProduct() == null) {
@@ -80,8 +83,8 @@ public class ProductController {
 
         } catch (NoSuchElementException e) {
             System.out.println(e.getMessage());
-            // 상품이 없는 예외 발생 시
-            ApiResponse apiResponse = new ApiResponse("0", e.getMessage());
+            // 상품이 없는(또는 삭제된) 예외 발생 시
+            ApiResponse apiResponse = new ApiResponse("500", e.getMessage());
             return ResponseEntity.ok().body(apiResponse);
 
         } catch (Exception e) {
@@ -91,6 +94,7 @@ public class ProductController {
             return ResponseEntity.ok().body(apiResponse);
         }
     }
+
 
 
     // 리뷰 쓰기 기능
@@ -277,5 +281,44 @@ public class ProductController {
 
     }
 
+    // 검색 API 추가
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam String title) {
+        List<Product> products = productService.searchProductsByTitle(title);
+        return ResponseEntity.ok(products);
+    }
 
+    // 상품 삭제
+    @PutMapping("/{product_idx}/delete")
+    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable("product_idx") Long productIdx) {
+        ApiResponse apiResponse;
+        try {
+            boolean isDeleted = productService.deleteProduct(productIdx);
+            if (isDeleted) {
+                apiResponse = new ApiResponse("1000", "상품 삭제 완료");
+                return ResponseEntity.ok().body(apiResponse);
+            }
+            else throw new Exception();
+        } catch (Exception e) {
+            apiResponse = new ApiResponse("0", e.getMessage());
+            return ResponseEntity.ok().body(apiResponse);
+        }
+    }
+
+    // 상품 거래 완료 처리
+    @PutMapping("/{product_idx}/complete")
+    public ResponseEntity<ApiResponse> completeProduct(@PathVariable("product_idx") Long productIdx) {
+        ApiResponse apiResponse;
+        try {
+            boolean isCompleted = productService.completeProduct(productIdx);
+            if (isCompleted) {
+                apiResponse = new ApiResponse("1000", "거래 완료 처리 완료");
+                return ResponseEntity.ok().body(apiResponse);
+            }
+            else throw new Exception();
+        } catch (Exception e) {
+            apiResponse = new ApiResponse("0", e.getMessage());
+            return ResponseEntity.ok().body(apiResponse);
+        }
+    }
 }

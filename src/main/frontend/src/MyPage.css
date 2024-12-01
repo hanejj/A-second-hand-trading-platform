@@ -1,0 +1,146 @@
+/* MyPage.css */
+
+.my-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f9f9ff;
+}
+
+.header-section {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f4e1ff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #e2e2e2;
+    margin-right: 20px;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-email {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.user-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.user-message {
+    font-size: 14px;
+    color: #666;
+}
+
+.points-section {
+    display: flex;
+    align-items: center;
+}
+
+.points-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.points-value {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.points-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.edit-button {
+    padding: 10px 20px;
+    background-color: #d081ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    background-color: #ba6fe1;
+}
+
+.tabs-section {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+    border-bottom: 2px solid #d081ff;
+    font-weight: bold;
+}
+
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* .product-card {
+    width: 200px;
+    border: 1px solid #e2e2e2;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.product-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.product-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+} */

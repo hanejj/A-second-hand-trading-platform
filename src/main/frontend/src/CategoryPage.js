@@ -16,9 +16,11 @@ const CategoryPage = () => {
   const { category } = useParams(); // URL에서 카테고리 값 추출
   const [selling, setSelling] = useState('sell'); // 기본 필터는 '팔아요'
   const [products, setProducts] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(null);
 
   // 상품 목록 요청
   useEffect(() => {
+    const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
     const fetchProducts = async () => {
       try {
         const response = await axios.get('http://localhost:8080/product', {
@@ -26,6 +28,7 @@ const CategoryPage = () => {
             selling,
             category: category === 'all' ? 'all' : category,
             order: 'new', // 기본 정렬: 최신순
+            isAdmin: isAdmin,
           },
         });
 
@@ -43,7 +46,7 @@ const CategoryPage = () => {
     };
 
     fetchProducts();
-  }, [category, selling]);
+  }, [category, selling, isAdmin]);
 
   return (
     <div className="category-page">
@@ -73,19 +76,28 @@ const CategoryPage = () => {
       <div className="product-gallery">
         {products.length > 0 ? (
           products.map((product) => (
-            <div key={product.productIdx} className="product-card">
-            <Link to={`/product/${product.productIdx}`} className="product-link">
+            <div 
+      key={product.product_idx} 
+      className={`product-wrapper ${
+        product.status === "removed" || product.status === "completed" 
+          ? "inactive-product" 
+          : ""
+      }`}
+    >
+            <Link to={`/product/${product.productIdx}`} className="product-card">
               <div className="product-info">
                 <h3>{product.title}</h3>
                 <p>{product.price}원</p>
                 <p>{product.location}</p>
                 <p>♡ {product.heartNum} 💬 {product.chatNum}</p>
+                {/* 상태에 따른 텍스트 표시 */}
+          {product.status === "removed" && <p className="product-status">삭제</p>}
+          {product.status === "completed" && <p className="product-status">거래 완료</p>}
               </div>
+              <img src={`http://localhost:8080/image?image=${product.image}`} alt={product.title} />
             </Link>
-            <Link to={`/product/${product.productIdx}`} className="product-link">
-              <img src={"http://localhost:8080/image?image="+product.image} alt={product.title} />
-            </Link>
-          </div> 
+          </div>
+
           ))
         ) : (
           <p>상품이 없습니다.</p>

@@ -17,7 +17,6 @@ import ProductPage from './ProductPage'; // ProductPage 추가
 import ProductUploadPage from './ProductUploadPage'; // ProductPage 추가
 import UserEditPage from './UserEditPage'; 
 import ProductSearchPage from './ProductSearchPage';
-import Chat from './Chat';
 
 
 const App = () => {
@@ -101,7 +100,6 @@ const App = () => {
         <Route path="/mypage" element={<MyPage />} /> 
         <Route path="/user/:email/edit" element={<UserEditPage />} />
         <Route path="/search" element={<ProductSearchPage />} />
-        <Route path="/product/:productIdx/chat" element={<Chat />} />
       </Routes>
     </Router>
   );

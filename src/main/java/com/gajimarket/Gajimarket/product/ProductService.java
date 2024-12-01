@@ -316,4 +316,15 @@ public class ProductService {
 
         return productList;
     }
+
+    //상품 삭제
+    public boolean deleteProduct(Long productIdx) {
+        // SQL 쿼리로 상품 상태를 removed로 업데이트
+        String sql = "UPDATE product SET status = ? WHERE product_idx = ?";
+
+        int rowsUpdated = jdbcTemplate.update(sql, "removed", productIdx);
+
+        // 업데이트된 행의 수가 1 이상이면 성공, 아니면 실패
+        return rowsUpdated > 0;
+    }
 }

@@ -290,4 +290,21 @@ public class ProductController {
         List<Product> products = productService.searchProductsByTitle(title);
         return ResponseEntity.ok(products);
     }
+
+    // 상품 삭제
+    @PutMapping("/{product_idx}/delete")
+    public ResponseEntity<ApiResponse> completeProduct(@PathVariable("product_idx") Long productIdx) {
+        ApiResponse apiResponse;
+        try {
+            boolean isCompleted = productService.deleteProduct(productIdx);
+            if (isCompleted) {
+                apiResponse = new ApiResponse("1000", "상품 삭제 완료");
+                return ResponseEntity.ok().body(apiResponse);
+            }
+            else throw new Exception();
+        } catch (Exception e) {
+            apiResponse = new ApiResponse("0", e.getMessage());
+            return ResponseEntity.ok().body(apiResponse);
+        }
+    }
 }

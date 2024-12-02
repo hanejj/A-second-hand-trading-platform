@@ -84,6 +84,12 @@
     text-decoration: underline;
   }
   
+  .inquiry-detail-page-add-answer {
+    display: flex;
+    gap: 20px; /* 버튼 간 간격 추가 */
+    margin-top: 20px;
+  }
+  
   .inquiry-detail-page-add-answer-button{
     padding: 10px 20px;
     border: none;
@@ -92,4 +98,5 @@
     font-size: 1rem;
     border-radius: 4px;
     cursor: pointer;
+    gap:20px;
   }

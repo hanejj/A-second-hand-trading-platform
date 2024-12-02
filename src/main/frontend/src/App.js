@@ -22,6 +22,7 @@ import InquiryDetailPage from './InquiryDetailPage';
 import AnswerDetailPage from './AnswerDetailPage';
 import QuestionUploadPage from './QuestionUploadPage';
 import AnswerUploadPage from './AnswerUploadPage';
+import ReportDetailPage from './ReportDetailPage';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -109,6 +110,7 @@ const App = () => {
         <Route path="/inquiry/answer/:answer_idx" element={<AnswerDetailPage />} />
         <Route path="/inquiry/upload" element={<QuestionUploadPage />} />
         <Route path="/inquiry/:question_idx/upload/answer" element={<AnswerUploadPage />} />
+        <Route path="/report/:reportIdx" element={<ReportDetailPage />} />
       </Routes>
     </Router>
   );

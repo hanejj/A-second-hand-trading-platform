@@ -147,5 +147,34 @@ public class ReportService {
         }
     }
 
+    // 신고 완료 처리
+    public void completeReport(int reportIdx) throws Exception {
+        // 1. 신고가 존재하는지 확인
+        String checkReportSql = "SELECT status FROM Report WHERE report_idx = ?";
+        List<String> reportStatusList = jdbcTemplate.query(
+                checkReportSql,
+                (rs, rowNum) -> rs.getString("status"),
+                reportIdx
+        );
+
+        if (reportStatusList.isEmpty()) {
+            throw new Exception("해당 신고가 존재하지 않습니다.");
+        }
+
+        // 2. 현재 상태 유효성 검증
+        String currentStatus = reportStatusList.get(0);
+        if (!"pending".equals(currentStatus)) {
+            throw new Exception("이미 처리된 신고입니다. 상태: " + currentStatus);
+        }
+
+        // 3. 신고 상태를 'rejected'로 변경
+        String updateStatusSql = "UPDATE Report SET status = 'resolved' WHERE report_idx = ?";
+        int result = jdbcTemplate.update(updateStatusSql, reportIdx);
+
+        if (result != 1) {
+            throw new Exception("신고 완료 처리에 실패했습니다.");
+        }
+    }
+
 
 }

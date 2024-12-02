@@ -83,6 +83,21 @@ public class ReportController {
         }
     }
 
+    // 신고 완료 처리
+    @PatchMapping("/{report_idx}/reject")
+    public ResponseEntity<ApiResponse> completeReport(@PathVariable("report_idx") int reportIdx) {
+        ApiResponse apiResponse;
+        try {
+            // 서비스 호출
+            reportService.rejectReport(reportIdx);
+            apiResponse = new ApiResponse<>("1000", "신고 처리 성공");
+            return ResponseEntity.ok().body(apiResponse);
+        } catch (Exception e) {
+            apiResponse = new ApiResponse<>("0", e.getMessage());
+            return ResponseEntity.ok().body(apiResponse);
+        }
+    }
+
 
 
 

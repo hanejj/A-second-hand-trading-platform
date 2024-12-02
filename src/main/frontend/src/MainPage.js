@@ -78,7 +78,9 @@ const MainPage = () => {
           <h1>인기 상품</h1>
         </div>
         <div className="product-gallery">
-          {popularProducts.map((product) => (
+          {popularProducts
+          .filter((product) => product.status !== "completed") // "completed" 상태의 상품 제외
+          .map((product) => (
             <div 
             key={product.product_idx} 
             className={`product-wrapper ${
@@ -118,7 +120,9 @@ const MainPage = () => {
           <h1>최신 업로드 상품</h1>
         </div>
         <div className="product-gallery">
-          {popularProducts.map((product) => (
+          {latestProducts
+          .filter((product) => product.status !== "completed") // "completed" 상태의 상품 제외
+          .map((product) => (
             <div 
             key={product.product_idx} 
             className={`product-wrapper ${

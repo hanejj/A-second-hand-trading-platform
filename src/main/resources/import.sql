@@ -3,6 +3,19 @@ use gajimarket;
 
 SET FOREIGN_KEY_CHECKS = 0;
 truncate table user;
+truncate table admin;
+truncate table answer;
+truncate table chat;
+truncate table keyword;
+truncate table notice;
+truncate table point;
+truncate table point_history;
+truncate table product;
+truncate table question;
+truncate table report;
+truncate table review;
+truncate table user;
+truncate table wishlist;
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO user (id, passwd, name, birth, sex, phone, nickname, location, image, message, manner_point)
@@ -13,23 +26,17 @@ VALUES
 ('user4@gmail.com', 'passwd4', '한은진', '2000-07-25', 'F', '010-6666-3333', '은진이', '인천광역시', '/uploads/user.png', '따뜻한 하루!', 50),
 ('user5@gmail.com', 'passwd5', '강백호', '1993-01-30', 'M', '010-2222-1111', '슬램덩크', '광주광역시', '/uploads/user.png', '행복하세요~', 50);
 
-SET FOREIGN_KEY_CHECKS = 0;
-truncate table admin;
-SET FOREIGN_KEY_CHECKS = 1;
+
 INSERT INTO admin (id, passwd, name)
 values
 ('admin1@gaji.com','admin1','김관리');
 
-SET FOREIGN_KEY_CHECKS = 0;
-truncate table product;
-truncate table keyword;
-SET FOREIGN_KEY_CHECKS = 1;
 -- Electronics 카테고리 데이터
 INSERT INTO product (category, title, content, price, created_at, location, chat_num, heart_num, selling, image, writer_idx, writer_name, status)
 VALUES
 ('Electronics', '아이폰 13 미니 팝니다', '거의 새 제품입니다. 정품 박스 포함.', 850000, DATE_ADD(NOW(), INTERVAL -1 DAY), '부산광역시', 5, 10, 'sell', '/uploads/iphone13mini.jpg', 1, '길동이', 'active'),
-('Electronics', '아이패드 10세대 판매', '정품, 거의 새 제품입니다.', 500000, DATE_ADD(NOW(), INTERVAL -2 DAY), '서울특별시', 3, 7, 'sell', '/uploads/ipad10.jpg', 1, '길동이', 'active'),
-('Electronics', '삼성 모니터 팔아요', '24인치 LED 모니터, 상태 양호.', 70000, DATE_ADD(NOW(), INTERVAL -3 DAY), '광주광역시', 0, 2, 'sell', '/uploads/monitor.jpg', 3, '소영이', 'active'),
+('Electronics', '아이패드 10세대 판매', '정품, 거의 새 제품입니다.', 500000, DATE_ADD(NOW(), INTERVAL -2 DAY), '서울특별시', 3, 7, 'sell', '/uploads/ipad10.jpg', 1, '길동이', 'completed'),
+('Electronics', '삼성 모니터 팔아요', '24인치 LED 모니터, 상태 양호.', 70000, DATE_ADD(NOW(), INTERVAL -3 DAY), '광주광역시', 0, 2, 'sell', '/uploads/monitor.jpg', 3, '소영이', 'removed'),
 ('Electronics', 'PS5 팝니다', '플레이스테이션 5, 게임 포함.', 450000, DATE_ADD(NOW(), INTERVAL -5 DAY), '서울특별시 노원구', 6, 12, 'sell', '/uploads/ps5.jpg', 2, '짱구', 'active'),
 ('Electronics', '맥북 구해요', '간절히 필요합니다.', 200000, DATE_ADD(NOW(), INTERVAL -3 DAY), '광주광역시', 0, 2, 'get', '/uploads/macbook.jpg', 3, '소영이', 'active'),
 ('Electronics', '스위치 구해요', '닌텐도 스위치 구해요', 450000, DATE_ADD(NOW(), INTERVAL -5 DAY), '서울특별시 노원구', 6, 12, 'get', '/uploads/nintendo.jpg', 2, '짱구', 'active');
@@ -107,8 +114,17 @@ SET FOREIGN_KEY_CHECKS = 0;
 truncate table wishlist;
 SET FOREIGN_KEY_CHECKS = 1;
 
-INSERT INTO Wishlist (user_idx, product_idx, created_at)
+-- Question 테이블에 샘플 데이터 삽입
+INSERT INTO `Question` (title, content, created_at, public, user_idx, image)
 VALUES
-    ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 1, NOW()),
-    ((SELECT user_idx FROM User WHERE id = 'user1@gmail.com'), 2, NOW()),
-    ((SELECT user_idx FROM User WHERE id = 'user2@gmail.com'), 3, NOW());
+('첫 번째 질문', '이것은 첫 번째 질문 내용입니다.', DATE_ADD(NOW(), INTERVAL -7 DAY), 'y', 1, NULL),
+('두 번째 질문', '이것은 두 번째 질문 내용입니다.', DATE_ADD(NOW(), INTERVAL -5 DAY), 'n', 2, '/uploads/novel_book.jpg'),
+('세 번째 질문', '이것은 세 번째 질문 내용입니다.', DATE_ADD(NOW(), INTERVAL -3 DAY), 'y', 3, NULL),
+('네 번째 질문', '이것은 네 번째 질문 내용입니다.', DATE_ADD(NOW(), INTERVAL -2 DAY), 'n', 4, '/uploads/novel_book.jpg'),
+('다섯 번째 질문', '이것은 다섯 번째 질문 내용입니다.', DATE_ADD(NOW(), INTERVAL -1 DAY), 'y', 5, NULL);
+
+-- Answer 테이블에 샘플 데이터 삽입
+INSERT INTO `Answer` (title, content, created_at, public, question_idx, admin_index, image)
+VALUES
+('Re: 첫 번째 질문', '첫 번째 질문에 대한 답변입니다.', NOW(), 'y', 1, 1, '/uploads/novel_book.jpg'),
+('Re: 네 번째 질문', '네 번째 질문에 대한 답변입니다.', NOW(), 'n', 4, 1, NULL);

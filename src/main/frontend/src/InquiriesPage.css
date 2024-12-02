@@ -1,0 +1,85 @@
+.inquiries-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .inquiries-page-title {
+    color: #cd40cd;
+    text-align: center;
+  }
+
+  .inquiries-page h1 {
+    text-align: center;
+    color: #cd40cd;
+    margin-bottom: 20px;
+  }
+  
+
+  
+  .inquiries-page-table {
+    width: 99%;
+    border-collapse: collapse;
+    margin: 0 auto; /* 테이블을 페이지 정가운데 배치 */
+  }
+  
+  .inquiries-page-table th,
+  .inquiries-page-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .inquiries-page-table th {
+    background-color: #d5a0e2;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .inquiries-page-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .inquiries-page-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .inquiries-page-answer-title {
+    color: black;
+    font-style: italic;
+    
+  }
+  
+  .inquiries-page-row,
+  .inquiries-page-answer-row {
+    transition: background-color 0.2s;
+  }
+  
+
+.inquiries-page-link {
+    text-decoration: none; /* 밑줄 제거 */
+    color:black;
+  }
+  
+  .inquiries-page-link:hover {
+    color: #a472c3; /* 호버 시 색상 변경 */
+  }
+
+  /*문의 작성 버튼*/
+  .inquiries-page-button-container {
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    margin: 20px; /* 테이블과의 간격 */
+  }
+  .inquiries-page-button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #d5a0e2;
+    color: white;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .inquiries-page-button:hover {
+    background-color: #af69e1;
+  }

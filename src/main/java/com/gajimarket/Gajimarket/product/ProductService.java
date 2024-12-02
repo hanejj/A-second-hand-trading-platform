@@ -28,7 +28,7 @@ public class ProductService {
 
 
     // "/product" 요청 시 상품 목록 조회
-    public List<Product> getProductList(ProductRequest productRequest) {
+    public List<Product> getProductList(ProductRequest productRequest, boolean isAdmin) {
         String sql = "";
         Object[] params;
 
@@ -41,6 +41,11 @@ public class ProductService {
         else {
             sql = "SELECT * FROM product WHERE selling = ? AND category = ?";
             params = new Object[]{productRequest.getSelling(), productRequest.getCategory()};
+        }
+
+        // isAdmin=false인 경우 status 조건 추가
+        if (isAdmin==false) {
+            sql += " AND status != 'removed'";
         }
 
         // 인기순/최신순 처리 로직 추가
@@ -76,15 +81,17 @@ public class ProductService {
         );
     }
 
-
     // 특정 상품 정보를 조회하는 메서드
-    public ProductPageResponse getProductById(int product_idx, Integer user_idx) { // user_idx는 Integer로 변경 (null 허용)
+    public ProductPageResponse getProductById(int product_idx, Integer user_idx, boolean isAdmin) {
+        // user_idx가 null일 경우 -1로 처리 (관리자인 경우 다른 로직 적용)
+        Object userIdxParam = (user_idx != null) ? user_idx : -1;
+
         // 1. 상품 정보 조회
         String productSql = """
     SELECT 
         p.*, 
         CASE 
-            WHEN w.wish_idx IS NOT NULL THEN TRUE 
+            WHEN ? IS NOT NULL AND w.wish_idx IS NOT NULL THEN TRUE 
             ELSE FALSE 
         END AS is_hearted
     FROM 
@@ -101,7 +108,11 @@ public class ProductService {
         Object userIdxParam = (user_idx != null) ? user_idx : -1; // 로그인하지 않은 경우 -1 사용
         Product product = jdbcTemplate.queryForObject(
                 productSql,
-                new Object[]{userIdxParam, product_idx},
+                new Object[]{
+                        isAdmin ? null : userIdxParam, // 관리자일 경우 null로 처리
+                        isAdmin ? null : userIdxParam, // 관리자일 경우 null로 처리
+                        product_idx
+                },
                 (rs, rowNum) -> new Product(
                         rs.getInt("product_idx"),
                         rs.getString("category"),
@@ -119,43 +130,50 @@ public class ProductService {
                         rs.getObject("partner_idx", Integer.class),
                         rs.getBoolean("review"),
                         rs.getString("content"),
-                        rs.getBoolean("is_hearted") // 찜 상태
+                        isAdmin ? false : rs.getBoolean("is_hearted") // 관리자라면 false 반환
                 )
         );
+
+        // isAdmin=false이고 상품이 삭제 상태라면 예외 발생
+        if (!isAdmin && "removed".equals(product.getStatus())) {
+            throw new NoSuchElementException("삭제된 상품은 조회할 수 없습니다.");
+        }
 
         // 2. 키워드 조회
         String keywordSql = "SELECT keyword FROM keyword WHERE product_idx = ?";
         List<String> keywords = jdbcTemplate.queryForList(keywordSql, new Object[]{product_idx}, String.class);
 
-        // 3. 추천 상품 조회 (user_idx가 null이면 기본값 처리)
+        // 3. 추천 상품 조회
         List<Product> recommendedProducts = Collections.emptyList();
         if (!keywords.isEmpty()) {
             String recommendedProductsSql = """
-            SELECT DISTINCT 
-                p.*,
-                CASE
-                    WHEN EXISTS (
-                        SELECT 1
-                        FROM wishlist w
-                        WHERE w.product_idx = p.product_idx AND w.user_idx = ?
-                    ) THEN TRUE
-                    ELSE FALSE
-                END AS is_hearted
-            FROM
-                product p
-            JOIN
-                keyword k ON p.product_idx = k.product_idx
-            WHERE
-                k.keyword IN (%s)
-                AND p.product_idx != ?
+        SELECT DISTINCT 
+            p.*,
+            CASE
+                WHEN ? IS NOT NULL AND EXISTS (
+                    SELECT 1
+                    FROM wishlist w
+                    WHERE w.product_idx = p.product_idx AND w.user_idx = ?
+                ) THEN TRUE
+                ELSE FALSE
+            END AS is_hearted
+        FROM
+            product p
+        JOIN
+            keyword k ON p.product_idx = k.product_idx
+        WHERE
+            k.keyword IN (%s)
+            AND p.product_idx != ?
+            AND p.status='active'
         """;
 
             String placeholders = String.join(",", keywords.stream().map(k -> "?").toArray(String[]::new));
             String finalSql = String.format(recommendedProductsSql, placeholders);
 
             List<Object> params = new ArrayList<>();
-            params.add(userIdxParam); // user_idx 또는 -1
-            params.addAll(keywords); // IN 절 파라미터
+            params.add(isAdmin ? null : userIdxParam); // 관리자는 찜 확인 생략
+            params.add(isAdmin ? null : userIdxParam); // 관리자는 찜 확인 생략
+            params.addAll(keywords);
             params.add(product_idx);
 
             recommendedProducts = jdbcTemplate.query(
@@ -178,7 +196,7 @@ public class ProductService {
                             rs.getObject("partner_idx", Integer.class),
                             rs.getBoolean("review"),
                             rs.getString("content"),
-                            rs.getBoolean("is_hearted") // 찜 상태
+                            isAdmin ? false : rs.getBoolean("is_hearted") // 관리자라면 false 반환
                     )
             );
         }
@@ -186,10 +204,6 @@ public class ProductService {
         // 응답 객체 생성
         return new ProductPageResponse(product, recommendedProducts);
     }
-
-
-
-
 
     //작성된 리뷰를 데이터베이스에 등록
     public void writeReview(int product_idx, ReviewRequest reviewRequest) {
@@ -332,5 +346,26 @@ public class ProductService {
         } catch (SQLException e) {
             throw new RuntimeException("Database error", e);
         }
+
+    //상품 삭제
+    public boolean deleteProduct(Long productIdx) {
+        // SQL 쿼리로 상품 상태를 removed로 업데이트
+        String sql = "UPDATE product SET status = ? WHERE product_idx = ?";
+
+        int rowsUpdated = jdbcTemplate.update(sql, "removed", productIdx);
+
+        // 업데이트된 행의 수가 1 이상이면 성공, 아니면 실패
+        return rowsUpdated > 0;
+    }
+
+    //상품 거래 완료 처리
+    public boolean completeProduct(Long productIdx) {
+        // SQL 쿼리로 상품 상태를 completed로 업데이트
+        String sql = "UPDATE product SET status = ? WHERE product_idx = ?";
+
+        int rowsUpdated = jdbcTemplate.update(sql, "completed", productIdx);
+
+        // 업데이트된 행의 수가 1 이상이면 성공, 아니면 실패
+        return rowsUpdated > 0;
     }
 }

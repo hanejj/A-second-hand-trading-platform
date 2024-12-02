@@ -175,3 +175,16 @@ a{
     text-decoration: none; /* 링크의 밑줄 제거 */
     color: inherit; /* 부모 요소의 색상(검은색)을 상속받게 설정 */
   }
+
+  /* 비활성화된 상품 */
+.inactive-product .product-card {
+    opacity: 0.5; /* 흐리게 표시 */
+}
+
+/* 상품 상태 텍스트 */
+.product-status {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #999; /* 회색으로 표시 */
+    font-weight: bold;
+}

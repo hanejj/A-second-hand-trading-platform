@@ -1,26 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './NoticePage.css';
 
 const NoticePage = () => {
   const [notices, setNotices] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // 임의의 공지사항 데이터
-    const noticeData = [
-      { id: 1, title: '첫 번째 공지사항', author: '관리자', date: '2024-10-13' },
-      { id: 2, title: '두 번째 공지사항', author: '관리자', date: '2024-10-14' },
-      { id: 3, title: '세 번째 공지사항', author: '관리자', date: '2024-10-15' },
-    ];
+    const adminStatus = localStorage.getItem('isAdmin');
+    const token = localStorage.getItem('token');
+    setIsAdmin(adminStatus === 'true' && !!token);
 
-    setNotices(noticeData);
+    const fetchNotices = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/notice');
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched notices:', data);
+          setNotices(data.data || []);
+        } else {
+          console.error('Failed to fetch notices');
+          setNotices([]);
+        }
+      } catch (error) {
+        console.error('Error fetching notices:', error);
+        setNotices([]);
+      }
+    };
+
+    fetchNotices();
   }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm('이 공지사항을 삭제하시겠습니까?')) {
+      try {
+        const response = await fetch(`http://localhost:8080/notice/delete/${id}`, {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          alert('공지사항이 삭제되었습니다.');
+          setNotices(notices.filter((notice) => notice.noticeId !== id));
+        } else {
+          alert('공지사항 삭제에 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('Error deleting notice:', error);
+        alert('서버와의 통신 중 오류가 발생했습니다.');
+      }
+    }
+  };
 
   return (
     <div className="notice-page">
-
-      {/* 공지사항 목록 */}
       <h2>공지사항 목록</h2>
+
+      {isAdmin && (
+        <div className="write-button-container">
+          <button
+            className="write-button"
+            onClick={() => navigate('/notices/new')}
+          >
+            글쓰기
+          </button>
+        </div>
+      )}
+
       <table>
         <thead>
           <tr>
@@ -28,28 +73,38 @@ const NoticePage = () => {
             <th>제목</th>
             <th>글쓴이</th>
             <th>작성시간</th>
+            {isAdmin && <th>관리</th>}
           </tr>
         </thead>
         <tbody>
-          {notices.map(notice => (
-            <tr key={notice.id}>
-              <td>{notice.id}</td>
+          {notices.map((notice) => (
+            <tr key={notice.noticeId}>
+              <td>{notice.noticeId}</td>
               <td>
-                <Link to={`/notices/${notice.id}`}>{notice.title}</Link>
+                <Link to={`/notices/${notice.noticeId}`}>{notice.noticeTitle}</Link>
               </td>
-              <td>{notice.author}</td>
-              <td>{notice.date}</td>
+              <td>{notice.adminName}</td>
+              <td>{new Date(notice.noticeCreatedAt).toLocaleString()}</td>
+              {isAdmin && (
+                <td>
+                  <button
+                    className="edit-button"
+                    onClick={() => navigate(`/notices/edit/${notice.noticeId}`)}
+                  >
+                    수정
+                  </button>
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDelete(notice.noticeId)}
+                  >
+                    삭제
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
-
-      {/* 검색 및 글쓰기 기능 */}
-      <div className="search-section">
-        <input type="text" placeholder="검색어를 입력하세요..." />
-        <button>검색</button>
-        <Link to="/notices/new" className="write-button">글쓰기</Link>
-      </div>
     </div>
   );
 };

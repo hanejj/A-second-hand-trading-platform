@@ -1,4 +1,4 @@
-.notice-page {
+ï»¿.notice-page {
     padding: 20px;
 }
 
@@ -6,7 +6,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #6a0dad; /* º¸¶ó»ö ¹è°æ */
+    background-color: #6a0dad; /* ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ */
     padding: 10px;
     color: white;
 }
@@ -60,7 +60,7 @@ th {
     .search-section button {
         padding: 8px;
         margin-left: 10px;
-        background-color: #6a0dad; /* º¸¶ó»ö */
+        background-color: #6a0dad; /* ï¿½ï¿½ï¿½ï¿½ï¿½ */
         color: white;
         border: none;
         cursor: pointer;
@@ -69,8 +69,13 @@ th {
 .write-button {
     padding: 8px;
     margin-left: 10px;
-    background-color: #6a0dad; /* º¸¶ó»ö */
+    background-color: #6a0dad; /* ï¿½ï¿½ï¿½ï¿½ï¿½ */
     color: white;
     text-decoration: none;
     border-radius: 5px;
+}
+
+.write-button-container {
+    margin-bottom: 20px;
+    text-align: right; /* ì˜¤ë¥¸ìª½ ì •ë ¬ */
 }

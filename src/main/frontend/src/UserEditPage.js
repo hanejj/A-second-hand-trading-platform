@@ -54,11 +54,52 @@ const UserEditPage = () => {
     setUserData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImageFile(file);
-    setUserData((prevState) => ({ ...prevState, image: URL.createObjectURL(file) }));
-  };
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    setImageFile(file); // 이미지 파일 상태 저장
+  
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('id', userData.id);
+  
+    try {
+      const response = await fetch('http://localhost:8080/upload/image', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.code === 1000) {
+        setUserData((prevState) => ({ ...prevState, image: data.imagePath }));
+        alert('이미지 업로드 성공');
+      } else {
+        alert('이미지 업로드 실패');
+      }
+    } catch (error) {
+      console.error('이미지 업로드 에러:', error);
+    }
+  };  
+
+  const handleRemoveImage = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/remove/image?image=${userData.image}&id=${userData.id}`, {
+        method: 'DELETE',
+      });
+  
+      const data = await response.json();
+  
+      if (data.code === 1000) {
+        setImageFile(null); // 이미지 파일 초기화
+        setUserData((prevState) => ({ ...prevState, image: data.defaultImage }));
+        alert('이미지 삭제 성공');
+      } else {
+        alert('이미지 삭제 실패');
+      }
+    } catch (error) {
+      console.error('이미지 삭제 에러:', error);
+      alert('이미지 삭제 중 문제가 발생했습니다.');
+    }
+  };  
 
   const handleSubmit = () => {
     if (userData.passwd && userData.passwd !== userData.confirmPassword) {
@@ -75,6 +116,7 @@ const UserEditPage = () => {
       message: userData.message,
       location: userData.location,
       passwd: userData.passwd || '',
+      image: userData.image,
     }));
     if (imageFile) {
       formData.append('image', imageFile);
@@ -98,20 +140,37 @@ const UserEditPage = () => {
       <h2 className="user-edit-title">내 정보 수정</h2>
       <div className="edit-form-container">
         <div className="edit-avatar-section">
-          <div className="avatar-image-container">
-            <img src={userData.image || 'default-avatar.png'} alt="User Avatar" className="avatar-img" />
-            <label htmlFor="image-upload" className="image-upload-label">
-              사진 변경
-            </label>
-            <input 
-              type="file" 
-              id="image-upload" 
-              accept="image/*" 
-              onChange={handleImageChange} 
-              className="image-upload-input"
-            />
-            <button className="image-remove-button" onClick={() => setUserData(prevState => ({ ...prevState, image: '' }))}>현재 사진 삭제</button>
-          </div>
+        <div className="avatar-image-container">
+  {/* 이미지 미리보기 */}
+  <img 
+    src={userData.image ? `http://localhost:8080/image?image=${userData.image}` : '/uploads/user.png'} 
+    alt="User Avatar" 
+    className="avatar-img" 
+  />
+  
+  {/* 사진 변경 라벨 */}
+  <label htmlFor="image-upload" className="image-upload-label">
+    사진 변경
+  </label>
+  
+  {/* 이미지 업로드 입력 */}
+  <input 
+    type="file" 
+    id="image-upload" 
+    accept="image/*" 
+    onChange={handleImageChange} 
+    className="image-upload-input"
+  />
+  
+  {/* 현재 사진 삭제 버튼 */}
+  <button 
+    className="image-remove-button" 
+    onClick={handleRemoveImage}
+  >
+    현재 사진 삭제
+  </button>
+</div>
+
           <div className="nickname-section">
             <span className="nickname-label">닉네임</span>
             <input

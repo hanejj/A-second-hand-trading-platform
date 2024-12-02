@@ -11,7 +11,7 @@ const MainPage = () => {
   const [sessionInfo, setSessionInfo] = useState(null);
   const [isAdmin, setIsAdmin] = useState(null);
   const navigate = useNavigate();
-
+  
   // 페이지 접속 시 API 요청
   useEffect(() => {
     const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));

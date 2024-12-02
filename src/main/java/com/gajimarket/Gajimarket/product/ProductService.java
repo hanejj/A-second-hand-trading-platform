@@ -81,8 +81,6 @@ public class ProductService {
         );
     }
 
-
-    // 특정 상품 정보를 조회하는 메서드
     // 특정 상품 정보를 조회하는 메서드
     public ProductPageResponse getProductById(int product_idx, Integer user_idx, boolean isAdmin) {
         // user_idx가 null일 경우 -1로 처리 (관리자인 경우 다른 로직 적용)
@@ -106,6 +104,8 @@ public class ProductService {
         p.product_idx = ?
     """;
 
+        // 찜 상태를 처리할 user_idx를 설정 (비로그인 상태면 기본값 사용)
+        Object userIdxParam = (user_idx != null) ? user_idx : -1; // 로그인하지 않은 경우 -1 사용
         Product product = jdbcTemplate.queryForObject(
                 productSql,
                 new Object[]{
@@ -204,11 +204,6 @@ public class ProductService {
         // 응답 객체 생성
         return new ProductPageResponse(product, recommendedProducts);
     }
-
-
-
-
-
 
     //작성된 리뷰를 데이터베이스에 등록
     public void writeReview(int product_idx, ReviewRequest reviewRequest) {
@@ -335,6 +330,22 @@ public class ProductService {
 
         return productList;
     }
+
+    public int getProductWriterIdx(int productIdx) {
+        String sql = "SELECT writer_idx FROM product WHERE product_idx = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, productIdx);
+            var resultSet = stmt.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt("writer_idx");
+            } else {
+                throw new RuntimeException("Product not found");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Database error", e);
+        }
 
     //상품 삭제
     public boolean deleteProduct(Long productIdx) {

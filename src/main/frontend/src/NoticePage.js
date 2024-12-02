@@ -17,15 +17,15 @@ const NoticePage = () => {
         const response = await fetch('http://localhost:8080/notice');
         if (response.ok) {
           const data = await response.json();
-          console.log('Fetched notices:', data);
-          setNotices(data.data || []);
+          console.log('Fetched notices:', data); 
+          setNotices(data.data || []); 
         } else {
           console.error('Failed to fetch notices');
-          setNotices([]);
+          setNotices([]); 
         }
       } catch (error) {
         console.error('Error fetching notices:', error);
-        setNotices([]);
+        setNotices([]); 
       }
     };
 

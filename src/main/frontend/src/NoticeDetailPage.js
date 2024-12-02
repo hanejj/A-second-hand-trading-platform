@@ -12,7 +12,7 @@ const NoticeDetailPage = () => {
 
   useEffect(() => {
     const adminStatus = localStorage.getItem('isAdmin');
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token'); 
     setIsAdmin(adminStatus === 'true' && !!token);
 
     const fetchNotice = async () => {

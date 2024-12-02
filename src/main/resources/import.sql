@@ -29,7 +29,8 @@ VALUES
 
 INSERT INTO admin (id, passwd, name)
 values
-('admin1@gaji.com','admin1','김관리');
+('admin1@gaji.com','admin1','김관리'),
+('admin2@gaji.com','admin2','나관리');
 
 -- Electronics 카테고리 데이터
 INSERT INTO product (category, title, content, price, created_at, location, chat_num, heart_num, selling, image, writer_idx, writer_name, status)

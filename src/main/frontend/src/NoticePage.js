@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './NoticePage.css';
 
 const NoticePage = () => {
-  const [notices, setNotices] = useState([]); 
+  const [notices, setNotices] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 

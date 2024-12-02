@@ -23,8 +23,8 @@ const ProductPage = () => {
   //찜 버튼 클릭 시
   const handleHeartClick = async () => {
     if (!userIdx) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
+      alert('로그인이 필요합니다.');
+      navigate('/login');
       return;
     }
     try {
@@ -97,18 +97,19 @@ const ProductPage = () => {
   //채팅 버튼 클릭 시
   const handleChatClick = () => {
     if (!userIdx) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
+      alert('로그인이 필요합니다.');
+      navigate('/login');
       return;
     }
     setIsChatting(true);
+    navigate(`/product/${productIdx}/chat`);
   };
 
   //신고 버튼 클릭 시
   const handleReportClick = () => {
     if (!userIdx) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
+      alert('로그인이 필요합니다.');
+      navigate('/login');
       return;
     }
     // 상품 신고 기능 연결 필요
@@ -130,14 +131,14 @@ const ProductPage = () => {
     }
 
     const formData = new FormData();
-    formData.append("review", reviewContent);
-    formData.append("partnerIndex", user.userIdx);
-
+    formData.append('review', reviewContent);
+    formData.append('partnerIndex', user.userIdx);
+  
     // `sellerIndex`는 현재 로그인한 사용자(user.userIdx)
-    formData.append("sellerIndex", user.userIdx);
+    formData.append('sellerIndex', user.userIdx);
     // `buyerIndex`는 product.partner_idx와 동일
-    formData.append("buyerIndex", product.partnerIdx);
-    formData.append("reviewScore", reviewScore);
+    formData.append('buyerIndex', product.partnerIdx);
+    formData.append('reviewScore', reviewScore);
 
     if (reviewImage) {
       formData.append("image", reviewImage);
@@ -253,6 +254,7 @@ const ProductPage = () => {
             setUser(response.data.user); // 사용자 정보 저장
             setUserIdx(response.data.user.userIdx);
             console.log("UserIdx:", response.data.user.userIdx);
+
           }
         })
         .catch((error) => {
@@ -390,7 +392,6 @@ const ProductPage = () => {
           <p>추천 상품이 없습니다.</p>
         )}
       </div>
-
       {showReviewModal && (
         <div className="product-page-review-modal">
           <div className="product-page-modal-content">

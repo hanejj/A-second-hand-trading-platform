@@ -1,55 +1,55 @@
-.notice-detail-container {
-    max-width: 800px; /* ÃÖ´ë ³Êºñ */
-    margin: 20px auto; /* Áß¾Ó Á¤·Ä */
-    padding: 20px; /* ÆÐµù Ãß°¡ */
-    border: 1px solid #e0e0e0; /* Å×µÎ¸® */
-    border-radius: 8px; /* ¸ð¼­¸® µÕ±Û°Ô */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* ±×¸²ÀÚ È¿°ú */
-    background-color: #ffffff; /* ¹è°æ»ö */
+ï»¿.notice-detail-container {
+    max-width: 800px; /* ï¿½Ö´ï¿½ ï¿½Êºï¿½ */
+    margin: 20px auto; /* ï¿½ß¾ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    padding: 20px; /* ï¿½Ðµï¿½ ï¿½ß°ï¿½ */
+    border: 1px solid #e0e0e0; /* ï¿½×µÎ¸ï¿½ */
+    border-radius: 8px; /* ï¿½ð¼­¸ï¿½ ï¿½Õ±Û°ï¿½ */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* ï¿½×¸ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ */
+    background-color: #ffffff; /* ï¿½ï¿½ï¿½ï¿½ */
 }
 
 .back-button {
-    text-align: right; /* ¿À¸¥ÂÊ Á¤·Ä */
-    margin-bottom: 20px; /* ¾Æ·¡ ¿©¹é */
+    text-align: right; /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    margin-bottom: 20px; /* ï¿½Æ·ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 }
 
 .notice-title {
-    font-size: 24px; /* Á¦¸ñ Å©±â */
-    font-weight: bold; /* µÎ²² */
-    color: #6a5acd; /* Á¦¸ñ »ö»ó */
-    margin-bottom: 10px; /* ¾Æ·¡ ¿©¹é */
+    font-size: 24px; /* ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½ */
+    font-weight: bold; /* ï¿½Î²ï¿½ */
+    color: #6a5acd; /* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    margin-bottom: 10px; /* ï¿½Æ·ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 }
 
 .notice-meta {
-    color: #666; /* ¸ÞÅ¸ »ö»ó */
-    font-size: 14px; /* ¸ÞÅ¸ Å©±â */
-    margin-bottom: 20px; /* ¾Æ·¡ ¿©¹é */
+    color: #666; /* ï¿½ï¿½Å¸ ï¿½ï¿½ï¿½ï¿½ */
+    font-size: 14px; /* ï¿½ï¿½Å¸ Å©ï¿½ï¿½ */
+    margin-bottom: 20px; /* ï¿½Æ·ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 }
 
 .notice-content {
-    font-size: 16px; /* ³»¿ë Å©±â */
-    line-height: 1.5; /* ÁÙ °£°Ý */
-    margin-bottom: 20px; /* ¾Æ·¡ ¿©¹é */
+    font-size: 16px; /* ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½ */
+    line-height: 1.5; /* ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    margin-bottom: 20px; /* ï¿½Æ·ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 }
 
 .action-buttons {
-    display: flex; /* Flexbox »ç¿ë */
-    justify-content: flex-end; /* ¿À¸¥ÂÊ Á¤·Ä */
-    gap: 10px; /* ¹öÆ° °£ °£°Ý */
+    display: flex; /* Flexbox ï¿½ï¿½ï¿½ */
+    justify-content: flex-end; /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    gap: 10px; /* ï¿½ï¿½Æ° ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 }
 
 .edit-button,
 .delete-button {
-    background-color: #6a5acd; /* ¹öÆ° ¹è°æ »ö»ó */
-    color: white; /* ¹öÆ° ±ÛÀÚ »ö»ó */
-    border: none; /* Å×µÎ¸® ¾øÀ½ */
-    border-radius: 4px; /* ¸ð¼­¸® µÕ±Û°Ô */
-    padding: 10px 15px; /* ÆÐµù */
-    cursor: pointer; /* Ä¿¼­ Æ÷ÀÎÅÍ */
-    transition: background-color 0.3s; /* ¹è°æ »ö»ó ÀüÈ¯ */
+    background-color: #6a5acd; /* ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    color: white; /* ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    border: none; /* ï¿½×µÎ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    border-radius: 4px; /* ï¿½ð¼­¸ï¿½ ï¿½Õ±Û°ï¿½ */
+    padding: 10px 15px; /* ï¿½Ðµï¿½ */
+    cursor: pointer; /* Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+    transition: background-color 0.3s; /* ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ */
 }
 
     .edit-button:hover,
     .delete-button:hover {
-        background-color: #5c4fbd; /* È£¹ö ½Ã »ö»ó º¯È­ */
+        background-color: #5c4fbd; /* È£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È­ */
     }

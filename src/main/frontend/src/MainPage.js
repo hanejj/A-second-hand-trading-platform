@@ -11,7 +11,7 @@ const MainPage = () => {
   const [sessionInfo, setSessionInfo] = useState(null);
   const [isAdmin, setIsAdmin] = useState(null);
   const navigate = useNavigate();
-
+  
   // 페이지 접속 시 API 요청
   useEffect(() => {
     const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
@@ -78,7 +78,9 @@ const MainPage = () => {
           <h1>인기 상품</h1>
         </div>
         <div className="product-gallery">
-          {popularProducts.map((product) => (
+          {popularProducts
+          .filter((product) => product.status !== "completed") // "completed" 상태의 상품 제외
+          .map((product) => (
             <div 
             key={product.product_idx} 
             className={`product-wrapper ${
@@ -118,7 +120,9 @@ const MainPage = () => {
           <h1>최신 업로드 상품</h1>
         </div>
         <div className="product-gallery">
-          {latestProducts.map((product) => (
+          {latestProducts
+          .filter((product) => product.status !== "completed") // "completed" 상태의 상품 제외
+          .map((product) => (
             <div 
             key={product.product_idx} 
             className={`product-wrapper ${
@@ -129,7 +133,7 @@ const MainPage = () => {
           >
               <Link
                 to={`/product/${product.productIdx}`}
-                className="product-link"
+                className="product-card"
               >
                 <div className="product-info">
                   <h3>{product.title}</h3>
@@ -142,13 +146,8 @@ const MainPage = () => {
                   {product.status === "removed" && <p className="product-status">삭제</p>}
                   {product.status === "completed" && <p className="product-status">거래 완료</p>}
                 </div>
-              </Link>
-              <Link
-                to={`/product/${product.productIdx}`}
-                className="product-link"
-              >
                 <img
-                  src={"http://localhost:8080/image?image=" + product.image}
+                  src={`http://localhost:8080/image?image=${product.image}`}
                   alt={product.title}
                 />
               </Link>

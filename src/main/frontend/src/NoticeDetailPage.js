@@ -3,11 +3,11 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import './NoticeDetailPage.css';
 
 const NoticeDetailPage = () => {
-  const { id } = useParams(); 
-  const [notice, setNotice] = useState(null); 
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState(null); 
-  const [isAdmin, setIsAdmin] = useState(false); 
+  const { id } = useParams();
+  const [notice, setNotice] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const NoticeDetailPage = () => {
         if (response.ok) {
           const data = await response.json();
           console.log('Fetched Notice:', data);
-          setNotice(data.data || data); 
+          setNotice(data.data || data);
         } else {
           setError('공지사항을 불러오는 데 실패했습니다.');
         }

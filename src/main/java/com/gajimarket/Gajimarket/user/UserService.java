@@ -8,10 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Map;
 
 @Service
@@ -79,35 +76,62 @@ public class UserService {
     }
 
     public void signUp(User user) {
-        String sql = "INSERT INTO user (id, passwd, name, birth, sex, phone, nickname, location, image, message, manner_point) "
+        String userSql = "INSERT INTO user (id, passwd, name, birth, sex, phone, nickname, location, image, message, manner_point) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String pointSql = "INSERT INTO Point (user_idx, point) VALUES (?, ?)";
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false); // 트랜잭션 시작
 
-            // PreparedStatement에 값 설정
-            stmt.setString(1, user.getId());        // 아이디
-            stmt.setString(2, user.getPasswd());    // 비밀번호
-            stmt.setString(3, user.getName());      // 이름
-            stmt.setDate(4, Date.valueOf(user.getBirth()));  // 생년월일 (String -> Date 변환)
-            stmt.setString(5, user.getSex());       // 성별
-            stmt.setString(6, user.getPhone());     // 연락처
-            stmt.setString(7, user.getNickname());  // 닉네임
-            stmt.setString(8, user.getLocation());  // 거주지
-            stmt.setString(9, user.getImage());     // 이미지 (NULL 가능)
-            stmt.setString(10, user.getMessage());  // 소개글 (NULL 가능)
-            stmt.setInt(11, user.getMannerPoint() != null ? user.getMannerPoint() : 50);  // 매너 점수, 기본값 50
+            try (PreparedStatement userStmt = connection.prepareStatement(userSql, Statement.RETURN_GENERATED_KEYS);
+                 PreparedStatement pointStmt = connection.prepareStatement(pointSql)) {
 
-            // 쿼리 실행
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                logger.info("User sign up successful");
-            } else {
-                logger.error("Failed to sign up user");
+                // User 테이블에 데이터 삽입
+                userStmt.setString(1, user.getId());        // 아이디
+                userStmt.setString(2, user.getPasswd());    // 비밀번호
+                userStmt.setString(3, user.getName());      // 이름
+                userStmt.setDate(4, Date.valueOf(user.getBirth()));  // 생년월일
+                userStmt.setString(5, user.getSex());       // 성별
+                userStmt.setString(6, user.getPhone());     // 연락처
+                userStmt.setString(7, user.getNickname());  // 닉네임
+                userStmt.setString(8, user.getLocation());  // 거주지
+                userStmt.setString(9, user.getImage() != null ? user.getImage() : "/uploads/user.png"); // 기본 이미지
+                userStmt.setString(10, user.getMessage());  // 소개글 (NULL 가능)
+                userStmt.setInt(11, user.getMannerPoint() != null ? user.getMannerPoint() : 50);  // 매너 점수 기본값
+
+                // 실행 및 user_idx 가져오기
+                int rowsAffected = userStmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    try (ResultSet generatedKeys = userStmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            int userIdx = generatedKeys.getInt(1); // 생성된 user_idx
+
+                            // Point 테이블에 초기 포인트 삽입
+                            pointStmt.setInt(1, userIdx);
+                            pointStmt.setInt(2, 0); // 초기 포인트 0
+                            pointStmt.executeUpdate();
+
+                            connection.commit(); // 트랜잭션 커밋
+                            logger.info("User sign up and point initialization successful");
+                        } else {
+                            connection.rollback(); // 트랜잭션 롤백
+                            logger.error("Failed to retrieve generated user_idx");
+                            throw new RuntimeException("Failed to retrieve user_idx");
+                        }
+                    }
+                } else {
+                    connection.rollback(); // 트랜잭션 롤백
+                    logger.error("Failed to sign up user");
+                    throw new RuntimeException("Failed to sign up user");
+                }
+            } catch (SQLException e) {
+                connection.rollback(); // 트랜잭션 롤백
+                logger.error("SQL Error during sign up: " + e.getMessage());
+                throw new RuntimeException("Database error during sign up", e);
             }
         } catch (SQLException e) {
-            logger.error("SQL Error during sign up: " + e.getMessage());
-            throw new RuntimeException("Database error during sign up", e);
+            logger.error("Database connection error: " + e.getMessage());
+            throw new RuntimeException("Database connection error", e);
         }
     }
 

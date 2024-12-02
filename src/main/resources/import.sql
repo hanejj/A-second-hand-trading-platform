@@ -96,7 +96,13 @@ VALUES
 ('Other', '캠핑 장비 판매', '캠핑용 텐트와 용품들', 80000, DATE_ADD(NOW(), INTERVAL -5 DAY), '인천광역시', 3, 6, 'sell', '/uploads/camping_gear.jpg', 4, '은진이', 'active'),
 ('Other', '고양이 장난감 팝니다', '고양이를 위한 다양한 장난감', 15000, DATE_ADD(NOW(), INTERVAL -7 DAY), '광주광역시', 2, 5, 'sell', '/uploads/cat_toy.jpg', 5, '슬램덩크', 'active');
 
+SET FOREIGN_KEY_CHECKS = 0;
+truncate table review;
+SET FOREIGN_KEY_CHECKS = 1;
 
+SET FOREIGN_KEY_CHECKS = 0;
+truncate table report;
+SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO `Report` (`title`, `content`, `reporting_idx`, `status`, `reported_user`, `reported_product`, `created_at`)
 VALUES
 ('상품 사기 신고', '이 상품은 사기를 치고 있는 것으로 보입니다. 구매자에게 피해를 입히고 있습니다.', 1, 'pending', 2, 5, '2024-11-29 10:30:00'),
@@ -104,6 +110,10 @@ VALUES
 ('거래 조건 불이행', '구매자가 약속된 거래 조건을 지키지 않았습니다.', 5, 'rejected', 2, 10, '2024-11-27 14:00:00'),
 ('허위 광고 신고', '해당 상품이 과장 광고로 판매되고 있습니다.', 4, 'pending', 1, 15, '2024-11-26 12:15:00'),
 ('상품 이미지 도용', '다른 판매자의 상품 이미지를 무단으로 사용한 것으로 보입니다.', 2, 'resolved', 3, 20, '2024-11-25 09:00:00');
+
+SET FOREIGN_KEY_CHECKS = 0;
+truncate table wishlist;
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- Question 테이블에 샘플 데이터 삽입
 INSERT INTO `Question` (title, content, created_at, public, user_idx, image)

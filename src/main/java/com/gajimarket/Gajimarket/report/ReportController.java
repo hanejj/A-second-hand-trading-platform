@@ -84,7 +84,7 @@ public class ReportController {
     }
 
     // 신고 완료 처리
-    @PatchMapping("/{report_idx}/reject")
+    @PatchMapping("/{report_idx}/complete")
     public ResponseEntity<ApiResponse> completeReport(@PathVariable("report_idx") int reportIdx) {
         ApiResponse apiResponse;
         try {

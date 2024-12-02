@@ -29,7 +29,6 @@ const ReportDetailPage = () => {
     fetchReportDetail();
   }, [reportIdx]);
 
-  const { text, color } = getStatusTextAndColor(reportDetail.status); // 상태와 색상 추출
 
   
   // 오류 메시지나 로딩 상태 처리

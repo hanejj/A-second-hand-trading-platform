@@ -1,70 +1,95 @@
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import './NoticeDetailPage.css';
 
 const NoticeDetailPage = () => {
-  const { id } = useParams(); // URL에서 ID를 가져옴
+  const { id } = useParams();
+  const [notice, setNotice] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const navigate = useNavigate();
 
-  // 공지사항 데이터 (임의로 작성된 예시)
-  const notices = [
-    {
-      id: 1,
-      title: '첫 번째 공지사항',
-      author: '관리자',
-      date: '2024-10-13',
-      content: '여기는 첫 번째 공지사항의 내용이 들어갑니다. 이 공지사항은 사용자가 보다 나은 경험을 할 수 있도록 도와줄 것입니다.',
-    },
-    {
-      id: 2,
-      title: '두 번째 공지사항',
-      author: '관리자',
-      date: '2024-10-14',
-      content: '여기는 두 번째 공지사항의 내용이 들어갑니다. 신규 업데이트 및 기능 추가에 대한 정보가 포함되어 있습니다.',
-    },
-    {
-      id: 3,
-      title: '세 번째 공지사항',
-      author: '관리자',
-      date: '2024-10-15',
-      content: '여기는 세 번째 공지사항의 내용입니다. 저희는 항상 사용자 의견을 듣고 있습니다.',
-    },
-  ];
+  useEffect(() => {
+    const adminStatus = localStorage.getItem('isAdmin');
+    const token = localStorage.getItem('token');
+    setIsAdmin(adminStatus === 'true' && !!token);
 
-  // ID에 해당하는 공지사항 찾기
-  const notice = notices.find(notice => notice.id === parseInt(id));
+    const fetchNotice = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/notice/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched Notice:', data);
+          setNotice(data.data || data);
+        } else {
+          setError('공지사항을 불러오는 데 실패했습니다.');
+        }
+      } catch (error) {
+        setError('서버와 통신 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // 해당 공지사항이 없을 경우 처리
+    fetchNotice();
+  }, [id]);
+
+  const handleDelete = async () => {
+    if (window.confirm('이 공지사항을 삭제하시겠습니까?')) {
+      try {
+        const response = await fetch(`http://localhost:8080/notice/delete/${id}`, {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          alert('공지사항이 삭제되었습니다.');
+          navigate('/notices');
+        } else {
+          alert('공지사항 삭제에 실패했습니다.');
+        }
+      } catch (error) {
+        alert('서버와 통신 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
+  if (loading) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   if (!notice) {
     return <div>공지사항을 찾을 수 없습니다.</div>;
   }
 
   return (
     <div className="notice-detail-container">
-      {/* 공지사항 목록 버튼 */}
       <div className="back-button">
         <Link to="/notices">
           <button>공지사항 목록</button>
         </Link>
       </div>
 
-      {/* 공지사항 제목, 작성자, 작성일 */}
       <div className="notice-info">
-        <h2 className="notice-title">{notice.title}</h2>
+        <h2 className="notice-title">{notice.noticeTitle || '제목 없음'}</h2>
         <p className="notice-meta">
-          작성자: {notice.author} | 작성일: {notice.date}
+          작성자: {notice.adminName || '알 수 없음'} | 작성일: {notice.noticeCreatedAt ? new Date(notice.noticeCreatedAt).toLocaleString() : '알 수 없음'}
         </p>
       </div>
 
-      {/* 공지사항 내용 */}
       <div className="notice-content">
-        <p>{notice.content}</p>
+        <p>{notice.noticeContent || '내용 없음'}</p>
       </div>
 
-      {/* 수정 및 삭제 버튼 */}
-      <div className="action-buttons">
-        <button className="edit-button">수정</button>
-        <button className="delete-button">삭제</button>
-      </div>
+      {isAdmin && (
+        <div className="action-buttons">
+          <button className="edit-button" onClick={() => navigate(`/notices/edit/${id}`)}>수정</button>
+          <button className="delete-button" onClick={handleDelete}>삭제</button>
+        </div>
+      )}
     </div>
   );
 };

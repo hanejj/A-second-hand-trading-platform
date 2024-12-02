@@ -104,8 +104,6 @@ public class ProductService {
         p.product_idx = ?
     """;
 
-        // 찜 상태를 처리할 user_idx를 설정 (비로그인 상태면 기본값 사용)
-        Object userIdxParam = (user_idx != null) ? user_idx : -1; // 로그인하지 않은 경우 -1 사용
         Product product = jdbcTemplate.queryForObject(
                 productSql,
                 new Object[]{
@@ -204,6 +202,7 @@ public class ProductService {
         // 응답 객체 생성
         return new ProductPageResponse(product, recommendedProducts);
     }
+
 
     //작성된 리뷰를 데이터베이스에 등록
     public void writeReview(int product_idx, ReviewRequest reviewRequest) {
@@ -346,6 +345,7 @@ public class ProductService {
         } catch (SQLException e) {
             throw new RuntimeException("Database error", e);
         }
+    }
 
     //상품 삭제
     public boolean deleteProduct(Long productIdx) {

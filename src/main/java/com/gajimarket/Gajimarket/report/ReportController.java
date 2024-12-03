@@ -37,12 +37,13 @@ public class ReportController {
     @PostMapping("/product/{product_idx}")
     public ResponseEntity<ApiResponse> reportProduct(
             @PathVariable("product_idx") int productIdx,
-            @RequestBody ReportRequest reportRequest) {
-        int reportingUserIdx=1; //임의로 신고자 인덱스 1로 설정, 로그인 api와 연결 후 수정해야함
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("user_idx") int userIdx) { // 신고자 인덱스를 @RequestParam으로 받음
         ApiResponse apiResponse;
         try {
-            reportService.reportProduct(productIdx, reportRequest.getTitle(), reportRequest.getContent(), reportingUserIdx);
-            apiResponse=new ApiResponse<>("1000", "상품 신고 성공");
+            reportService.reportProduct(productIdx, title, content, userIdx); // userIdx를 전달
+            apiResponse = new ApiResponse<>("1000", "상품 신고 성공");
             return ResponseEntity.ok().body(apiResponse);
         } catch (Exception e) {
             apiResponse = new ApiResponse("0", e.getMessage());
@@ -79,17 +80,17 @@ public class ReportController {
             return ResponseEntity.ok().body(apiResponse);
         } catch (Exception e) {
             apiResponse = new ApiResponse<>("0", e.getMessage());
-            return ResponseEntity.ok().body(apiResponse);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
         }
     }
 
     // 신고 완료 처리
-    @PatchMapping("/{report_idx}/complete")
-    public ResponseEntity<ApiResponse> completeReport(@PathVariable("report_idx") int reportIdx) {
+    @PatchMapping("/{report_idx}/resolve")
+    public ResponseEntity<ApiResponse> resolveReport(@PathVariable("report_idx") int reportIdx) {
         ApiResponse apiResponse;
         try {
             // 서비스 호출
-            reportService.rejectReport(reportIdx);
+            reportService.resolveReport(reportIdx);
             apiResponse = new ApiResponse<>("1000", "신고 처리 성공");
             return ResponseEntity.ok().body(apiResponse);
         } catch (Exception e) {

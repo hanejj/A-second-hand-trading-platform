@@ -139,6 +139,7 @@ const ReportDetailPage = () => {
           <strong>내용:</strong> {reportDetail.content}
         </p>
       </div>
+      {reportDetail.status === "pending" && (
       <div className="inquiry-detail-page-buttons">
         {/* 버튼들 */}
         <button onClick={handleRejectReport} className="reject-button">
@@ -148,6 +149,7 @@ const ReportDetailPage = () => {
           처리 완료
         </button>
       </div>
+    )}
     </div>
   );
 };

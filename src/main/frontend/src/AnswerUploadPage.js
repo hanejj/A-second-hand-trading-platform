@@ -35,7 +35,24 @@ const AnswerUploadPage = () => {
 
   useEffect(() => {
     fetchQuestionDetail();
-    setAdminIdx(1); // adminIdx 값을 설정
+    // 현재 로그인한 관리자 정보 가져오기
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios
+        .get("http://localhost:8080/admin/profile", {
+          headers: {
+            Authorization: "Bearer " + token, // JWT 토큰을 Authorization 헤더에 추가
+          },
+        })
+        .then((response) => {
+          if (response.data) {
+            setAdminIdx(response.data.admin_idx);
+          }
+        })
+        .catch((error) => {
+          console.error("관리자 정보를 가져오는 중 오류 발생:", error);
+        });
+    }
   }, [question_idx]); // question_idx가 변경되면 다시 호출
 
   const handlePublicStatusChange = (status) => {

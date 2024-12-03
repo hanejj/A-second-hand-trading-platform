@@ -157,7 +157,7 @@ public class ProductService {
             END AS is_hearted
         FROM
             product p
-        JOIN
+        INNER JOIN
             keyword k ON p.product_idx = k.product_idx
         WHERE
             k.keyword IN (%s)

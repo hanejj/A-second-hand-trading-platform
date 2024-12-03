@@ -26,9 +26,11 @@ import AnswerDetailPage from './AnswerDetailPage';
 import QuestionUploadPage from './QuestionUploadPage';
 import AnswerUploadPage from './AnswerUploadPage';
 import ReportDetailPage from './ReportDetailPage';
+import AuthorPage from "./AuthorPage";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // 로그인 상태를 확인
   useEffect(() => {
@@ -38,6 +40,9 @@ const App = () => {
     } else {
       setIsLoggedIn(false); // 토큰이 없으면 로그인 버튼으로 설정
     }
+
+    const storedIsAdmin = localStorage.getItem('isAdmin') === 'true'; // 관리자 여부 확인
+    setIsAdmin(storedIsAdmin); // 관리자 여부 설정
   }, []);
 
   const handleLogout = () => {
@@ -60,10 +65,13 @@ const App = () => {
           ) : (
             <NavButton to="/login">로그인</NavButton>
           )}
-          <NavButton to="/notices">공지사항</NavButton>
-          <NavButton to="/inquiries">문의사항</NavButton>
-          <NavButton to="/mypage">마이페이지</NavButton>
-          <NavButton to="/search">상품 검색</NavButton> 
+          {!isAdmin && (
+            <>
+            <NavButton to="/notices">공지사항</NavButton>
+            <NavButton to="/inquiries">문의사항</NavButton>
+            <NavButton to="/mypage">마이페이지</NavButton>
+            </>
+          )}
         </nav>
         
       </header>
@@ -117,6 +125,7 @@ const App = () => {
         <Route path="/inquiry/upload" element={<QuestionUploadPage />} />
         <Route path="/inquiry/:question_idx/upload/answer" element={<AnswerUploadPage />} />
         <Route path="/report/:reportIdx" element={<ReportDetailPage />} />
+        <Route path="/author/:userIdx" element={<AuthorPage />} />
       </Routes>
     </Router>
   );

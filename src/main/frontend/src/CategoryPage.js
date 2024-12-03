@@ -70,14 +70,24 @@ const CategoryPage = () => {
         </div>
 
         {/* 글쓰기 버튼은 우측 끝에 배치 */}
-        {!isAdmin && (
+        <div className="button-container">
+          {!isAdmin && (
+            <button
+              className="write-button"
+              onClick={() => navigate('/product/upload')}
+            >
+              글쓰기
+            </button>
+          )}
           <button
-            className="category-page-write-button"
-            onClick={handleWriteButtonClick}
+            className="search-button"
+            onClick={() => navigate('/search')}
           >
-            글쓰기
+            상품 검색
           </button>
-        )}
+</div>
+
+
       </div>
       {/* 상품 목록 */}
       <div className="product-gallery">

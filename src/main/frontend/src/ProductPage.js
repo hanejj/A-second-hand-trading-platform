@@ -343,7 +343,12 @@ const ProductPage = () => {
               ♡ 관심 {product.heartNum} · 💬 채팅 {product.chatNum}
             </p>
             <div className="product-page-seller-info">
-              <p>작성자 {product.writerName}</p>
+              <Link
+                to={`/author/${product.writerIdx}`}
+                className="seller-name-link"
+              >
+                작성자 {product.writerName}
+              </Link>
             </div>
           </div>
 
@@ -354,12 +359,15 @@ const ProductPage = () => {
             >
               {isHearted ? "찜 해제🤍" : "찜🩷"}
             </button>
-            <button
-              className="product-page-chat-button"
-              onClick={handleChatClick}
-            >
-              채팅
-            </button>
+            {/* 채팅 버튼 */}
+            {userIdx !== product.writerIdx && (
+              <button
+                className="product-page-chat-button"
+                onClick={handleChatClick}
+              >
+                채팅
+              </button>
+            )}
             {/* 관리자와 게시글 작성자 신고 불가 */}
             {!isAdmin && userIdx !== product.writerIdx && (
               <button

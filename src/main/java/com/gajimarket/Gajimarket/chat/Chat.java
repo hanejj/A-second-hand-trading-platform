@@ -9,6 +9,8 @@ public class Chat {
     private String messageContent; // 채팅 메시지 내용
     private LocalDateTime sentAt;  // 메시지 전송 시간
     private int relatedProductId;  // 관련 상품 ID
+    private String senderNickname; // 발신자 닉네임
+    private String receiverNickname; // 수신자 닉네임
 
     // Getters and Setters
     public int getChatId() {
@@ -59,6 +61,22 @@ public class Chat {
         this.relatedProductId = relatedProductId;
     }
 
+    public String getSenderNickname() {
+        return senderNickname;
+    }
+
+    public void setSenderNickname(String senderNickname) {
+        this.senderNickname = senderNickname;
+    }
+
+    public String getReceiverNickname() {
+        return receiverNickname;
+    }
+
+    public void setReceiverNickname(String receiverNickname) {
+        this.receiverNickname = receiverNickname;
+    }
+
     @Override
     public String toString() {
         return "Chat{" +
@@ -68,6 +86,8 @@ public class Chat {
                 ", messageContent='" + messageContent + '\'' +
                 ", sentAt=" + sentAt +
                 ", relatedProductId=" + relatedProductId +
+                ", senderNickname='" + senderNickname + '\'' +
+                ", receiverNickname='" + receiverNickname + '\'' +
                 '}';
     }
 }

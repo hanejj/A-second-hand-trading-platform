@@ -280,11 +280,21 @@ public class ProductController {
 
     }
 
-    // 검색 API 추가
+    // 검색 API
     @GetMapping("/search")
-    public ResponseEntity<List<Product>> searchProducts(@RequestParam String title) {
-        List<Product> products = productService.searchProductsByTitle(title);
-        return ResponseEntity.ok(products);
+    public ResponseEntity<Map<String, Object>> searchProducts(@RequestParam String title) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Product> products = productService.searchProductsByTitle(title);
+            response.put("code", 1000); // 성공 코드
+            response.put("message", "상품 검색 성공");
+            response.put("data", products);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("code", 0); // 실패 코드
+            response.put("message", "상품 검색 중 오류 발생: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @GetMapping("/{productIdx}/writer")
@@ -326,6 +336,25 @@ public class ProductController {
         } catch (Exception e) {
             apiResponse = new ApiResponse("0", e.getMessage());
             return ResponseEntity.ok().body(apiResponse);
+        }
+    }
+
+    //구매 내역 조회 api
+    @GetMapping("/purchases")
+    public ResponseEntity<?> getPurchaseHistory(@RequestParam("user_idx") int userIdx) {
+        try {
+            List<Product> purchasedProducts = productService.getPurchasedProductsByUserIdx(userIdx);
+            return ResponseEntity.ok(Map.of(
+                    "code", 1000,
+                    "message", "구매 내역 조회 성공",
+                    "purchases", purchasedProducts
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "code", 0,
+                    "message", "구매 내역 조회 중 오류 발생",
+                    "error", e.getMessage()
+            ));
         }
     }
 }

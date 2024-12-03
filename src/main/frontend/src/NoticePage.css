@@ -1,81 +1,112 @@
 ﻿.notice-page {
     padding: 20px;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #6a0dad; /* ����� ��� */
-    padding: 10px;
-    color: white;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.nav button {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-h2 {
-    margin-top: 20px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .notice-page-title {
+    color: #cd40cd;
     text-align: center;
-}
-
-th {
-    background-color: #f2f2f2;
-}
-
-.search-section {
+    margin-bottom: 20px;
+  }
+  
+  /* 뒤로 가기 버튼 */
+  .go-back-button {
+    background-color: transparent;
+    border: none;
+    color: #C87BD6;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  
+  .go-back-button:hover {
+    color: #cd40cd;
+  }
+  
+  /* 글쓰기 버튼 컨테이너 */
+  .notice-page-button-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-    .search-section input {
-        padding: 8px;
-        width: 200px;
-        border: 1px solid #ddd;
-    }
-
-    .search-section button {
-        padding: 8px;
-        margin-left: 10px;
-        background-color: #6a0dad; /* ����� */
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
-
-.write-button {
-    padding: 8px;
-    margin-left: 10px;
-    background-color: #6a0dad; /* ����� */
+    justify-content: flex-end;
+    margin: 20px 0; /* 버튼과 테이블 간격 */
+  }
+  
+  .notice-page-button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #d5a0e2;
     color: white;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .notice-page-button:hover {
+    background-color: #af69e1;
+  }
+  
+  /* 테이블 스타일 */
+  .notice-page-table {
+    width: 99%;
+    border-collapse: collapse;
+    margin: 0 auto; /* 테이블을 페이지 중앙에 배치 */
+  }
+  
+  .notice-page-table th,
+  .notice-page-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .notice-page-table th {
+    background-color: #d5a0e2;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .notice-page-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .notice-page-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* 링크 스타일 */
+  .notice-page-link {
     text-decoration: none;
-    border-radius: 5px;
-}
-
-.write-button-container {
-    margin-bottom: 20px;
-    text-align: right; /* 오른쪽 정렬 */
-}
+    color: black;
+  }
+  
+  .notice-page-link:hover {
+    color: #a472c3;
+  }
+  
+  /* 수정, 삭제 버튼 */
+  .edit-button,
+  .delete-button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-right: 5px;
+  }
+  
+  .edit-button {
+    background-color: #6a5acd;
+    color: white;
+  }
+  
+  .edit-button:hover {
+    background-color: #5a4cbc;
+  }
+  
+  .delete-button {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .delete-button:hover {
+    background-color: #b02a37;
+  }
+  

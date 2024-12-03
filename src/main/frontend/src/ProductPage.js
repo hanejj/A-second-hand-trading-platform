@@ -135,11 +135,11 @@ const ProductPage = () => {
         }),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            "Content-Type": "application/x-www-form-urlencoded",
           },
-        }
+        },
       );
-  
+
       if (response.data.code === "1000") {
         alert("신고가 성공적으로 접수되었습니다.");
         setShowReportModal(false);
@@ -150,8 +150,7 @@ const ProductPage = () => {
       alert("신고 중 오류가 발생했습니다.");
     }
   };
-  
-  
+
   // 리뷰 작성 버튼 클릭 시
   const handleWriteReviewClick = () => setShowReviewModal(true);
 
@@ -439,38 +438,38 @@ const ProductPage = () => {
         )}
       </div>
       {showReportModal && (
-  <div className="product-page-modal">
-    <div className="product-page-modal-content">
-      <button
-        className="product-page-close-button"
-        onClick={() => setShowReportModal(false)}
-      >
-        &times;
-      </button>
-      <h3>상품 신고</h3>
-      {/* 신고 제목 레이블과 입력 필드 */}
-      <div>
-        <label htmlFor="reportTitle" className="report-title-label">
-          신고 제목
-        </label>
-        <input
-          id="reportTitle"
-          type="text"
-          value={reportTitle}
-          onChange={(e) => setReportTitle(e.target.value)}
-          placeholder="신고 제목을 입력하세요."
-          className="report-title-input"
-        />
-      </div>
-      <textarea
-        value={reportContent}
-        onChange={(e) => setReportContent(e.target.value)}
-        placeholder="신고 내용을 입력하세요."
-      />
-      <button onClick={handleReportSubmit}>신고 제출</button>
-    </div>
-  </div>
-)}
+        <div className="product-page-modal">
+          <div className="product-page-modal-content">
+            <button
+              className="product-page-close-button"
+              onClick={() => setShowReportModal(false)}
+            >
+              &times;
+            </button>
+            <h3>상품 신고</h3>
+            {/* 신고 제목 레이블과 입력 필드 */}
+            <div>
+              <label htmlFor="reportTitle" className="report-title-label">
+                신고 제목
+              </label>
+              <input
+                id="reportTitle"
+                type="text"
+                value={reportTitle}
+                onChange={(e) => setReportTitle(e.target.value)}
+                placeholder="신고 제목을 입력하세요."
+                className="report-title-input"
+              />
+            </div>
+            <textarea
+              value={reportContent}
+              onChange={(e) => setReportContent(e.target.value)}
+              placeholder="신고 내용을 입력하세요."
+            />
+            <button onClick={handleReportSubmit}>신고 제출</button>
+          </div>
+        </div>
+      )}
 
       {showReviewModal && (
         <div className="product-page-modal">

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./UserManagementPage.css";
+import { useNavigate } from "react-router-dom";
 
 const UserManagementPage = () => {
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
 
   // 매너 지수에 따라 하트 색상 계산
   const calculateHeartColor = (mannerPoint) => {
@@ -102,8 +104,17 @@ const UserManagementPage = () => {
       });
   };   
 
+  // 뒤로 가기 버튼 핸들러
+  const handleGoBack = () => {
+    navigate(-1); // 이전 페이지로 이동
+  };
+
   return (
     <div className="user-management-page">
+      {/* 뒤로 가기 버튼 */}
+      <button className="go-back-button" onClick={handleGoBack}>
+        &lt; 뒤로 가기
+      </button>
       <h1>회원 관리</h1>
       <table className="user-management-page-user-table">
         <thead>

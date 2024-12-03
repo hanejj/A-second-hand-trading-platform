@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import "./InquiryDetailPage.css"; // 스타일 파일
 
 const InquiryDetailPage = () => {
   const { question_idx } = useParams();
   const [question, setQuestion] = useState(null);
   const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+  const navigate = useNavigate();
   // 문의글 상세 조회 API 호출
   useEffect(() => {
     const fetchQuestionDetail = async () => {
@@ -34,8 +35,18 @@ const InquiryDetailPage = () => {
     question.questionCreatedAt,
   ).toLocaleDateString();
 
+
+  // 뒤로 가기 버튼 핸들러
+  const handleGoBack = () => {
+    navigate(-1); // 이전 페이지로 이동
+  };
+
   return (
     <div className="inquiry-detail-page">
+      {/* 뒤로 가기 버튼 */}
+      <button className="go-back-button" onClick={handleGoBack}>
+        &lt; 뒤로 가기
+      </button>
       <div className="inquiry-detail-page-header">
         <h1 className="inquiry-detail-page-inquiry-title">
           {question.questionTitle}

@@ -83,3 +83,15 @@
   .inquiries-page-button:hover {
     background-color: #af69e1;
   }
+
+  .go-back-button {
+    background-color: transparent;
+    border: none;
+    color: #C87BD6;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  
+  .go-back-button:hover {
+    color:#cd40cd;
+  }

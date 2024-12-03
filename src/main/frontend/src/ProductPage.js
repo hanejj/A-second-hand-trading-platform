@@ -28,8 +28,8 @@ const ProductPage = () => {
   //찜 버튼 클릭 시
   const handleHeartClick = async () => {
     if (!userIdx) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
+      alert("로그인이 필요합니다.");
+      navigate("/login");
       return;
     }
     try {
@@ -106,8 +106,8 @@ const ProductPage = () => {
   //채팅 버튼 클릭 시
   const handleChatClick = () => {
     if (!userIdx) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
+      alert("로그인이 필요합니다.");
+      navigate("/login");
       return;
     }
     setIsChatting(true);
@@ -168,14 +168,14 @@ const ProductPage = () => {
     }
 
     const formData = new FormData();
-    formData.append('review', reviewContent);
-    formData.append('partnerIndex', user.userIdx);
-  
+    formData.append("review", reviewContent);
+    formData.append("partnerIndex", user.userIdx);
+
     // `sellerIndex`는 현재 로그인한 사용자(user.userIdx)
-    formData.append('sellerIndex', user.userIdx);
+    formData.append("sellerIndex", user.userIdx);
     // `buyerIndex`는 product.partner_idx와 동일
-    formData.append('buyerIndex', product.partnerIdx);
-    formData.append('reviewScore', reviewScore);
+    formData.append("buyerIndex", product.partnerIdx);
+    formData.append("reviewScore", reviewScore);
 
     if (reviewImage) {
       formData.append("image", reviewImage);
@@ -291,7 +291,6 @@ const ProductPage = () => {
             setUser(response.data.user); // 사용자 정보 저장
             setUserIdx(response.data.user.userIdx);
             console.log("UserIdx:", response.data.user.userIdx);
-
           }
         })
         .catch((error) => {
@@ -468,7 +467,13 @@ const ProductPage = () => {
               onChange={(e) => setReportContent(e.target.value)}
               placeholder="신고 내용을 입력하세요."
             />
-            <button onClick={handleReportSubmit}>신고 제출</button>
+            {/* 제출 버튼 */}
+            <button
+              onClick={handleReportSubmit}
+              disabled={!reportTitle || !reportContent} // 제목과 내용이 모두 채워져야 활성화
+            >
+              신고 제출
+            </button>
           </div>
         </div>
       )}

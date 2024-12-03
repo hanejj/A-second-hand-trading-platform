@@ -67,6 +67,11 @@ const ProductUploadPage = () => {
     }
   };
 
+  // 뒤로 가기 버튼 핸들러
+  const handleGoBack = () => {
+    navigate(-1); // 이전 페이지로 이동
+  };
+
   useEffect(() => {
     // 필수 입력 필드 검증
     const isValid =
@@ -80,6 +85,10 @@ const ProductUploadPage = () => {
 
   return (
     <div className="product-upload-page">
+      {/* 뒤로 가기 버튼 */}
+      <button className="go-back-button" onClick={handleGoBack}>
+        &lt; 뒤로 가기
+      </button>
       <h2 className="ProductUploadPage-title">상품 업로드</h2>
       <form onSubmit={handleSubmit} className="ProductUploadPage-upload-form">
         <div className="ProductUploadPage-form-group">

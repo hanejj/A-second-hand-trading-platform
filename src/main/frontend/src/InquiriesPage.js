@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./InquiriesPage.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const InquiriesPage = () => {
   const [inquiries, setInquiries] = useState([]);
   const [userIdx, setUserIdx] = useState(null);
   const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+  const navigate = useNavigate();
 
   const fetchInquiries = async () => {
     try {
@@ -54,8 +55,17 @@ const InquiriesPage = () => {
     return publicFlag === true || publicFlag === "y" ? "공개" : "비공개";
   };
 
+  // 뒤로 가기 버튼 핸들러
+  const handleGoBack = () => {
+    navigate(-1); // 이전 페이지로 이동
+  };
+
   return (
-    <div className="inquiries-page-container">
+    <div className="inquiries-page">
+      {/* 뒤로 가기 버튼 */}
+      <button className="go-back-button" onClick={handleGoBack}>
+        &lt; 뒤로 가기
+      </button>
       <h1 className="inquiries-page-title">문의사항 게시판</h1>
       <div className="inquiries-page-button-container">
         {userIdx != null && !isAdmin && (

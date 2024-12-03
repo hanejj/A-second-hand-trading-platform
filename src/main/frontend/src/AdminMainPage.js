@@ -12,8 +12,17 @@ const AdminMainPage = () => {
     else if (section==="관리자 관리"){
       navigate("/management/admin");
     }
+    else if(section==="상품 관리"){
+      navigate("/category/all");
+    }
+    else if (section==="공지사항"){
+      navigate("/notices");
+    }
     else if(section==="신고 내역"){
       navigate("/admin/report");
+    }
+    else if (section==="문의사항"){
+      navigate("/inquiries");
     }
     else {
       console.log(`${section} 버튼 클릭됨`);

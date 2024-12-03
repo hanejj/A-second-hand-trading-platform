@@ -13,7 +13,6 @@
   display: flex;
   justify-content: flex-end;
   margin-bottom: 20px;
-  background-color:white;
 }
 
 .admin-management-page-add-admin-button {
@@ -173,3 +172,14 @@
   background-color: #999;
 }
 
+.go-back-button {
+  background-color: transparent;
+  border: none;
+  color: #C87BD6;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.go-back-button:hover {
+  color:#cd40cd;
+}

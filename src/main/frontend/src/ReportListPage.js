@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./ReportListPage.css";
-
+import { useNavigate } from "react-router-dom";
 const ReportListPage = () => {
   const [reports, setReports] = useState([]);
+  const navigate = useNavigate();
+
 
   // 서버에서 신고 목록 불러오기
   const fetchReportList = () => {
@@ -48,8 +50,17 @@ const ReportListPage = () => {
     return "transparent"; // 처리 전은 기본 배경
   };
 
+  // 뒤로 가기 버튼 핸들러
+  const handleGoBack = () => {
+    navigate(-1); // 이전 페이지로 이동
+  };
+
   return (
     <div className="report-management-page">
+      {/* 뒤로 가기 버튼 */}
+      <button className="go-back-button" onClick={handleGoBack}>
+        &lt; 뒤로 가기
+      </button>
       <h1>신고 내역 관리</h1>
       <table className="report-management-page-report-table">
         <thead>

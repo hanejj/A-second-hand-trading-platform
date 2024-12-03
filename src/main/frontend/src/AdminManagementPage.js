@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./AdminManagementPage.css";
 
 const AdminManagementPage = () => {
   const [admins, setAdmins] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [newAdmin, setNewAdmin] = useState({ id: "", passwd: "", confirmPasswd: "", name: "" }); // 새 관리자 정보
-
+  const navigate = useNavigate(); // 페이지 이동을 위한 hook
+  
   // 관리자 목록 가져오기
   const fetchAdminList = () => {
     // 로컬 스토리지에서 isAdmin 값을 가져오기
@@ -88,8 +90,17 @@ const AdminManagementPage = () => {
       });
   };
 
+  // 뒤로 가기 버튼 핸들러
+  const handleGoBack = () => {
+    navigate(-1); // 이전 페이지로 이동
+  };
+
   return (
     <div className="admin-management-page">
+      {/* 뒤로 가기 버튼 */}
+      <button className="go-back-button" onClick={handleGoBack}>
+        &lt; 뒤로 가기
+      </button>
       <h1>관리자 목록</h1>
       <div className="admin-management-page-add-button-section">
         <button className="admin-management-page-add-admin-button" onClick={() => setIsModalOpen(true)}>

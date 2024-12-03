@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import "./InquiryDetailPage.css"; // 스타일 파일
 
 const AnswerDetailPage = () => {
   const { answer_idx } = useParams(); // URL에서 answer_idx를 받아옴
   const [answer, setAnswer] = useState(null);
+  const navigate = useNavigate();
 
   // 답글 상세 조회 API 호출
   useEffect(() => {
@@ -32,8 +33,17 @@ const AnswerDetailPage = () => {
   // 작성일 포맷 변환
   const formattedDate = new Date(answer.answerCreatedAt).toLocaleDateString();
 
+  // 뒤로 가기 버튼 핸들러
+  const handleGoBack = () => {
+    navigate(-1); // 이전 페이지로 이동
+  };
+
   return (
     <div className="inquiry-detail-page">
+      {/* 뒤로 가기 버튼 */}
+      <button className="go-back-button" onClick={handleGoBack}>
+        &lt; 뒤로 가기
+      </button>
       <div className="inquiry-detail-page-header">
         <h1 className="inquiry-detail-page-answer-title">
           {answer.answerTitle}

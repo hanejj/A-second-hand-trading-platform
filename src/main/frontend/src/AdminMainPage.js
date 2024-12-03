@@ -1,30 +1,84 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./AdminMainPage.css"; // 버튼 스타일이 정의된 CSS 파일
+import { Chart } from "react-google-charts";
+import axios from "axios";
+import "./AdminMainPage.css";
 
 const AdminMainPage = () => {
   const navigate = useNavigate();
+  // 데이터 시각화
+  const [categoryData, setCategoryData] = useState([["Category", "Count"]]); // 카테고리별 상품 수
+  const [chargePointData, setChargePointData] = useState([["날짜", "충전량"]]); // 최신 일주일 포인트 충전량
+  const [loading, setLoading] = useState(true);
+  // 카테고리 이름 매핑
+  const categoryTranslation = {
+    Electronics: "전자제품",
+    Fashion: "패션",
+    Books: "도서",
+    Furniture: "가구",
+    Other: "기타",
+  };
+
+  useEffect(() => {
+    // 카테고리별 상품 수
+    axios
+      .get("http://localhost:8080/data/product/category-count")
+      .then((response) => {
+        if (response.data.code === "1000") {
+          const data = response.data.data;
+
+          // Google Chart에 사용할 데이터 포맷으로 변환
+          const chartDataArray = [["카테고리", "상품 수"]];
+          data.forEach((item) => {
+            const translatedCategory =
+              categoryTranslation[item.category] || item.category;
+            chartDataArray.push([translatedCategory, item.productCount]);
+          });
+          setCategoryData(chartDataArray);
+        } else {
+          console.error("데이터 로드 실패:", response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("API 호출 중 오류 발생:", error);
+      });
+
+    // 최신 일주일 포인트 충전량
+    axios
+      .get("http://localhost:8080/data/point/charge-last-week")
+      .then((response) => {
+        if (response.data.code === "1000") {
+        const data = response.data.data;
+        const chartDataArray = [["날짜", "충전량"]]; // 차트의 헤더 설정
+        data.forEach((item) => {
+          chartDataArray.push([item.date, item.totalCharge]); // 날짜와 충전량 추가
+        });
+        setChargePointData(chartDataArray);
+        setLoading(false);
+      } else {
+        console.error("데이터 로드 실패:", response.data);
+      }
+      })
+      .catch((error) => {
+        console.error("API 호출 중 오류 발생:", error);
+        setLoading(false);
+      });
+  }, []);
 
   const handleButtonClick = (section) => {
     if (section === "회원 관리") {
       navigate("/management/user"); // 회원관리 페이지로 이동
-    } 
-    else if (section==="관리자 관리"){
+    } else if (section === "관리자 관리") {
       navigate("/management/admin");
-    }
-    else if(section==="상품 관리"){
+    } else if (section === "상품 관리") {
       navigate("/category/all");
-    }
-    else if (section==="공지사항"){
+    } else if (section === "공지사항") {
       navigate("/notices");
-    }
-    else if(section==="신고 내역"){
+    } else if (section === "신고 내역") {
       navigate("/admin/report");
-    }
-    else if (section==="문의사항"){
+    } else if (section === "문의사항") {
       navigate("/inquiries");
-    }
-    else {
+    } else {
       console.log(`${section} 버튼 클릭됨`);
       // 다른 섹션별로 로직 추가 가능
     }
@@ -33,6 +87,68 @@ const AdminMainPage = () => {
   return (
     <div className="admin-main-page">
       <h1>관리자페이지</h1>
+
+      {/* Google Chart 데이터 시각화 */}
+{/* Google Chart 데이터 시각화 */}
+<div className="chart-grid">
+      {/* 카테고리별 상품 수 */}
+      <div className="chart-container">
+        {categoryData.length > 0 ? (
+          <Chart
+            chartType="PieChart"
+            data={categoryData}
+            options={{
+              title: "카테고리별 상품 수",
+              titleTextStyle: {
+                fontSize: 20, // 타이틀 폰트 크기 설정
+                bold: true,
+              },
+              pieHole: 0.4,
+              is3D: false,
+              colors: ["#8E44AD", "#D2B4DE", "#F7DC6F", "#76D7C4", "#E59866"],
+            }}
+            width={"100%"}
+            height={"400px"}
+          />
+        ) : (
+          <p>차트 데이터를 로드 중입니다...</p>
+        )}
+      </div>
+      
+      {/* 포인트 충전량 합 현황 */}
+      <div className="chart-container">
+        {!loading ? (
+          <Chart
+            chartType="LineChart"
+            data={chargePointData} // 포인트 충전량 차트 데이터
+            options={{
+              title: "최근 1주일 동안의 포인트 충전량 합",
+              titleTextStyle: {
+                fontSize: 20, // 타이틀 폰트 크기 설정
+                bold: true,
+              },
+              hAxis: {
+                title: "날짜",
+                format: "yyyy-MM-dd",
+              },
+              vAxis: {
+                title: "충전량",
+                minValue: 0,
+              },
+              legend: { position: "none" },
+              colors: ["#a472c3"], // 포인트 충전량 라인 색
+            }}
+            width={"100%"}
+            height={"400px"}
+          />
+        ) : (
+          <p>차트 데이터를 로드 중입니다...</p>
+        )}
+      </div>
+
+      
+    </div>
+
       <div className="admin-main-page-button-grid">
         <button
           className="admin-main-page-button"

@@ -65,7 +65,7 @@
     opacity: 0.8;
   }
 
-  .product-page-review-modal {
+  .product-page-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -248,4 +248,36 @@
   font-size: 1.5rem;
   margin-bottom: 20px;
   color: #6a2f91;
+}
+
+
+/* 상품 상태 텍스트 */
+.product-status {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #999; /* 회색으로 표시 */
+  font-weight: bold;
+}
+
+/* 비활성화된 상품 정보 박스 */
+.inactive-product-info-box {
+  opacity: 0.5; /* 흐리게 표시 */
+}
+
+/* 신고 제목 레이블 스타일 */
+.report-title-label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* 신고 제목 입력 필드 스타일 */
+.report-title-input {
+  width: 80%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 12px;
 }

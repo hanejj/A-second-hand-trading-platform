@@ -11,6 +11,7 @@ const ProductPage = () => {
   const [reviewData, setReviewData] = useState(null);
   const [isHearted, setIsHearted] = useState(false); // 초기 상태
   const [isChatting, setIsChatting] = useState(false);
+  //리뷰 모달
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewContent, setReviewContent] = useState("");
   const [reviewImage, setReviewImage] = useState(null);
@@ -19,6 +20,10 @@ const ProductPage = () => {
   const [recommendedProducts, setRecommendedProducts] = useState([]); // 추천 상품
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(null);
+  //신고 모달
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportTitle, setReportTitle] = useState("");
+  const [reportContent, setReportContent] = useState("");
 
   //찜 버튼 클릭 시
   const handleHeartClick = async () => {
@@ -61,7 +66,9 @@ const ProductPage = () => {
       if (response.data.code === "1000") {
         // 삭제 완료 메시지 표시 및 페이지 이동
         alert("상품 삭제가 완료되었습니다.");
-        navigate("/category/all"); // 메인 페이지로 리디렉션
+        if (isAdmin)
+          window.location.reload(); // 관리자가 삭제한 경우에는 상품 페이지 새로고침
+        else navigate("/category/all"); // 카테고리 페이지로 리디렉션
       } else {
         alert("상품 삭제에 실패했습니다.");
       }
@@ -73,7 +80,9 @@ const ProductPage = () => {
 
   //상품 거래 완료 버튼 클릭 시
   const handleCompleteClick = async () => {
-    const confirmation = window.confirm("정말로 이 상품을 거래 완료 처리하시겠습니까? 처리 완료 시, 이 상품은 더 이상 거래되지 않습니다.");
+    const confirmation = window.confirm(
+      "정말로 이 상품을 거래 완료 처리하시겠습니까? 처리 완료 시, 이 상품은 더 이상 거래되지 않습니다.",
+    );
     if (!confirmation) return; // 사용자가 취소하면 삭제하지 않음
 
     try {
@@ -108,11 +117,39 @@ const ProductPage = () => {
   //신고 버튼 클릭 시
   const handleReportClick = () => {
     if (!userIdx) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
+      alert("로그인이 필요합니다.");
+      navigate("/login"); // 로그인 페이지로 리디렉션
       return;
     }
-    // 상품 신고 기능 연결 필요
+    setShowReportModal(true); // 신고 모달을 열기
+  };
+
+  //신고 모달에서 제출할 때
+  const handleReportSubmit = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/report/product/${product.productIdx}`,
+        new URLSearchParams({
+          title: reportTitle,
+          content: reportContent,
+          user_idx: userIdx,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        },
+      );
+
+      if (response.data.code === "1000") {
+        alert("신고가 성공적으로 접수되었습니다.");
+        setShowReportModal(false);
+      } else {
+        alert("신고에 실패했습니다: " + response.data.message);
+      }
+    } catch (error) {
+      alert("신고 중 오류가 발생했습니다.");
+    }
   };
 
   // 리뷰 작성 버튼 클릭 시
@@ -282,7 +319,13 @@ const ProductPage = () => {
           <p>
             카테고리{" >"} {getCategoryName(product.category)}
           </p>
-          <div className="product-page-product-info-box">
+          <div
+            className={`product-page-product-info-box ${
+              product.status === "removed" || product.status === "completed"
+                ? "inactive-product-info-box"
+                : ""
+            }`}
+          >
             <h1 className="product-page-h1">{product.title}</h1>
             <p>{product.price.toLocaleString()}원</p>
             <p>
@@ -318,12 +361,15 @@ const ProductPage = () => {
             >
               채팅
             </button>
-            <button
-              className="product-page-report-button"
-              onClick={handleReportClick}
-            >
-              신고
-            </button>
+            {/* 관리자와 게시글 작성자 신고 불가 */}
+            {!isAdmin && userIdx !== product.writerIdx && (
+              <button
+                className="product-page-report-button"
+                onClick={handleReportClick}
+              >
+                신고
+              </button>
+            )}
             {/* 현재 로그인한 유저의 게시글이거나 관리자인 경우 삭제 가능, product.status가 "removed"가 아닐 때 */}
             {(user && userIdx === product.writerIdx) || isAdmin === true
               ? product.status !== "removed" && (
@@ -335,9 +381,10 @@ const ProductPage = () => {
                   </button>
                 )
               : null}
-              {/* 현재 로그인한 유저의 게시글이거나 관리자인 경우 삭제 가능, product.status가 "removed"나 "completed"가 아닐 때 */}
+            {/* 현재 로그인한 유저의 게시글이거나 관리자인 경우 삭제 가능, product.status가 "removed"나 "completed"가 아닐 때 */}
             {(user && userIdx === product.writerIdx) || isAdmin === true
-              ? product.status !== "completed" && product.status !== "removed" && (
+              ? product.status !== "completed" &&
+                product.status !== "removed" && (
                   <button
                     className="product-page-report-button"
                     onClick={handleCompleteClick}
@@ -392,8 +439,41 @@ const ProductPage = () => {
           <p>추천 상품이 없습니다.</p>
         )}
       </div>
+      {showReportModal && (
+        <div className="product-page-modal">
+          <div className="product-page-modal-content">
+            <button
+              className="product-page-close-button"
+              onClick={() => setShowReportModal(false)}
+            >
+              &times;
+            </button>
+            <h3>상품 신고</h3>
+            {/* 신고 제목 레이블과 입력 필드 */}
+            <div>
+              <label htmlFor="reportTitle" className="report-title-label">
+                신고 제목
+              </label>
+              <input
+                id="reportTitle"
+                type="text"
+                value={reportTitle}
+                onChange={(e) => setReportTitle(e.target.value)}
+                placeholder="신고 제목을 입력하세요."
+                className="report-title-input"
+              />
+            </div>
+            <textarea
+              value={reportContent}
+              onChange={(e) => setReportContent(e.target.value)}
+              placeholder="신고 내용을 입력하세요."
+            />
+            <button onClick={handleReportSubmit}>신고 제출</button>
+          </div>
+        </div>
+      )}
       {showReviewModal && (
-        <div className="product-page-review-modal">
+        <div className="product-page-modal">
           <div className="product-page-modal-content">
             <button
               className="product-page-close-button"

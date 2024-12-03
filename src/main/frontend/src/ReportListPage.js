@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import "./ReportListPage.css";
 
 const ReportListPage = () => {
@@ -66,7 +67,11 @@ const ReportListPage = () => {
             return (
               <tr key={report.reportIdx} style={{ backgroundColor: rowBackgroundColor }}>
                 <td>{index + 1}</td>
-                <td>{report.title}</td>
+                <td>
+              <Link to={`/report/${report.reportIdx}`} style={{ color: "inherit", textDecoration: "none" }}>
+                {report.title}
+              </Link>
+            </td>
                 <td style={{ color }}>{text}</td>
                 <td>{new Date(report.createdAt).toLocaleDateString()}</td>
               </tr>

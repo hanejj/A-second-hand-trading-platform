@@ -302,28 +302,48 @@ public class ProductService {
     }
 
     public List<Product> searchProductsByTitle(String title) {
-        String sql = "SELECT * FROM Product WHERE title LIKE ?";
+        // SQL 쿼리: Product 테이블과 Keyword 테이블 조인
+        String sql = """
+        SELECT DISTINCT p.* 
+        FROM Product p
+        LEFT JOIN Keyword k ON p.product_idx = k.product_idx
+        WHERE p.title LIKE ? OR k.keyword LIKE ?
+    """;
+
         List<Product> productList = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-            stmt.setString(1, "%" + title + "%");
+            String searchTerm = "%" + title + "%";
+            stmt.setString(1, searchTerm); // Product.title 검색
+            stmt.setString(2, searchTerm); // Keyword.keyword 검색
+
             ResultSet resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
                 Product product = new Product();
                 product.setProductIdx(resultSet.getInt("product_idx"));
+                product.setCategory(resultSet.getString("category"));
                 product.setTitle(resultSet.getString("title"));
-                product.setContent(resultSet.getString("content"));
                 product.setPrice(resultSet.getInt("price"));
-                product.setLocation(resultSet.getString("location"));
                 product.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+                product.setLocation(resultSet.getString("location"));
+                product.setChatNum(resultSet.getInt("chat_num"));
+                product.setHeartNum(resultSet.getInt("heart_num"));
+                product.setSelling(resultSet.getString("selling"));
+                product.setImage(resultSet.getString("image"));
+                product.setWriterIdx(resultSet.getInt("writer_idx"));
+                product.setWriterName(resultSet.getString("writer_name"));
+                product.setStatus(resultSet.getString("status"));
 
                 productList.add(product);
             }
 
         } catch (SQLException e) {
+            // 상세한 예외 로그 추가
+            System.err.println("SQL Exception: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Error during product search", e);
         }
 
@@ -367,5 +387,42 @@ public class ProductService {
 
         // 업데이트된 행의 수가 1 이상이면 성공, 아니면 실패
         return rowsUpdated > 0;
+    }
+
+    //구매 내역 조회
+    public List<Product> getPurchasedProductsByUserIdx(int partnerIdx) {
+        String sql = "SELECT * FROM Product WHERE partner_idx = ?";
+        List<Product> productList = new ArrayList<>();
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setInt(1, partnerIdx);
+            ResultSet resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                Product product = new Product();
+                product.setProductIdx(resultSet.getInt("product_idx"));
+                product.setCategory(resultSet.getString("category"));
+                product.setTitle(resultSet.getString("title"));
+                product.setPrice(resultSet.getInt("price"));
+                product.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+                product.setLocation(resultSet.getString("location"));
+                product.setChatNum(resultSet.getInt("chat_num"));
+                product.setHeartNum(resultSet.getInt("heart_num"));
+                product.setSelling(resultSet.getString("selling"));
+                product.setImage(resultSet.getString("image"));
+                product.setWriterIdx(resultSet.getInt("writer_idx"));
+                product.setWriterName(resultSet.getString("writer_name"));
+                product.setStatus(resultSet.getString("status"));
+
+                productList.add(product);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("구매 내역 조회 중 오류 발생", e);
+        }
+
+        return productList;
     }
 }

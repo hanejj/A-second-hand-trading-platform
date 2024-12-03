@@ -471,5 +471,78 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
         }
     }
+
+    // 작성자 정보 조회 API
+    @GetMapping("/author/{user_idx}")
+    public ResponseEntity<Map<String, Object>> getAuthorInfo(@PathVariable("user_idx") int userIdx) {
+        Map<String, Object> responseBody = new HashMap<>();
+
+        try (Connection connection = dataSource.getConnection()) {
+            String query = "SELECT user_idx, id, name, nickname, message, manner_point, image " +
+                    "FROM user WHERE user_idx = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, userIdx);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                Map<String, Object> authorInfo = new HashMap<>();
+                authorInfo.put("user_idx", resultSet.getInt("user_idx"));
+                authorInfo.put("id", resultSet.getString("id"));
+                authorInfo.put("name", resultSet.getString("name"));
+                authorInfo.put("nickname", resultSet.getString("nickname"));
+                authorInfo.put("message", resultSet.getString("message"));
+                authorInfo.put("manner_point", resultSet.getInt("manner_point"));
+                authorInfo.put("image", resultSet.getString("image"));
+
+                responseBody.put("code", 1000);
+                responseBody.put("author", authorInfo);
+                return ResponseEntity.ok(responseBody);
+            } else {
+                responseBody.put("code", 0);
+                responseBody.put("message", "작성자를 찾을 수 없습니다.");
+                return ResponseEntity.status(404).body(responseBody);
+            }
+        } catch (Exception e) {
+            responseBody.put("code", 0);
+            responseBody.put("message", "작성자 정보를 가져오는 중 오류 발생");
+            return ResponseEntity.status(500).body(responseBody);
+        }
+    }
+
+    // 작성자의 판매 상품 조회 API
+    @GetMapping("/author/{user_idx}/selling")
+    public ResponseEntity<Map<String, Object>> getAuthorSellingProducts(@PathVariable("user_idx") int userIdx) {
+        Map<String, Object> responseBody = new HashMap<>();
+
+        try (Connection connection = dataSource.getConnection()) {
+            String query = "SELECT product_idx, title, price, location, heart_num, chat_num, image, status " +
+                    "FROM product WHERE writer_idx = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, userIdx);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            List<Map<String, Object>> products = new ArrayList<>();
+            while (resultSet.next()) {
+                Map<String, Object> product = new HashMap<>();
+                product.put("product_idx", resultSet.getInt("product_idx"));
+                product.put("title", resultSet.getString("title"));
+                product.put("price", resultSet.getInt("price"));
+                product.put("location", resultSet.getString("location"));
+                product.put("heart_num", resultSet.getInt("heart_num"));
+                product.put("chat_num", resultSet.getInt("chat_num"));
+                product.put("image", resultSet.getString("image"));
+                product.put("status", resultSet.getString("status"));
+                products.add(product);
+            }
+
+            responseBody.put("code", 1000);
+            responseBody.put("products", products);
+            return ResponseEntity.ok(responseBody);
+        } catch (Exception e) {
+            responseBody.put("code", 0);
+            responseBody.put("message", "작성자의 판매 상품을 가져오는 중 오류 발생");
+            return ResponseEntity.status(500).body(responseBody);
+        }
+    }
 }
 

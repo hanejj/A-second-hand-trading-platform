@@ -8,14 +8,96 @@ const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [products, setProducts] = useState([]);
   const [wishlist, setWishlist] = useState([]);
-  const [chatList, setChatList] = useState([]); // 채팅 목록
   const [activeTab, setActiveTab] = useState('판매내역');
+  const [purchasedProducts, setPurchasedProducts] = useState([]); // 구매 내역
   const [isPointModalOpen, setIsPointModalOpen] = useState(false);
   const [pointAmount, setPointAmount] = useState(0);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [password, setPassword] = useState('');
+  const [inquiries, setInquiries] = useState([]);
   const navigate = useNavigate();
+  const [openChats, setOpenChats] = useState({}); // 채팅창 열림/닫힘 상태 관리
+  const [chatList, setChatList] = useState([]); // 전체 채팅 목록
+const [loadingChats, setLoadingChats] = useState(true); // 채팅 로딩 상태
+const [chatError, setChatError] = useState(null); // 채팅 로드 에러
+
+useEffect(() => {
+  if (userInfo) {
+    const fetchChatList = async () => {
+      setLoadingChats(true);
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:8080/chat/get/chatList', {
+          params: { userId: userInfo.userIdx },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.data?.chats) {
+          setChatList(response.data.chats);
+        } else {
+          setChatList([]); // 데이터가 없으면 빈 배열 설정
+        }
+      } catch (err) {
+        setChatError('채팅 데이터를 불러오는 중 오류가 발생했습니다.');
+        console.error(err);
+      } finally {
+        setLoadingChats(false);
+      }
+    };
+
+    fetchChatList();
+  }
+}, [userInfo]);
+
+
+const toggleChat = (productId) => {
+  setOpenChats((prevState) => ({
+    ...prevState,
+    [productId]: !prevState[productId], // 이전 상태를 반전
+  }));
+};
+
+  // 공개 여부를 반환하는 함수
+  const getPublicStatus = (publicFlag) => {
+    return publicFlag === true || publicFlag === "y" ? "공개" : "비공개";
+  };
+
+  // 매너 지수에 따라 하트 색상 계산
+  const calculateHeartColor = (mannerPoint) => {
+    const maxColor = { r: 139, g: 0, b: 139 }; // 보라색 (#800080)
+    const minColor = { r: 240, g: 240, b: 240 }; // 흰색 (#ffffff)
+
+    const ratio = mannerPoint / 100;
+    const r = Math.round(minColor.r + (maxColor.r - minColor.r) * ratio);
+    const g = Math.round(minColor.g + (maxColor.g - minColor.g) * ratio);
+    const b = Math.round(minColor.b + (maxColor.b - minColor.b) * ratio);
+
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
+  useEffect(() => {
+    if (userInfo) {
+      const fetchInquiries = async () => {
+        try {
+          const response = await axios.get("http://localhost:8080/ask", {
+            params: {
+              isAdmin: false, // MyPage에서 사용자로 요청
+              userIdx: userInfo.userIdx,
+            },
+          });
+          if (response.data.code === "1000") {
+            setInquiries(response.data.data || []);
+          } else {
+            console.error("문의 내역을 가져오는 데 실패했습니다.");
+          }
+        } catch (error) {
+          console.error("문의 내역 조회 중 오류 발생:", error);
+        }
+      };
+
+      fetchInquiries();
+    }
+  }, [userInfo]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -212,6 +294,33 @@ const MyPage = () => {
     });
   };
 
+  const getPurchaseHistory = async () => {
+    const token = localStorage.getItem('token');
+    const userIdx = userInfo.userIdx;
+  
+    try {
+      const response = await axios.get('http://localhost:8080/product/purchases', {
+        params: { user_idx: userIdx },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      if (response.data.code === 1000) {
+        setPurchasedProducts(response.data.purchases || []);
+      } else {
+        console.error('구매 내역 조회 실패:', response.data.message);
+      }
+    } catch (error) {
+      console.error('구매 내역 조회 중 오류 발생:', error);
+    }
+  };  
+
+  //구매내역 불러오기
+  useEffect(() => {
+    if (userInfo) {
+      getPurchaseHistory();
+    }
+  }, [userInfo]);  
+
   if (!userInfo) {
     return <div>로딩 중...</div>;
   }
@@ -242,16 +351,27 @@ const MyPage = () => {
             <button className="point-button" onClick={handleOpenWithdrawModal}>포인트 인출</button>
           </div>
           <div className="points-box">
-            <div className="points-value">{userInfo.mannerPoint}</div>
-            <div className="points-label">매너 지수</div>
+          <div className="points-value">
+            {userInfo.mannerPoint}
+            <span
+              style={{
+                color: calculateHeartColor(userInfo.mannerPoint),
+                marginLeft: "5px",
+              }}
+            >
+              ♥
+            </span>
           </div>
+          <div className="points-label">매너 지수</div>
+        </div>
+
         </div>
         <button className="edit-button" onClick={handleOpenAuthModal}>내 정보 수정</button>
         {/*<button className="logout-button" onClick={handleLogout}>로그아웃</button>*/}
       </div>
 
       <div className="tabs-section">
-        {['판매내역', '구매내역', '채팅', '찜 목록', '문의 내역', '신고 내역'].map((tab) => (
+        {['판매내역', '구매내역', '채팅', '찜 목록', '문의 내역'].map((tab) => (
           <div
             key={tab}
             className={`tab ${activeTab === tab ? 'active' : ''}`}
@@ -266,6 +386,7 @@ const MyPage = () => {
   <div className="product-list">
     {products.length > 0 ? (
       [...products]
+        .filter(product => product.status !== 'removed') // status가 removed인 상품 제외
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // 최신 순 정렬
         .map(product => (
           <Link 
@@ -296,6 +417,7 @@ const MyPage = () => {
   <div className="product-list">
     {wishlist.length > 0 ? (
       [...wishlist]
+        .filter(product => product.status !== 'removed') // status가 removed인 상품 제외
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // 최신 순 정렬
         .map(item => (
           <Link 
@@ -327,40 +449,55 @@ const MyPage = () => {
     {Object.keys(chatList).length > 0 ? (
       Object.keys(chatList).map((productId) => (
         <div key={productId} className="product-chat-group">
-          <h3>
-            {/* 상품 ID를 클릭하면 상품 상세 페이지로 이동 */}
-            <Link to={`/product/${productId}`} style={{ textDecoration: 'none', color: '#000' }}>
-              상품 ID: {productId}
-            </Link>
-          </h3>
-          <div className="chat-messages">
-            {chatList[productId].map((chat, index) => (
-              <div key={index} className="chat-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3
+              onClick={() => toggleChat(productId)}
+              style={{ cursor: 'pointer', color: openChats[productId] ? 'blue' : 'black', margin: 0 }}
+            >
+              상품 ID: {productId} {openChats[productId] ? '▲' : '▼'}
+            </h3>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <Link
+                to={`/product/${productId}`}
+                className="product-link"
+                style={{ textDecoration: 'none', color: '#007BFF' }}
+              >
+                상품으로 이동
+              </Link>
+              <Link
+                to={`/product/${productId}/chat`}
+                className="chat-link"
+                style={{ textDecoration: 'none', color: '#007BFF' }}
+              >
+                채팅으로 이동
+              </Link>
+            </div>
+          </div>
+          {openChats[productId] && (
+            <div className="chat-messages">
+              {chatList[productId].map((chat, index) => (
                 <div
+                  key={index}
                   className={`chat-message ${
-                    chat.senderId === userInfo.userIdx
-                      ? 'own-message'
-                      : chat.receiverId === userInfo.userIdx
-                      ? 'receiver-message'
-                      : 'other-message'
+                    chat.senderId === userInfo.userIdx ? 'own-message' : 'other-message'
                   }`}
                 >
-                  <strong>
-                    {chat.senderId === userInfo.userIdx
-                      ? '나'
-                      : chat.receiverId === userInfo.userIdx
-                      ? '다른 사람'
-                      : chat.senderId}
-                    :
-                  </strong>
-                  <span>{chat.messageContent}</span>
+                  <div className="chat-message-content">
+                    <strong>
+                      {chat.senderId === userInfo.userIdx
+                        ? '나'
+                        : chat.senderNickname || '알 수 없음'}
+                      :
+                    </strong>
+                    <span>{chat.messageContent}</span>
+                    <div className="message-time">
+                      {new Date(chat.sentAt).toLocaleString()}
+                    </div>
+                  </div>
                 </div>
-                <div className="chat-time">
-                  {new Date(chat.sentAt).toLocaleString()}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       ))
     ) : (
@@ -368,6 +505,90 @@ const MyPage = () => {
     )}
   </div>
 )}
+
+{activeTab === '구매내역' && (
+  <div className="product-list">
+    {purchasedProducts.length > 0 ? (
+      [...purchasedProducts]
+        .filter(product => product.status !== 'removed') // status가 removed인 상품 제외
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // 최신 순 정렬
+        .map(product => (
+          <Link 
+            to={`/product/${product.productIdx}`} 
+            className="product-card" 
+            key={product.productIdx}
+          >
+            <div className="product-info">
+              <h3>{product.title}</h3>
+              <p>가격: {product.price.toLocaleString()}원</p>
+              <p>위치: {product.location}</p>
+              <p>♡ {product.heartNum} 💬 {product.chatNum}</p>
+            </div>
+            <img 
+              src={`http://localhost:8080/image?image=${product.image}`} 
+              alt={product.title} 
+              className="product-image"
+            />
+          </Link>
+        ))
+    ) : (
+      <div>구매한 상품이 없습니다.</div>
+    )}
+  </div>
+)}
+
+{activeTab === "문의 내역" && (
+        <div className="inquiries-list">
+          <h1>문의 내역</h1>
+          <table className="inquiries-table">
+            <thead>
+              <tr>
+                <th>순번</th>
+                <th>제목</th>
+                <th>날짜</th>
+                <th>공개여부</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inquiries
+                .sort((a, b) => new Date(b.questionCreatedAt) - new Date(a.questionCreatedAt))
+                .map((inquiry, index) => (
+                  <React.Fragment key={inquiry.questionIdx}>
+                    <tr>
+                      <td>{inquiries.length - index}</td>
+                      <td>
+                        <Link
+                          to={`/Inquiry/question/${inquiry.questionIdx}`}
+                          className="inquiry-link"
+                        >
+                          {inquiry.questionTitle}
+                        </Link>
+                      </td>
+                      <td>{new Date(inquiry.questionCreatedAt).toLocaleDateString()}</td>
+                      <td>{getPublicStatus(inquiry.questionPublic)}</td>
+                    </tr>
+                    {inquiry.answer && (
+                      <tr className="answer-row">
+                        <td></td>
+                        <td>
+                          <Link
+                            to={`/Inquiry/answer/${inquiry.answer.answerIdx}`}
+                            className="inquiry-link"
+                          >
+                            ㄴ {inquiry.answer.answerTitle}
+                          </Link>
+                        </td>
+                        <td>{new Date(inquiry.answer.answerCreatedAt).toLocaleDateString()}</td>
+                        <td>{getPublicStatus(inquiry.answer.answerPublic)}</td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+            </tbody>
+          </table>
+          {inquiries.length === 0 && <p>문의 내역이 없습니다.</p>}
+        </div>
+      )}
 
       {isAuthModalOpen && (
         <div className="auth-modal" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: '1000', width: '300px', padding: '20px', backgroundColor: 'white', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>

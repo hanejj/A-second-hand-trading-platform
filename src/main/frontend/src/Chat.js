@@ -47,23 +47,30 @@ const Chat = () => {
 
   useEffect(() => {
     if (productIdx && userId) {
-      setLoading(true);
-
-      axios
-        .get(`http://localhost:8080/chat/${productIdx}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        })
-        .then((response) => {
-          setMessages(response.data.length > 0 ? response.data : []);
-          setLoading(false);
-        })
-        .catch((err) => {
+      const fetchChats = async () => {
+        setLoading(true);
+        try {
+          const response = await axios.get(`http://localhost:8080/chat/${productIdx}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          });
+  
+          const data = response.data;
+          if (data.chats) {
+            setMessages(data.chats);
+          } else {
+            setMessages([]); // 채팅 기록이 없으면 빈 배열 설정
+          }
+        } catch (err) {
           setError('채팅 데이터를 불러오는 중 오류가 발생했습니다.');
           console.error(err);
+        } finally {
           setLoading(false);
-        });
+        }
+      };
+  
+      fetchChats();
     }
-  }, [productIdx, userId]);
+  }, [productIdx, userId]);  
 
   const sendMessage = () => {
     if (!message.trim()) return;
@@ -180,7 +187,7 @@ const Chat = () => {
               className={`chat-message ${msg.senderId === userId ? 'own-message' : ''}`}
             >
               <div className="chat-message-content">
-                <b>{msg.senderId === userId ? '나' : msg.senderId}</b>: {msg.messageContent}
+                <b>{msg.senderId === userId ? '나' : msg.senderNickname || '알 수 없음'}</b>: {msg.messageContent}
                 <div className="message-time">
                   {new Date(msg.sentAt).toLocaleTimeString()}
                 </div>

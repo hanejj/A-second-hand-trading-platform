@@ -1,0 +1,291 @@
+.my-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f9f9ff;
+}
+
+.header-section {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f4e1ff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.avatar-img {
+  width: 100px; /* 원하는 크기로 설정 */
+  height: 100px;
+  border-radius: 50%; /* 원형 이미지 */
+  object-fit: cover; /* 비율 유지 */
+}
+
+.avatar-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-img {
+  max-width: 120px; /* 최대 너비 */
+  max-height: 120px; /* 최대 높이 */
+  border-radius: 50%; /* 원형 처리 */
+  object-fit: cover; /* 이미지 비율 유지하면서 크기에 맞추기 */
+  margin-bottom: 10px; /* 이미지 하단 여백 */
+}
+
+.image-upload-label {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.image-upload-input {
+  display: none; /* 업로드 버튼 숨기기 */
+}
+
+.image-remove-button {
+  margin-top: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-email {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.user-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.user-message {
+    font-size: 14px;
+    color: #666;
+}
+
+.points-section {
+    display: flex;
+    align-items: center;
+}
+
+.points-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.points-value {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.points-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.edit-button {
+    padding: 10px 20px;
+    background-color: #d081ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    background-color: #ba6fe1;
+}
+
+.tabs-section {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+    border-bottom: 2px solid #d081ff;
+    font-weight: bold;
+}
+
+/*인기 상품, 최신 상품 제목*/
+.main-page-title {
+  text-align: left;
+  margin: 20px;
+  color: #C87BD6;
+}
+
+a{
+  text-decoration: none; /* 링크에 밑줄을 제거 */
+}
+
+/* 링크 스타일 제거 */
+.product-link {
+  text-decoration: none; /* 링크의 밑줄 제거 */
+  color: inherit; /* 부모 요소의 색상(검은색)을 상속받게 설정 */
+}
+
+/* 전체 채팅 목록 */
+.chat-list {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 상품별 채팅 그룹 */
+  .product-chat-group {
+    margin-bottom: 30px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .product-chat-group h3 {
+    margin-top: 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  /* 채팅 메시지 */
+  .chat-messages {
+    padding-top: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  /* 채팅 카드 */
+  .chat-card {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
+  .chat-message {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 5px 0;
+    border-radius: 20px;
+    max-width: 80%;
+    background-color: #f0f0f0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .chat-message.own-message {
+    background-color: #ffdb58;
+    align-self: flex-end;
+  }
+  
+  .chat-message.other-message {
+    background-color: #e0e0e0;
+    align-self: flex-start;
+  }
+  
+  .chat-time {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
+    text-align: right;
+  }
+  
+  /* 채팅 메시지 이미지 */
+  .message-image {
+    max-width: 100%;
+    margin-top: 10px;
+    border-radius: 8px;
+  }
+  
+  .chat-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .no-messages {
+    color: #888;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .own-message {
+    background-color: #f0f0f0;
+    text-align: right;
+  }
+  
+  .receiver-message {
+    background-color: #e6f7ff;
+    text-align: left;
+  }
+  
+  .other-message {
+    background-color: #f9f9f9;
+  }
+
+  /* 각 상품별 채팅 그룹 */
+.product-chat-group {
+    flex: 0 1 calc(33.333% - 20px); /* 한 줄에 3개씩 배치, 간격을 제외한 크기 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 400px; /* 최대 크기 제한 */
+  }
+  
+  /* chat-list를 flexbox로 가로 정렬 */
+.chat-list {
+    display: flex;
+    flex-wrap: wrap; /* 여러 줄로 나누어 배치 */
+    gap: 20px; /* 각 상품 간의 간격 설정 */
+    justify-content: flex-start; /* 좌측 정렬 */
+  }
+  
+  .user-nickname {
+    font-weight: bold;
+    font-size: 1.5em; /* Optional for larger text */
+  }
+  
+  .manner-value {
+    font-weight: bold;
+    color: #333; /* Optional for a darker color */
+    font-size: 1.5em;
+  }
+  

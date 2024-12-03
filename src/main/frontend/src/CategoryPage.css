@@ -37,6 +37,7 @@
   }
   
 /* 글쓰기 버튼 스타일 */
+.search-button,
 .category-page-write-button {
   padding: 10px 20px;
   background-color: #C87BD6; 

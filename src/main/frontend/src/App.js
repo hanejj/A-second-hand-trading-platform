@@ -17,6 +17,9 @@ import ProductPage from './ProductPage'; // ProductPage 추가
 import ProductUploadPage from './ProductUploadPage'; // ProductPage 추가
 import UserEditPage from './UserEditPage'; 
 import ProductSearchPage from './ProductSearchPage';
+import NoticeWritePage from './NoticeWritePage';
+import NoticeEditPage from './NoticeEditPage';
+import Chat from './Chat';
 import InquiriesPage from './InquiriesPage';
 import InquiryDetailPage from './InquiryDetailPage';
 import AnswerDetailPage from './AnswerDetailPage';
@@ -105,6 +108,9 @@ const App = () => {
         <Route path="/mypage" element={<MyPage />} /> 
         <Route path="/user/:email/edit" element={<UserEditPage />} />
         <Route path="/search" element={<ProductSearchPage />} />
+        <Route path="/notices/new" element={<NoticeWritePage />} />
+        <Route path="/notices/edit/:id" element={<NoticeEditPage />} />
+        <Route path="/product/:productIdx/chat" element={<Chat />} />
         <Route path="/inquiries" element={<InquiriesPage />} />
         <Route path="/inquiry/question/:question_idx" element={<InquiryDetailPage />} />
         <Route path="/inquiry/answer/:answer_idx" element={<AnswerDetailPage />} />

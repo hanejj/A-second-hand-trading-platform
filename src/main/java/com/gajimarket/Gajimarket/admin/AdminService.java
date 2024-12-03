@@ -1,6 +1,7 @@
 package com.gajimarket.Gajimarket.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -121,6 +122,25 @@ public class AdminService {
         );
 
         return reportList;
+    }
+
+    public Admin findAdminById(String adminId) {
+        String sql = "SELECT * FROM admin WHERE id = ?";
+
+        try {
+            return jdbcTemplate.queryForObject(
+                    sql,
+                    (rs, rowNum) -> new Admin(
+                            rs.getInt("admin_index"),
+                            rs.getString("id"),
+                            rs.getString("passwd"),
+                            rs.getString("name")
+                    ),
+                    adminId
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null; // 조회된 결과가 없을 경우 null 반환
+        }
     }
 
 }

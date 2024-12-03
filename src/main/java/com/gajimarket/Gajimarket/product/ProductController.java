@@ -67,7 +67,6 @@ public class ProductController {
         System.out.println("/product/" + product_idx + " request");
         System.out.println("userIdx: "+user_idx+" isAdmin: "+isAdmin);
         try {
-
             // 서비스 호출
             ProductPageResponse response = productService.getProductById(product_idx, user_idx, isAdmin);
 
@@ -286,6 +285,14 @@ public class ProductController {
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String title) {
         List<Product> products = productService.searchProductsByTitle(title);
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/{productIdx}/writer")
+    public ResponseEntity<Map<String, Integer>> getProductWriter(@PathVariable int productIdx) {
+        int writerIdx = productService.getProductWriterIdx(productIdx);
+        Map<String, Integer> response = new HashMap<>();
+        response.put("writerIdx", writerIdx);
+        return ResponseEntity.ok(response);
     }
 
     // 상품 삭제

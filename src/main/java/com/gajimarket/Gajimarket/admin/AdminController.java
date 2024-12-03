@@ -1,11 +1,16 @@
 package com.gajimarket.Gajimarket.admin;
 
 import com.gajimarket.Gajimarket.ApiResponse;
+import com.gajimarket.Gajimarket.config.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -13,11 +18,55 @@ import java.util.NoSuchElementException;
 public class AdminController {
 
     private final AdminService adminService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, JwtTokenProvider jwtTokenProvider) {
         this.adminService = adminService;
+        this.jwtTokenProvider=jwtTokenProvider;
     }
+    
+    // 로그인한 관리자 유저의 정보 가져오기
+    @GetMapping("/profile")
+    public ResponseEntity<ApiResponse> getAdminOrUserProfile(HttpServletRequest request, @RequestParam boolean isAdmin) {
+        String token = request.getHeader("Authorization");
+        ApiResponse apiResponse;
+
+        // 1. 토큰 검증
+        if (token == null || !token.startsWith("Bearer ")) {
+            apiResponse = new ApiResponse("0", "토큰이 없습니다.");
+            return ResponseEntity.ok().body(apiResponse);
+        }
+
+        token = token.substring(7);
+        if (!jwtTokenProvider.validateToken(token)) {
+            apiResponse = new ApiResponse("0", "유효하지 않은 토큰입니다.");
+            return ResponseEntity.ok().body(apiResponse);
+        }
+
+        // 2. 사용자/관리자 ID 추출
+        String userId = jwtTokenProvider.getUserIdFromToken(token);
+
+        try {
+            if (isAdmin) {
+                // 관리자 정보 조회
+                Admin admin = adminService.findAdminById(userId);
+                if (admin == null) {
+                    apiResponse = new ApiResponse("100", "관리자를 찾을 수 없습니다.");
+                    return ResponseEntity.ok().body(apiResponse);
+                }
+                apiResponse = new ApiResponse("1000", admin);
+                return ResponseEntity.ok().body(apiResponse);
+            } else {
+                apiResponse = new ApiResponse("500", "관리자가 아닙니다.");
+                return ResponseEntity.ok().body(apiResponse);
+            }
+        } catch (Exception e) {
+            apiResponse = new ApiResponse("0", e.getMessage());
+            return ResponseEntity.ok().body(apiResponse);
+        }
+    }
+
 
     // 전체 사용자 정보 가져오기
     @GetMapping("/get/userList")

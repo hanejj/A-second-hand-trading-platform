@@ -40,15 +40,29 @@ public class AdminService {
     // 회원 영구정지=매너 지수 -1로 설정
     public void banUser(int userIdx) {
         // SQL 쿼리 작성
-        String sql = "UPDATE user SET manner_point = -1 WHERE user_idx = ?";
+        String selectSql = "SELECT manner_point FROM user WHERE user_idx = ?";
+        String updateSql = "UPDATE user SET manner_point = -1 WHERE user_idx = ?";
 
-        // 업데이트 실행
-        int rowsAffected = jdbcTemplate.update(sql, userIdx);
+        // 현재 manner_point 조회
+        Integer currentMannerPoint = jdbcTemplate.queryForObject(selectSql, new Object[]{userIdx}, Integer.class);
 
-        if (rowsAffected == 0) {
+        if (currentMannerPoint == null) {
             throw new RuntimeException("회원 정지 실패: 존재하지 않는 user_idx " + userIdx);
         }
+
+        // 이미 영구 정지된 회원인지 확인
+        if (currentMannerPoint == -1) {
+            throw new IllegalStateException("이미 영구 정지된 회원입니다.");
+        }
+
+        // manner_point를 -1로 업데이트
+        int rowsAffected = jdbcTemplate.update(updateSql, userIdx);
+
+        if (rowsAffected == 0) {
+            throw new RuntimeException("회원 정지 실패: 업데이트 실패");
+        }
     }
+
 
     // 관리자 목록 가져오기
     public List<UserInfo> getAdminList() {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./UserManagementPage.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const UserManagementPage = () => {
   const [users, setUsers] = useState([]);
@@ -131,7 +131,11 @@ const UserManagementPage = () => {
             <tr key={user.idx}>
               <td>{index + 1}</td>
               <td>{user.id}</td>
-              <td>{user.name}</td>
+              <td>
+                <Link to={`/author/${user.idx}`}>
+                  {user.name}
+                </Link>
+                </td>
               <td>
               {user.manner_point === -1 ? (
                   <span className="banned-status">영구 정지됨</span>

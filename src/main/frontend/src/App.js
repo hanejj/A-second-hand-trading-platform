@@ -43,7 +43,7 @@ const App = () => {
 
     const storedIsAdmin = localStorage.getItem('isAdmin') === 'true'; // 관리자 여부 확인
     setIsAdmin(storedIsAdmin); // 관리자 여부 설정
-  }, []);
+  }, [isLoggedIn, isAdmin]);
 
   const handleLogout = () => {
     localStorage.removeItem('token'); // 토큰 제거
@@ -65,7 +65,7 @@ const App = () => {
           ) : (
             <NavButton to="/login">로그인</NavButton>
           )}
-          {!isAdmin && (
+          {!isAdmin && isLoggedIn && (
             <>
             <NavButton to="/notices">공지사항</NavButton>
             <NavButton to="/inquiries">문의사항</NavButton>

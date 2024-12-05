@@ -1,9 +1,11 @@
 .header {
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: linear-gradient(90deg, #C87BD6, #9c1db2); /* �׶���Ʈ ��� */
-    padding: 15px 20px;
+    box-sizing: border-box; /* 패딩과 보더를 포함한 박스 크기 계산 */
+    overflow-x: hidden; /* 수평 스크롤 방지 */
 }
 
 .logo {

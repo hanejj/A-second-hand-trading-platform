@@ -113,7 +113,10 @@ const ReportDetailPage = () => {
         </h1>
         <div className="inquiry-detail-page-inquiry-meta">
           <p>
-            <strong>신고자:</strong> {reportDetail.reportingUserNickname}
+            <strong>신고자:</strong>{" "}
+            <Link to={`/author/${reportDetail.reportingUserIdx}`}>
+            {reportDetail.reportingUserNickname}↗
+            </Link>
           </p>
           <p>
             <strong>신고일:</strong> {formattedDate}
@@ -127,7 +130,10 @@ const ReportDetailPage = () => {
       <hr className="inquiry-detail-page-inquiry-divider" />
       <div className="inquiry-detail-page-inquiry-content">
         <p>
-          <strong>신고하는 유저:</strong> {reportDetail.reportedUserNickname}
+          <strong>신고 당한 유저:</strong>{" "}
+          <Link to={`/author/${reportDetail.reportedUserIdx}`}>
+           {reportDetail.reportedUserNickname}↗
+          </Link>
         </p>
         <p>
           <strong>신고하는 글:</strong>{" "}

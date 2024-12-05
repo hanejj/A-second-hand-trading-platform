@@ -102,6 +102,7 @@ public class AdminController {
             @PathVariable("userIdx") int userIdx) {
         System.out.println("/admin/ban/" + userIdx + " request");
         ApiResponse apiResponse;
+
         try {
             // isAdmin이 false인 경우 관리자 권한이 없으므로 예외 처리
             if (!isAdmin) {
@@ -112,11 +113,18 @@ public class AdminController {
             adminService.banUser(userIdx);
             apiResponse = new ApiResponse("1000", "회원 영구 정지 성공");
             return ResponseEntity.ok().body(apiResponse);
+
+        } catch (IllegalStateException e) {
+            // 이미 영구 정지된 회원에 대한 예외 처리
+            apiResponse = new ApiResponse("300", e.getMessage());
+            return ResponseEntity.ok().body(apiResponse);
+
         } catch (Exception e) {
             apiResponse = new ApiResponse("0", "회원 영구 정지 실패");
             return ResponseEntity.badRequest().body(apiResponse);
         }
     }
+
     // 관리자 목록 가져오기
     @GetMapping("/get/adminList")
     public ResponseEntity<ApiResponse> getAdminList(@RequestParam boolean isAdmin) {

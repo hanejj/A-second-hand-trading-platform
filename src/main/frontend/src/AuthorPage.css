@@ -1,4 +1,4 @@
-.my-page {
+.author-page {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -8,7 +8,6 @@
 
 .header-section {
     display: flex;
-    width: 100%;
     justify-content: space-between;
     align-items: center;
     padding: 20px;
@@ -16,16 +15,19 @@
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    box-sizing: border-box; 
 }
 
 .user-info {
     display: flex;
     align-items: center;
+    gap: 16px; /* 아바타와 유저 정보 간 간격 */
+    padding-left:10px;
 }
 
 .avatar-img {
-  width: 100px; /* 원하는 크기로 설정 */
-  height: 100px;
+  width: 80px; /* 원하는 크기로 설정 */
+  height: 80px;
   border-radius: 50%; /* 원형 이미지 */
   object-fit: cover; /* 비율 유지 */
 }
@@ -88,24 +90,28 @@
     color: #666;
 }
 
-.points-section {
+.user-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-left:10px;
+}
+
+.manner-section {
     display: flex;
     align-items: center;
 }
 
-.points-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-right: 20px;
+.manner-box {
+    text-align: center;
 }
 
-.points-value {
+.manner-value {
     font-size: 20px;
     font-weight: bold;
 }
 
-.points-label {
+.manner-label {
     font-size: 14px;
     color: #666;
 }
@@ -117,6 +123,7 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-right:20px;
 }
 
 .edit-button:hover {
@@ -289,3 +296,131 @@ a{
     font-size: 1.5em;
   }
   
+  /* 신고 제목 레이블 스타일 */
+.report-title-label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* 신고 제목 입력 필드 스타일 */
+.report-title-input {
+  width: 80%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.author-page-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6); /* 어두운 배경 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* 모달을 최상단에 표시 */
+}
+
+.author-page-modal-content {
+  background: #fefefe; /* 부드러운 흰색 */
+  padding: 30px;
+  border-radius: 15px; /* 둥근 모서리 */
+  width: 500px; /* 모달 너비 */
+  max-width: 90%; /* 화면 작을 때 유연하게 */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* 깊이감 있는 그림자 */
+  position: relative; /* 닫기 버튼 위치 */
+  font-family: 'Arial', sans-serif;
+}
+
+/* 제목 스타일 */
+.author-page-modal-content h3 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center; /* 제목 중앙 정렬 */
+}
+
+/* 텍스트 입력란 */
+.author-page-modal-content textarea {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  resize: none; /* 크기 조정 비활성화 */
+  font-size: 1rem;
+  font-family: inherit;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* 텍스트박스 안쪽 그림자 */
+}
+
+/* 파일 업로드 */
+.author-page-modal-content input[type="file"] {
+  display: block;
+  margin: 10px 0 20px;
+  font-size: 0.9rem;
+}
+
+/* 버튼 기본 스타일 */
+.author-page-modal-content button {
+  background-color: #C87BD6; /* 주요 색상 */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* 색상 & 크기 변화 */
+}
+
+.author-page-modal-content button:hover {
+  background-color: #A25FAF; /* 호버 색상 */
+  transform: scale(1.05); /* 살짝 커지는 효과 */
+}
+
+/* 선택된 버튼 스타일 */
+.author-page-modal-content button.selected {
+  background-color: #cd40cd; /* 선택된 버튼 색상 */
+  color: #fff;
+}
+
+/* '좋았어요'와 '아쉬웠어요' 버튼 정렬 */
+.author-page-modal-content div {
+  display: flex;
+  justify-content: space-around; /* 버튼 간격 좁히기 */
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* 설명 텍스트 */
+.author-page-modal-content p {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+/* 닫기 버튼 */
+.author-page-modal-content .author-page-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.author-page-modal-content .author-page-close-button:hover {
+  color: #000;
+  background:none;
+}

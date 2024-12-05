@@ -73,7 +73,7 @@ const CategoryPage = () => {
         <div className="button-container">
           {!isAdmin && (
             <button
-              className="write-button"
+              className="category-page-write-button"
               onClick={() => navigate('/product/upload')}
             >
               글쓰기

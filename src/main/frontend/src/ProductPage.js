@@ -78,30 +78,6 @@ const ProductPage = () => {
     }
   };
 
-  //상품 거래 완료 버튼 클릭 시
-  const handleCompleteClick = async () => {
-    const confirmation = window.confirm(
-      "정말로 이 상품을 거래 완료 처리하시겠습니까? 처리 완료 시, 이 상품은 더 이상 거래되지 않습니다.",
-    );
-    if (!confirmation) return; // 사용자가 취소하면 삭제하지 않음
-
-    try {
-      const response = await axios.put(
-        `http://localhost:8080/product/${productIdx}/complete`,
-      );
-
-      if (response.data.code === "1000") {
-        alert("거래 완료 처리되었습니다.");
-        // 페이지 새로 고침
-        window.location.reload();
-      } else {
-        alert("처리에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("상품 삭제 중 오류 발생:", error);
-      alert("처리 중 오류가 발생했습니다.");
-    }
-  };
 
   //채팅 버튼 클릭 시
   const handleChatClick = () => {
@@ -385,18 +361,6 @@ const ProductPage = () => {
                     onClick={handleDeleteClick}
                   >
                     삭제
-                  </button>
-                )
-              : null}
-            {/* 현재 로그인한 유저의 게시글이거나 관리자인 경우 삭제 가능, product.status가 "removed"나 "completed"가 아닐 때 */}
-            {(user && userIdx === product.writerIdx) || isAdmin === true
-              ? product.status !== "completed" &&
-                product.status !== "removed" && (
-                  <button
-                    className="product-page-report-button"
-                    onClick={handleCompleteClick}
-                  >
-                    거래 완료
                   </button>
                 )
               : null}

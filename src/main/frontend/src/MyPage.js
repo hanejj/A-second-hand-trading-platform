@@ -342,13 +342,14 @@ const toggleChat = (productId) => {
             <div className="user-name">{userInfo.name}</div>
             <div className="user-message">{userInfo.message}</div>
           </div>
-        </div>
-        <div className="points-section">
+          <div className="points-section">
           <div className="points-box">
             <div className="points-value">{userInfo.points || 0}</div>
             <div className="points-label">포인트</div>
-            <button className="point-button" onClick={handleOpenPointModal}>포인트 충전</button>
-            <button className="point-button" onClick={handleOpenWithdrawModal}>포인트 인출</button>
+          </div>
+          <div className="points-button-box">
+          <button className="point-button" onClick={handleOpenPointModal}>포인트 충전</button>
+          <button className="point-button" onClick={handleOpenWithdrawModal}>포인트 인출</button>
           </div>
           <div className="points-box">
           <div className="points-value">
@@ -366,6 +367,8 @@ const toggleChat = (productId) => {
         </div>
 
         </div>
+        </div>
+        
         <button className="edit-button" onClick={handleOpenAuthModal}>내 정보 수정</button>
         {/*<button className="logout-button" onClick={handleLogout}>로그아웃</button>*/}
       </div>

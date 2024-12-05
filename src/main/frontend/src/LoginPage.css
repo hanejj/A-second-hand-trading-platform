@@ -1,4 +1,3 @@
-/* �α��� ������ ��ü �����̳� */
 .login-container {
     display: flex;
     flex-direction: column;
@@ -8,15 +7,13 @@
     background-color: #f8f8f8;
 }
 
-/* �������� �ΰ� */
 .logo {
     font-size: 36px;
-    color: #800080; /* ����� */
+    color: #800080; 
     margin-bottom: 30px;
     font-weight: bold;
 }
 
-/* �α��� �� */
 .login-form {
     display: flex;
     flex-direction: column;
@@ -27,53 +24,54 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* �Է� �ʵ� �׷� */
 .input-group {
     display: flex;
     flex-direction: column;
-    margin-bottom: 15px;
+    align-items: stretch; /* 부모 크기에 맞추어 동일한 크기 유지 */
 }
 
-    .input-group label {
-        margin-bottom: 5px;
-        color: #333;
-    }
+.input-group label {
+    margin-bottom: 5px;
+    color: #333;
+}
 
-    .input-group input {
-        padding: 10px;
-        font-size: 16px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-    }
+.input-group input {
+    width: 100% !important; /* 강제 적용 */
+    height: 45px !important; /* 강제 적용 */
+    padding: 10px !important;
+    font-size: 16px;
+    border: 1px solid #ddd !important;
+    border-radius: 5px !important;
+    box-sizing: border-box !important;
+}
 
-/* �α��� ��ư */
 .login-button {
-    padding: 10px;
-    background-color: #800080; /* ����� */
+    height: 45px; /* 버튼 높이도 입력 칸과 맞춤 */
+    background-color: #800080; 
     color: white;
     border: none;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
+    text-align: center;
 }
 
-    .login-button:hover {
-        background-color: #c19cd9; /* ���� ����� */
-    }
+.login-button:hover {
+    background-color: #c19cd9; 
+}
 
-/* �α��� ������ ��ũ�� */
 .login-links {
     margin-top: 20px;
     text-align: center;
 }
 
-    .login-links a {
-        display: block;
-        margin-top: 10px;
-        color: #800080;
-        text-decoration: none;
-    }
+.login-links a {
+    display: block;
+    margin-top: 10px;
+    color: #800080;
+    text-decoration: none;
+}
 
-        .login-links a:hover {
-            text-decoration: underline;
-        }
+.login-links a:hover {
+    text-decoration: underline;
+}

@@ -13,37 +13,55 @@ const Chat = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [transferAmount, setTransferAmount] = useState(''); // 송금 금액
+  const [productTitle, setProductTitle] = useState('');
+  const [writerId, setWriterId] = useState();
 
+  // 사용자 정보 및 상품 제목 가져오기
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
-      return;
-    }
-
-    const fetchUserId = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/user/profile', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('로그인이 필요합니다.');
+          navigate('/login');
+          return;
+        }
+
+        // 사용자 ID 가져오기
+        const userResponse = await axios.get('http://localhost:8080/user/profile', {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (response.data && response.data.code === 1000) {
-          const userIdx = response.data.user.userIdx;
-          setUserId(userIdx);
+        if (userResponse.data && userResponse.data.code === 1000) {
+          setUserId(userResponse.data.user.userIdx);
         } else {
-          throw new Error('유저 정보를 가져오는 중 오류 발생');
+          throw new Error('사용자 정보를 가져오는 중 오류 발생');
+        }
+
+        // 상품 제목 가져오기
+        const productResponse = await axios.get(`http://localhost:8080/product/${productIdx}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (
+          productResponse.data &&
+          productResponse.data.data &&
+          productResponse.data.data.product
+        ) {
+          setProductTitle(productResponse.data.data.product.title);
+          setWriterId(productResponse.data.data.product.writerIdx);
+        } else {
+          throw new Error('상품 제목을 가져오는 중 오류 발생');
         }
       } catch (err) {
-        console.error('프로필 요청 오류:', err);
-        alert('로그인 정보가 만료되었습니다. 다시 로그인해주세요.');
-        localStorage.removeItem('token');
+        console.error('데이터 요청 오류:', err);
+        alert('데이터를 가져오는 데 실패했습니다. 다시 로그인해주세요.');
         navigate('/login');
       }
     };
 
-    fetchUserId();
-  }, [navigate]);
+    fetchInitialData();
+  }, [navigate, productIdx]);
 
   useEffect(() => {
     if (productIdx && userId) {
@@ -164,6 +182,26 @@ const Chat = () => {
       });
   };  
 
+  const completeTransaction = () => {
+    const token = localStorage.getItem('token');
+    axios
+      .put(`http://localhost:8080/product/${productIdx}/complete`, null, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { buyer_idx: userId }, // 구매자 ID 전달
+      })
+      .then((response) => {
+        if (response.data.code === "1000") {
+          alert('거래가 완료되었습니다.');
+        } else {
+          alert(response.data.message || '거래 완료 처리에 실패했습니다.');
+        }
+      })
+      .catch((err) => {
+        console.error('거래 완료 처리 오류:', err);
+        alert('거래 완료 처리 중 오류가 발생했습니다.');
+      });
+  };  
+
   const toggleModal = () => setIsModalOpen(!isModalOpen); // 모달 열기/닫기
 
   useEffect(() => {
@@ -178,7 +216,7 @@ const Chat = () => {
 
   return (
     <div className="chat-container">
-      <h2>상품 {productIdx} 채팅</h2>
+      <h2>상품 {productTitle} 채팅</h2>
       <div className="chat-messages">
         {messages.length > 0 ? (
           messages.map((msg, index) => (
@@ -215,6 +253,12 @@ const Chat = () => {
         <button onClick={toggleModal} className="send-button">
           송금
         </button>
+        {/* 판매자가 아닐 때만 거래 완료 버튼 표시 */}
+        {userId !== writerId && (
+          <button onClick={completeTransaction} className="send-button complete-button">
+            거래 완료
+          </button>
+        )}
       </div>
       {isModalOpen && (
         <div className="modal">

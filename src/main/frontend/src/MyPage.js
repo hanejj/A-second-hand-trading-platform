@@ -17,7 +17,6 @@ const MyPage = () => {
   const [password, setPassword] = useState('');
   const [inquiries, setInquiries] = useState([]);
   const navigate = useNavigate();
-  const [openChats, setOpenChats] = useState({}); // 채팅창 열림/닫힘 상태 관리
   const [chatList, setChatList] = useState([]); // 전체 채팅 목록
 const [loadingChats, setLoadingChats] = useState(true); // 채팅 로딩 상태
 const [chatError, setChatError] = useState(null); // 채팅 로드 에러
@@ -48,14 +47,6 @@ useEffect(() => {
     fetchChatList();
   }
 }, [userInfo]);
-
-
-const toggleChat = (productId) => {
-  setOpenChats((prevState) => ({
-    ...prevState,
-    [productId]: !prevState[productId], // 이전 상태를 반전
-  }));
-};
 
   // 공개 여부를 반환하는 함수
   const getPublicStatus = (publicFlag) => {
@@ -450,59 +441,33 @@ const toggleChat = (productId) => {
 {activeTab === '채팅' && (
   <div className="chat-list">
     {Object.keys(chatList).length > 0 ? (
-      Object.keys(chatList).map((productId) => (
-        <div key={productId} className="product-chat-group">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3
-              onClick={() => toggleChat(productId)}
-              style={{ cursor: 'pointer', color: openChats[productId] ? 'blue' : 'black', margin: 0 }}
-            >
-              상품 ID: {productId} {openChats[productId] ? '▲' : '▼'}
-            </h3>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Link
-                to={`/product/${productId}`}
-                className="product-link"
-                style={{ textDecoration: 'none', color: '#007BFF' }}
-              >
-                상품으로 이동
-              </Link>
-              <Link
-                to={`/product/${productId}/chat`}
-                className="chat-link"
-                style={{ textDecoration: 'none', color: '#007BFF' }}
-              >
-                채팅으로 이동
-              </Link>
+      Object.keys(chatList).map((productId) => {
+        // 첫 번째 채팅 메시지에서 상품 제목 가져오기
+        const productTitle = chatList[productId][0]?.productTitle || "제목 없음";
+        return (
+          <div key={productId} className="product-chat-group">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0 }}>{productTitle}</h3> {/* 상품 제목 출력 */}
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <Link
+                  to={`/product/${productId}`}
+                  className="product-link"
+                  style={{ textDecoration: 'none', color: '#007BFF' }}
+                >
+                  상품으로 이동
+                </Link>
+                <Link
+                  to={`/product/${productId}/chat`}
+                  className="chat-link"
+                  style={{ textDecoration: 'none', color: '#007BFF' }}
+                >
+                  채팅으로 이동
+                </Link>
+              </div>
             </div>
           </div>
-          {openChats[productId] && (
-            <div className="chat-messages">
-              {chatList[productId].map((chat, index) => (
-                <div
-                  key={index}
-                  className={`chat-message ${
-                    chat.senderId === userInfo.userIdx ? 'own-message' : 'other-message'
-                  }`}
-                >
-                  <div className="chat-message-content">
-                    <strong>
-                      {chat.senderId === userInfo.userIdx
-                        ? '나'
-                        : chat.senderNickname || '알 수 없음'}
-                      :
-                    </strong>
-                    <span>{chat.messageContent}</span>
-                    <div className="message-time">
-                      {new Date(chat.sentAt).toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ))
+        );
+      })
     ) : (
       <div>채팅 내역이 없습니다.</div>
     )}

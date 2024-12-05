@@ -324,15 +324,20 @@ public class ProductController {
 
     // 상품 거래 완료 처리
     @PutMapping("/{product_idx}/complete")
-    public ResponseEntity<ApiResponse> completeProduct(@PathVariable("product_idx") Long productIdx) {
+    public ResponseEntity<ApiResponse> completeProduct(
+            @PathVariable("product_idx") Long productIdx,
+            @RequestParam("buyer_idx") Long buyerIdx // 구매자 idx를 요청 파라미터로 받음
+    ) {
         ApiResponse apiResponse;
         try {
-            boolean isCompleted = productService.completeProduct(productIdx);
+            // 거래 완료 처리 및 partner_idx 업데이트
+            boolean isCompleted = productService.completeProduct(productIdx, buyerIdx);
             if (isCompleted) {
                 apiResponse = new ApiResponse("1000", "거래 완료 처리 완료");
                 return ResponseEntity.ok().body(apiResponse);
+            } else {
+                throw new Exception("거래 완료 처리 실패");
             }
-            else throw new Exception();
         } catch (Exception e) {
             apiResponse = new ApiResponse("0", e.getMessage());
             return ResponseEntity.ok().body(apiResponse);

@@ -22,9 +22,10 @@ public class ChatDAO {
 
     // 특정 상품의 채팅 메시지 가져오기 (닉네임 포함)
     public List<Chat> getChatsByProduct(int relatedProductId) {
-        String query = "SELECT c.*, u.nickname AS senderNickname " +
+        String query = "SELECT c.*, u.nickname AS senderNickname, p.title AS productTitle " +
                 "FROM Chat c " +
                 "JOIN User u ON c.sender_idx = u.user_idx " +
+                "JOIN Product p ON c.product_idx = p.product_idx " + // Product 테이블 JOIN
                 "WHERE c.product_idx = ? " +
                 "ORDER BY c.created_at ASC";
         return jdbcTemplate.query(query, (rs, rowNum) -> {
@@ -36,15 +37,17 @@ public class ChatDAO {
             chat.setSentAt(rs.getTimestamp("created_at").toLocalDateTime());
             chat.setRelatedProductId(rs.getInt("product_idx"));
             chat.setSenderNickname(rs.getString("senderNickname")); // 닉네임 추가
+            chat.setProductTitle(rs.getString("productTitle")); // 상품 제목 추가
             return chat;
         }, relatedProductId);
     }
 
     // 로그인된 사용자의 모든 채팅 목록 가져오기 (닉네임 포함)
     public List<Chat> getChatListByUserId(int userId) {
-        String query = "SELECT c.*, u.nickname AS senderNickname " +
+        String query = "SELECT c.*, u.nickname AS senderNickname, p.title AS productTitle " +
                 "FROM Chat c " +
                 "JOIN User u ON c.sender_idx = u.user_idx " +
+                "JOIN Product p ON c.product_idx = p.product_idx " + // Product 테이블 JOIN
                 "WHERE c.sender_idx = ? OR c.receiver_idx = ? " +
                 "ORDER BY c.created_at ASC";
         return jdbcTemplate.query(query, (rs, rowNum) -> {
@@ -56,6 +59,7 @@ public class ChatDAO {
             chat.setSentAt(rs.getTimestamp("created_at").toLocalDateTime());
             chat.setRelatedProductId(rs.getInt("product_idx"));
             chat.setSenderNickname(rs.getString("senderNickname")); // 닉네임 추가
+            chat.setProductTitle(rs.getString("productTitle")); // 상품 제목 추가
             return chat;
         }, userId, userId);
     }

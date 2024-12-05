@@ -69,13 +69,11 @@ public class NoticeController {
     public ResponseEntity<Map<String, Object>> createNotice(
             @RequestParam("title") String title,
             @RequestParam("content") String content,
+            @RequestParam("adminId") int adminId, // 클라이언트에서 전달받은 관리자 ID
             @RequestPart(value = "image", required = false) MultipartFile image
     ) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // 임시 adminId 설정
-            int adminId = 1; // 테스트용 고정 관리자 ID
-
             String imagePath = null;
             if (image != null && !image.isEmpty()) {
                 imagePath = saveImage(image); // 이미지 저장
@@ -84,7 +82,7 @@ public class NoticeController {
             Notice notice = new Notice();
             notice.setNoticeTitle(title);
             notice.setNoticeContent(content);
-            notice.setAdminId(adminId);
+            notice.setAdminId(adminId); // 전달받은 adminId 설정
             notice.setNoticeImage(imagePath);
 
             noticeDAO.createNotice(notice);

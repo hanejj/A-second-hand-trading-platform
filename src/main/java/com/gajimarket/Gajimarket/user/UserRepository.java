@@ -62,4 +62,10 @@ public class UserRepository {
             return user;
         };
     }
+
+    //닉네임 수정 시, 상품 테이블에도 업데이트
+    public void updateNicknameInProductTable(String oldNickname, String newNickname) {
+        String sql = "UPDATE product SET writer_name = ? WHERE writer_name = ?";
+        jdbcTemplate.update(sql, newNickname, oldNickname);
+    }
 }

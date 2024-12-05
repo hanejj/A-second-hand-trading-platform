@@ -101,12 +101,12 @@ const UserEditPage = () => {
     }
   };  
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (userData.passwd && userData.passwd !== userData.confirmPassword) {
       alert('비밀번호가 일치하지 않습니다.');
       return;
     }
-
+  
     const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('user', JSON.stringify({
@@ -121,19 +121,30 @@ const UserEditPage = () => {
     if (imageFile) {
       formData.append('image', imageFile);
     }
-
-    axios.put(`http://localhost:8080/user/${email}/edit`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
-    })
-      .then(() => {
+  
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/user/${email}/edit`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (response.data && response.data.code === 1000) {
         alert('정보가 성공적으로 수정되었습니다.');
         navigate('/mypage');
-      })
-      .catch((error) => {
-        console.error('사용자 정보를 업데이트하는 중 오류 발생:', error);
-        alert('정보 수정 중 문제가 발생했습니다.');
-      });
-  };
+      } else {
+        alert(response.data.message || '정보 수정 중 문제가 발생했습니다.');
+      }
+    } catch (error) {
+      console.error('사용자 정보를 업데이트하는 중 오류 발생:', error);
+      alert('정보 수정 중 문제가 발생했습니다.');
+    }
+  };  
 
   return (
     <div className="user-edit-page">

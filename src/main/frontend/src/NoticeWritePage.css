@@ -1,81 +1,75 @@
-.notice-page {
+.notice-write-page {
+    max-width: 600px; /* 페이지 너비 제한 */
+    margin: 50px auto; /* 중앙 정렬 */
     padding: 20px;
+    background-color: #fff; /* 배경 흰색 */
+    border: 1px solid #ddd; /* 테두리 추가 */
+    border-radius: 8px; /* 둥근 테두리 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+    font-family: Arial, sans-serif; /* 폰트 설정 */
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #6a0dad; /* ����� ��� */
-    padding: 10px;
-    color: white;
-}
-
-.logo {
+.notice-write-page h2 {
+    text-align: center; /* 제목 중앙 정렬 */
+    color: #6a0dad; /* 보라색 */
     font-size: 24px;
-    font-weight: bold;
+    margin-bottom: 30px; /* 아래 간격 */
 }
 
-.nav button {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-h2 {
-    margin-top: 20px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-}
-
-th {
-    background-color: #f2f2f2;
-}
-
-.search-section {
+.notice-write-page form {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
+    flex-direction: column; /* 세로 정렬 */
+    gap: 20px; /* 항목 간격 */
 }
 
-    .search-section input {
-        padding: 8px;
-        width: 200px;
-        border: 1px solid #ddd;
-    }
+.input-group {
+    display: flex;
+    flex-direction: column; /* 레이블과 입력 필드 세로 정렬 */
+    gap: 10px; /* 항목 간격 */
+}
 
-    .search-section button {
-        padding: 8px;
-        margin-left: 10px;
-        background-color: #6a0dad; /* ����� */
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
+.input-group label {
+    font-weight: bold; /* 레이블 강조 */
+    font-size: 16px;
+    color: #333; /* 어두운 회색 */
+}
 
-.write-button {
-    padding: 8px;
-    margin-left: 10px;
-    background-color: #6a0dad; /* ����� */
+.input-group input,
+.input-group textarea {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px; /* 둥근 테두리 */
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+    border-color: #6a0dad; /* 포커스 시 보라색 테두리 */
+}
+
+.input-group input[type="file"] {
+    padding: 5px; /* 파일 선택 필드 간격 조정 */
+}
+
+textarea {
+    resize: none; /* 크기 조절 비활성화 */
+    height: 120px; /* 높이 설정 */
+}
+
+button.submit-button {
+    align-self: center; /* 버튼 중앙 정렬 */
+    padding: 10px 20px;
+    font-size: 16px;
     color: white;
-    text-decoration: none;
-    border-radius: 5px;
+    background-color: #6a0dad; /* 보라색 */
+    border: none;
+    border-radius: 5px; /* 둥근 테두리 */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.write-button-container {
-    margin-bottom: 20px;
-    text-align: right; /* 오른쪽 정렬 */
-  }
+button.submit-button:hover {
+    background-color: #8135d5; /* 밝은 보라색 */
+}

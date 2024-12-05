@@ -18,12 +18,14 @@ public class UserService {
     private final DataSource dataSource;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserService(DataSource dataSource, BCryptPasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate) {
+    public UserService(DataSource dataSource, BCryptPasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate, UserRepository userRepository) {
         this.dataSource = dataSource;
         this.passwordEncoder = passwordEncoder;
         this.jdbcTemplate = jdbcTemplate;
+        this.userRepository = userRepository;
     }
 
     public boolean authenticate(String id, String passwd) {
@@ -136,43 +138,51 @@ public class UserService {
     }
 
     public User updateUserDetails(String email, User updatedUser) {
-        String sql = "UPDATE user SET name = ?, phone = ?, location = ?, passwd = ?, image = ?, message = ? WHERE id = ?";
+        String sqlUpdateUser = "UPDATE user SET name = ?, phone = ?, location = ?, passwd = ?, image = ?, message = ?, nickname = ? WHERE id = ?";
+        String sqlUpdateProduct = "UPDATE product SET writer_name = ? WHERE writer_name = ?";
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false); // 트랜잭션 시작
 
-            // 기존 사용자 정보를 가져옵니다.
+            // 기존 사용자 데이터 조회
             User existingUser = findUserById(email);
             if (existingUser == null) {
-                logger.warn("No user found for email: {}", email);
-                return null;
+                throw new RuntimeException("사용자를 찾을 수 없습니다.");
             }
 
-            // 비밀번호가 없으면 기존 비밀번호 유지
-            String updatedPassword = updatedUser.getPasswd() != null && !updatedUser.getPasswd().isEmpty()
-                    ? updatedUser.getPasswd() : existingUser.getPasswd();
+            String oldNickname = existingUser.getNickname(); // 기존 닉네임
+            String newNickname = updatedUser.getNickname();
 
-            // PreparedStatement에 값 설정
-            stmt.setString(1, updatedUser.getName() != null ? updatedUser.getName() : existingUser.getName());  // 이름
-            stmt.setString(2, updatedUser.getPhone() != null ? updatedUser.getPhone() : existingUser.getPhone());  // 연락처
-            stmt.setString(3, updatedUser.getLocation() != null ? updatedUser.getLocation() : existingUser.getLocation());  // 거주지
-            stmt.setString(4, updatedPassword);  // 비밀번호 (수정되지 않았으면 기존 비밀번호 유지)
-            stmt.setString(5, updatedUser.getImage() != null ? updatedUser.getImage() : existingUser.getImage());  // 이미지 (NULL 가능)
-            stmt.setString(6, updatedUser.getMessage() != null ? updatedUser.getMessage() : existingUser.getMessage());  // 소개글 (NULL 가능)
-            stmt.setString(7, email);  // 이메일 (ID)
-
-            // 쿼리 실행
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                logger.info("User details update successful for email: {}", email);
-                return findUserById(email);  // 업데이트 후 최신 정보를 가져와서 반환
-            } else {
-                logger.warn("No user found to update for email: {}", email);
-                return null;
+            // 1. `Product` 테이블의 `writer_name` 업데이트
+            if (newNickname != null && !newNickname.equals(oldNickname)) {
+                try (PreparedStatement stmtProduct = connection.prepareStatement(sqlUpdateProduct)) {
+                    stmtProduct.setString(1, newNickname);
+                    stmtProduct.setString(2, oldNickname);
+                    stmtProduct.executeUpdate();
+                }
             }
+
+            // 2. `User` 테이블 업데이트
+            try (PreparedStatement stmtUser = connection.prepareStatement(sqlUpdateUser)) {
+                stmtUser.setString(1, updatedUser.getName() != null ? updatedUser.getName() : existingUser.getName());
+                stmtUser.setString(2, updatedUser.getPhone() != null ? updatedUser.getPhone() : existingUser.getPhone());
+                stmtUser.setString(3, updatedUser.getLocation() != null ? updatedUser.getLocation() : existingUser.getLocation());
+                stmtUser.setString(4, updatedUser.getPasswd() != null && !updatedUser.getPasswd().isEmpty()
+                        ? updatedUser.getPasswd()
+                        : existingUser.getPasswd());
+                stmtUser.setString(5, updatedUser.getImage() != null ? updatedUser.getImage() : existingUser.getImage());
+                stmtUser.setString(6, updatedUser.getMessage() != null ? updatedUser.getMessage() : existingUser.getMessage());
+                stmtUser.setString(7, newNickname != null ? newNickname : existingUser.getNickname());
+                stmtUser.setString(8, email);
+
+                stmtUser.executeUpdate();
+            }
+
+            connection.commit(); // 트랜잭션 커밋
+            return findUserById(email);
         } catch (SQLException e) {
-            logger.error("SQL Error during user update: " + e.getMessage());
-            throw new RuntimeException("Database error during user update", e);
+            logger.error("SQL Error during user update: {}", e.getMessage());
+            throw new RuntimeException("사용자 업데이트 중 데이터베이스 오류가 발생했습니다.", e);
         }
     }
 

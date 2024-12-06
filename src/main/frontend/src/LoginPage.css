@@ -25,6 +25,7 @@
 }
 
 .input-group {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: stretch; /* 부모 크기에 맞추어 동일한 크기 유지 */

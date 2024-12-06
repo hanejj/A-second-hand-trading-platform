@@ -292,6 +292,10 @@ public class ProductService {
         String sql = "INSERT INTO Wishlist (user_idx, product_idx, created_at) " +
                 "VALUES (?, ?, ?)";
         jdbcTemplate.update(sql, wishRequest.getUserIdx(), wishRequest.getProductIdx(), wishRequest.getCreatedAt());
+
+        // Product 테이블의 heart_num 증가
+        String updateProductSql = "UPDATE Product SET heart_num = heart_num + 1 WHERE product_idx = ?";
+        jdbcTemplate.update(updateProductSql, wishRequest.getProductIdx());
     }
 
     // 상품 찜 해제 기능
@@ -299,6 +303,10 @@ public class ProductService {
         // Wishlist에서 삭제
         String sql = "DELETE FROM Wishlist WHERE user_idx = ? AND product_idx = ?";
         jdbcTemplate.update(sql, wishRequest.getUserIdx(), wishRequest.getProductIdx());
+
+        // Product 테이블의 heart_num 감소
+        String updateProductSql = "UPDATE Product SET heart_num = heart_num - 1 WHERE product_idx = ?";
+        jdbcTemplate.update(updateProductSql, wishRequest.getProductIdx());
     }
 
     public List<Product> searchProductsByTitle(String title) {

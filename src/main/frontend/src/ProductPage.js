@@ -337,14 +337,16 @@ const ProductPage = () => {
           </div>
 
           <div className="product-page-buttons">
+            {!isAdmin && (
             <button
               className={`product-page-heart-button ${isHearted ? "hearted" : ""}`}
               onClick={handleHeartClick}
             >
               {isHearted ? "찜 해제🤍" : "찜🩷"}
             </button>
+)}
             {/* 채팅 버튼 */}
-            {userIdx !== product.writerIdx && (
+            {!isAdmin &&userIdx !== product.writerIdx && (
               <button
                 className="product-page-chat-button"
                 onClick={handleChatClick}

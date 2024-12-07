@@ -6,10 +6,6 @@ import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-// 앱 시작 전에 로컬 스토리지를 초기화
-localStorage.clear();
-console.log("로컬 스토리지가 초기화되었습니다.");
-
 root.render(
   <React.StrictMode>
     <App />

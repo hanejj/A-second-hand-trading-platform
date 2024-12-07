@@ -174,7 +174,7 @@ const ProductUploadPage = () => {
         </div>
   
         <div className="ProductUploadPage-form-group">
-          <label>판매 종류</label>
+          <label>거래 종류</label>
           <div className="ProductUploadPage-sell-type-buttons">
             <button
               type="button"

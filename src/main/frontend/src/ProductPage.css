@@ -44,6 +44,7 @@
     font-size: 16px;
     background-color: #C87BD6;
     color: white;
+    border-radius: 10px; /* 둥근 모서리 */
   }
   
   .product-page-heart-button.hearted {

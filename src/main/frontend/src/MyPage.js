@@ -330,7 +330,7 @@ useEffect(() => {
 
           <div className="user-details">
             <div className="user-email">{userInfo.id}</div>
-            <div className="user-name">{userInfo.name}</div>
+            <div className="user-name">{userInfo.nickname}({userInfo.name} 님) </div>
             <div className="user-message">{userInfo.message}</div>
           </div>
           <div className="points-section">

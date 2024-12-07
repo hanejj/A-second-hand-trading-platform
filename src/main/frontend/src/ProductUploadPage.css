@@ -1,122 +1,130 @@
 /* 기본 스타일 */
 .product-upload-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-  }
-  
-  .ProductUploadPage-title {
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 30px;
-    color:#C87BD6;
-  }
-  
-  /* 폼 스타일 */
-  .ProductUploadPage-upload-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .ProductUploadPage-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  label {
-    font-weight: bold;
-    font-size: 1rem;
-  }
-  
-  .input-field, select {
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 100%;
-  }
-  
-  textarea.input-field {
-    resize: vertical;
-    height: 100px;
-  }
-  
-  /* 팔아요/구해요 버튼 스타일 */
-  .ProductUploadPage-sell-type-buttons {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .ProductUploadPage-sell-type-buttons button {
-    padding: 10px 20px;
-    border: none;
-    background-color: #d5a0e2;
-    color: white;
-    font-size: 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .ProductUploadPage-sell-type-buttons button.active {
-    background-color: #cd40cd;
-  }
-  
-  .ProductUploadPage-sell-type-buttons button:hover {
-    opacity: 0.8;
-  }
-  
-  /* 제출 버튼 스타일 */
-  .ProductUploadPage-submit-button {
-    padding: 15px;
-    background-color: #28a745;
-    color: white;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: background-color 0.3s;
-  }
-  
-  .ProductUploadPage-submit-button:hover {
-    background-color: #218838;
-  }
-  
-  .ProductUploadPage-submit-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .ProductUploadPage-submit-button.disabled {
-    background-color: #ccc;
-    color: #666;
-    cursor: not-allowed;
-  }
-  
-  .ProductUploadPage-submit-button.active {
-    background-color: #cd40cd;
-    color: white;
-  }
-  
-  .ProductUploadPage-error-message {
-    color: red;
-    margin-top: 10px;
-  }
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
 
-  .go-back-button {
-    background-color: transparent;
-    border: none;
-    color: #C87BD6;
-    font-size: 15px;
-    cursor: pointer;
-  }
+.ProductUploadPage-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #C87BD6;
+}
+
+/* 폼 스타일 */
+.ProductUploadPage-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: normal;
+}
+
+.ProductUploadPage-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: stretch;
+}
+
+.ProductUploadPage-form-group label {
+  font-weight: bold;
+  font-size: 1rem;
+  width: stretch;
   
-  .go-back-button:hover {
-    color:#cd40cd;
-  }
+}
+
+.ProductUploadPage-input-field {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: stretch;
+  
+}
+
+.ProductUploadPage-select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: stretch;
+}
+
+textarea.ProductUploadPage-input-field {
+  resize: vertical;
+  height: 100px;
+  width: stretch;
+}
+
+/* 팔아요/구해요 버튼 스타일 */
+.ProductUploadPage-sell-type-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.ProductUploadPage-sell-type-buttons button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #d5a0e2;
+  color: white;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ProductUploadPage-sell-type-buttons button.active {
+  background-color: #cd40cd;
+}
+
+.ProductUploadPage-sell-type-buttons button:hover {
+  opacity: 0.8;
+}
+
+/* 제출 버튼 스타일 */
+.ProductUploadPage-submit-button {
+  padding: 15px;
+  background-color: #28a745;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+}
+
+.ProductUploadPage-submit-button:hover {
+  background-color: #218838;
+}
+
+.ProductUploadPage-submit-button.disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.ProductUploadPage-submit-button.active {
+  background-color: #cd40cd;
+  color: white;
+}
+
+.ProductUploadPage-error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+/* 뒤로 가기 버튼 */
+.ProductUploadPage-go-back-button {
+  background-color: transparent;
+  border: none;
+  color: #C87BD6;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.ProductUploadPage-go-back-button:hover {
+  color: #cd40cd;
+}

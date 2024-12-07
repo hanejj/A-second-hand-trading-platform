@@ -16,10 +16,36 @@ const CategoryPage = () => {
   const [selling, setSelling] = useState("sell"); // 기본 필터는 '팔아요'
   const [products, setProducts] = useState([]);
   const [isAdmin, setIsAdmin] = useState(null);
-
+  const [userIdx, setUserIdx]=useState(null);
+  const [user, setUser] = useState(null); // 현재 로그인한 사용자 정보 저장
+  
+  // 현재 로그인 정보 가져오기
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios
+        .get("http://localhost:8080/user/profile", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((response) => {
+          if (response.data && response.data.user) {
+            setUser(response.data.user);
+            setUserIdx(response.data.user.userIdx);
+          }
+        })
+        .catch((error) => {
+          console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+        });
+    }
+  
+    const isAdminStored = localStorage.getItem("isAdmin");
+    setIsAdmin(JSON.parse(isAdminStored)); // 초기 isAdmin 설정
+  }, []);
+  
   // 상품 목록 요청
   useEffect(() => {
-    const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8080/product", {
@@ -71,7 +97,7 @@ const CategoryPage = () => {
 
         {/* 글쓰기 버튼은 우측 끝에 배치 */}
         <div className="button-container">
-          {!isAdmin && (
+          {user && user.userIdx && !isAdmin && (
             <button
               className="category-page-write-button"
               onClick={() => navigate('/product/upload')}

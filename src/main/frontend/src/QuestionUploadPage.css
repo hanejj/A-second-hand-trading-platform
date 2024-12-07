@@ -26,12 +26,20 @@
     gap: 8px;
   }
   
-  label {
+  .QuestionUploadPage-form-group label {
     font-weight: bold;
     font-size: 1rem;
   }
   
-  .input-field, select {
+  .QuestionUploadPage-form-group-input-field {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: stretch;
+  }
+
+  .QuestionUploadPage-form-group-select {
     padding: 10px;
     font-size: 1rem;
     border: 1px solid #ddd;
@@ -39,7 +47,7 @@
     width: 100%;
   }
   
-  textarea.input-field {
+  textarea.QuestionUploadPage-form-group-input-field {
     resize: vertical;
     height: 100px;
   }

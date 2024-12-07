@@ -78,7 +78,6 @@ const ProductPage = () => {
     }
   };
 
-
   //채팅 버튼 클릭 시
   const handleChatClick = () => {
     if (!userIdx) {
@@ -205,7 +204,7 @@ const ProductPage = () => {
   // 상품 정보 가져오기
   const fetchProductDetails = async () => {
     try {
-      if (isAdmin === null) return; // isAdmin 상태가 null인 경우 요청하지 않음
+      if (isAdmin === null) setIsAdmin(false); // isAdmin 상태가 null인 경우 요청하지 않음
       const response = await axios.get(
         `http://localhost:8080/product/${productIdx}`,
         {
@@ -251,32 +250,34 @@ const ProductPage = () => {
     }
   };
 
+  // 초기 사용자 정보를 가져오는 useEffect
   useEffect(() => {
-    setIsAdmin(JSON.parse(localStorage.getItem("isAdmin")));
-    // 현재 로그인한 사용자 정보 가져오기
     const token = localStorage.getItem("token");
-    if (token) {
+    const isAdminStored = localStorage.getItem("isAdmin");
+    setIsAdmin(JSON.parse(isAdminStored)); // 초기 isAdmin 설정
+    if (token && isAdmin===false) {
       axios
         .get("http://localhost:8080/user/profile", {
           headers: {
-            Authorization: "Bearer " + token, // JWT 토큰을 Authorization 헤더에 추가
+            Authorization: "Bearer " + token,
           },
         })
         .then((response) => {
           if (response.data && response.data.user) {
-            setUser(response.data.user); // 사용자 정보 저장
+            setUser(response.data.user);
             setUserIdx(response.data.user.userIdx);
-            console.log("UserIdx:", response.data.user.userIdx);
           }
         })
         .catch((error) => {
           console.error("사용자 정보를 가져오는 중 오류 발생:", error);
         });
     }
+  }, [isAdmin]);
 
-    //상품 정보 가져오기
+  // 상품 정보를 가져오는 useEffect
+  useEffect(() => {
     fetchProductDetails();
-  }, [userIdx, productIdx, isAdmin]);
+  }, [productIdx]);
 
   if (!product) {
     return <div>Loading...</div>;
@@ -308,13 +309,20 @@ const ProductPage = () => {
               {new Date(product.createdAt).toLocaleDateString()}
             </p>
             {/* 상태에 따른 텍스트 표시 */}
-            {product.status === "active" && <p>거래 중</p>}
+            {product.status === "active" && (
+              <p>{`거래 중 / ${product.sell === "sell" ? "팔아요" : "구해요"}`}</p>
+            )}
             {product.status === "removed" && (
-              <p className="product-status">삭제</p>
+              <p className="product-status">
+                삭제 / {product.sell === "sell" ? "팔아요" : "구해요"}
+              </p>
             )}
             {product.status === "completed" && (
-              <p className="product-status">거래 완료</p>
+              <p className="product-status">
+                거래 완료 / {product.sell === "sell" ? "팔아요" : "구해요"}
+              </p>
             )}
+
             <p>
               ♡ 관심 {product.heartNum} · 💬 채팅 {product.chatNum}
             </p>

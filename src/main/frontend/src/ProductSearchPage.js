@@ -46,9 +46,9 @@ const ProductSearchPage = () => {
         />
         <button type="submit">검색</button>
       </form>
-
+  
       {errorMessage && <p className="error-message">{errorMessage}</p>}
-
+  
       <div className="product-list">
         {products.length > 0 ? (
           products.map(product => (
@@ -76,6 +76,7 @@ const ProductSearchPage = () => {
       </div>
     </div>
   );
+  
 };
 
 export default ProductSearchPage;

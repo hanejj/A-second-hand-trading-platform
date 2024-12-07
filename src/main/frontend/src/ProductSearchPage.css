@@ -16,7 +16,7 @@
 }
 
 /* 검색 폼 스타일 */
-form {
+.product-search-page form {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,7 +24,7 @@ form {
   gap: 10px; /* 검색 필드와 버튼 간격 */
 }
 
-form input[type="text"] {
+.product-search-page form input[type="text"] {
   padding: 10px 15px;
   font-size: 16px;
   border: 1px solid #ccc;
@@ -33,12 +33,12 @@ form input[type="text"] {
   transition: border-color 0.3s;
 }
 
-form input[type="text"]:focus {
+.product-search-page form input[type="text"]:focus {
   border-color: #d081ff; /* 포커스 시 보라색 강조 */
   outline: none;
 }
 
-form button {
+.product-search-page form button {
   padding: 10px 15px;
   font-size: 16px;
   background-color: #d081ff; /* 보라색 버튼 */
@@ -49,15 +49,14 @@ form button {
   transition: background-color 0.3s;
 }
 
-form button:hover {
+.product-search-page form button:hover {
   background-color: #cd40cd; /* 호버 시 짙은 보라색 */
 }
 
 /* 에러 메시지 스타일 */
-.error-message {
+.product-search-page .error-message {
   color: #dc3545; /* 빨간색 */
   text-align: center;
   margin-top: 10px;
   font-size: 14px;
 }
-

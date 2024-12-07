@@ -157,6 +157,7 @@ const UserManagementPage = () => {
                 <button
                   className="user-management-page-action-button"
                   onClick={() => handleEditMannerPoint(user.idx, user.name, user.manner_point)}
+                  disabled={user.manner_point === -1} // 매너 지수가 -1이면 버튼 비활성화
                 >
                   매너 지수 수정
                 </button>

@@ -120,7 +120,7 @@ const AnswerUploadPage = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="input-field"
+            className="QuestionUploadPage-form-group-input-field"
           />
         </div>
 
@@ -130,7 +130,7 @@ const AnswerUploadPage = () => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             required
-            className="input-field"
+            className="QuestionUploadPage-form-group-input-field"
           />
         </div>
 
@@ -139,7 +139,7 @@ const AnswerUploadPage = () => {
           <input
             type="file"
             onChange={handleImageChange}
-            className="input-field"
+            className="QuestionUploadPage-form-group-input-field"
           />
         </div>
 

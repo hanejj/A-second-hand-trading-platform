@@ -86,7 +86,7 @@ const ProductUploadPage = () => {
   return (
     <div className="product-upload-page">
       {/* 뒤로 가기 버튼 */}
-      <button className="go-back-button" onClick={handleGoBack}>
+      <button className="ProductUploadPage-go-back-button" onClick={handleGoBack}>
         &lt; 뒤로 가기
       </button>
       <h2 className="ProductUploadPage-title">상품 업로드</h2>
@@ -98,10 +98,10 @@ const ProductUploadPage = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="input-field"
+            className="ProductUploadPage-input-field"
           />
         </div>
-
+  
         <div className="ProductUploadPage-form-group">
           <label>내용</label>
           <textarea
@@ -109,10 +109,10 @@ const ProductUploadPage = () => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             required
-            className="input-field"
+            className="ProductUploadPage-input-field"
           />
         </div>
-
+  
         <div className="ProductUploadPage-form-group">
           <label>가격</label>
           <input
@@ -120,11 +120,11 @@ const ProductUploadPage = () => {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required
-            className="input-field"
+            className="ProductUploadPage-input-field"
             placeholder="숫자만 입력하세요"
           />
         </div>
-
+  
         <div className="ProductUploadPage-form-group">
           <label>위치</label>
           <input
@@ -132,17 +132,17 @@ const ProductUploadPage = () => {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             required
-            className="input-field"
+            className="ProductUploadPage-input-field"
           />
         </div>
-
+  
         <div className="ProductUploadPage-form-group">
           <label>카테고리</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             required
-            className="input-field"
+            className="ProductUploadPage-input-field"
           >
             <option value="Electronics">전자기기</option>
             <option value="Fashion">의류</option>
@@ -151,7 +151,7 @@ const ProductUploadPage = () => {
             <option value="Other">기타</option>
           </select>
         </div>
-
+  
         <div className="ProductUploadPage-form-group">
           <label>키워드</label>
           <input
@@ -159,35 +159,51 @@ const ProductUploadPage = () => {
             value={keywords}
             onChange={handleKeywordsChange}
             placeholder="쉼표로 구분하여 키워드 입력(키워드1,키워드2,...)"
-            className="input-field"
+            className="ProductUploadPage-input-field"
           />
         </div>
-
+  
         <div className="ProductUploadPage-form-group">
           <label>이미지</label>
           <input
             type="file"
             onChange={handleImageChange}
             required
-            className="input-field"
+            className="ProductUploadPage-input-field"
           />
         </div>
-
+  
         <div className="ProductUploadPage-form-group">
           <label>판매 종류</label>
           <div className="ProductUploadPage-sell-type-buttons">
-            <button type="button" onClick={() => handleSellTypeChange('sell')} className={sellType === 'sell' ? 'active' : ''}>팔아요</button>
-            <button type="button" onClick={() => handleSellTypeChange('get')} className={sellType === 'get' ? 'active' : ''}>구해요</button>
+            <button
+              type="button"
+              onClick={() => handleSellTypeChange('sell')}
+              className={sellType === 'sell' ? 'active' : ''}
+            >
+              팔아요
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSellTypeChange('get')}
+              className={sellType === 'get' ? 'active' : ''}
+            >
+              구해요
+            </button>
           </div>
         </div>
-
+  
         {!isFormValid && (
-          <p className="ProductUploadPage-error-message">모든 필수 항목을 입력해주세요!</p>
+          <p className="ProductUploadPage-error-message">
+            모든 필수 항목을 입력해주세요!
+          </p>
         )}
-
+  
         <button
           type="submit"
-          className={`ProductUploadPage-submit-button ${isFormValid ? 'active' : 'disabled'}`}
+          className={`ProductUploadPage-submit-button ${
+            isFormValid ? 'active' : 'disabled'
+          }`}
           disabled={!isFormValid}
         >
           상품 업로드
@@ -195,6 +211,7 @@ const ProductUploadPage = () => {
       </form>
     </div>
   );
+  
 };
 
 export default ProductUploadPage;

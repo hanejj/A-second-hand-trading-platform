@@ -86,6 +86,7 @@ public class ProductService {
         // user_idx가 null일 경우 -1로 처리 (관리자인 경우 다른 로직 적용)
         Object userIdxParam = (user_idx != null) ? user_idx : -1;
 
+        System.out.println("userIdxParam: "+userIdxParam);
         // 1. 상품 정보 조회
         String productSql = """
     SELECT 

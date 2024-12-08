@@ -256,34 +256,75 @@ const ProductPage = () => {
     }
   };
 
-  // 초기 사용자 정보를 가져오는 useEffect
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+
+
+  // 사용자 정보를 가져오는 함수
+const fetchUserProfile = async () => {
+  const token = localStorage.getItem("token");
+  if (token && isAdmin === false) {
+    try {
+      const response = await axios.get("http://localhost:8080/user/profile", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      });
+      if (response.data && response.data.user) {
+        setUser(response.data.user);
+        setUserIdx(response.data.user.userIdx);
+      }
+    } catch (error) {
+      console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+    }
+  }
+};
+
+// 초기 사용자 정보 및 상품 정보를 가져오는 useEffect
+useEffect(() => {
+  const init = async () => {
     const isAdminStored = localStorage.getItem("isAdmin");
     setIsAdmin(JSON.parse(isAdminStored)); // 초기 isAdmin 설정
-    if (token && isAdmin === false) {
-      axios
-        .get("http://localhost:8080/user/profile", {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((response) => {
-          if (response.data && response.data.user) {
-            setUser(response.data.user);
-            setUserIdx(response.data.user.userIdx);
-          }
-        })
-        .catch((error) => {
-          console.error("사용자 정보를 가져오는 중 오류 발생:", error);
-        });
-    }
-  }, [isAdmin]);
 
-  // 상품 정보를 가져오는 useEffect
-  useEffect(() => {
-    fetchProductDetails();
-  }, [productIdx]);
+    await fetchUserProfile(); // 사용자 정보를 먼저 가져옴
+    if (userIdx !== null || isAdmin !== null) {
+      fetchProductDetails(); // 사용자 정보를 가져온 후 상품 정보를 요청
+    }
+  };
+
+  init();
+}, [userIdx, isAdmin]);
+
+  // // 초기 사용자 정보를 가져오는 useEffect
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token && isAdmin === false) {
+  //     axios
+  //       .get("http://localhost:8080/user/profile", {
+  //         headers: {
+  //           Authorization: "Bearer " + token,
+  //         },
+  //       })
+  //       .then((response) => {
+  //         if (response.data && response.data.user) {
+  //           setUser(response.data.user);
+  //           setUserIdx(response.data.user.userIdx);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+  //       });
+  //   }
+  // }, [isAdmin]);
+
+  //   // 초기 사용자 정보를 가져오는 useEffect
+  //   useEffect(() => {
+  //     const isAdminStored = localStorage.getItem("isAdmin");
+  //     setIsAdmin(JSON.parse(isAdminStored)); // 초기 isAdmin 설정
+  //   }, []);
+
+  // // 상품 정보를 가져오는 useEffect
+  // useEffect(() => {
+  //   fetchProductDetails();
+  // }, []);
 
   if (!product) {
     return <div>Loading...</div>;

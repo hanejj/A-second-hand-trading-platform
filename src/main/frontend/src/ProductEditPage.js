@@ -6,6 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 const ProductEditPage = () => {
   const navigate = useNavigate();
   const { productIdx } = useParams();
+  const [product, setProduct] = useState(null);
   const [user, setUser] = useState(null); // 현재 로그인한 사용자 정보 저장
   const [userIdx, setUserIdx] = useState(null); 
   const [userNickname, setUserNickname] = useState(null); 
@@ -75,6 +76,39 @@ const ProductEditPage = () => {
   const handleGoBack = () => {
     navigate(-1); // 이전 페이지로 이동
   };
+
+  // 상품 정보 가져오기
+  const fetchProductDetails = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/product/${productIdx}`,
+        {
+          params: {
+            user_idx: userIdx,
+            isAdmin: false,
+          },
+        },
+      );
+      if (response.data.code === "1000") {
+        setProduct(response.data.data.product); // 상품 정보 설정
+      } else if (response.data.code === "500") {
+        // 접근 불가 상품 처리
+        alert("접근 불가 상품입니다.");
+        navigate("/"); // 메인 페이지로 이동
+      } else {
+        console.error("Unexpected response code:", response.data.code);
+        alert("상품 정보를 불러오는 중 문제가 발생했습니다.");
+      }
+    } catch (error) {
+      console.error("Error fetching product details:", error);
+    }
+  };
+
+
+  // 상품 정보를 가져오는 useEffect
+  useEffect(() => {
+    fetchProductDetails();
+  }, []);
 
   useEffect(() => {
     // 현재 로그인 정보 가져오기

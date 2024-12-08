@@ -362,4 +362,53 @@ public class ProductController {
             ));
         }
     }
+
+
+    // 상품 게시글 수정
+    @PutMapping("{product_idx}/edit")
+    public ResponseEntity<ApiResponse> editProduct(
+            @PathVariable int product_idx,
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("price") int price,
+            @RequestParam("category") String category,
+            @RequestParam("location") String location,
+            @RequestParam("createdAt") String  createdAt,
+            @RequestParam("user_idx") int userIdx,
+            @RequestParam("nickname") String nickname,
+            @RequestParam("keyword") String[] keywords,
+            @RequestParam("sell") String sellType,
+            @RequestParam("image") MultipartFile image) {
+
+        System.out.println("product /edit request");
+
+        ApiResponse apiResponse;
+        try {
+            // 이미지 저장 처리
+            String imagePath = saveImage(image);
+            // createdAt을 LocalDateTime으로 변환
+            // createdAt을 ZonedDateTime으로 파싱 (Z가 포함된 날짜 처리)
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(createdAt, DateTimeFormatter.ISO_DATE_TIME);
+            LocalDateTime createdDateTime = zonedDateTime.toLocalDateTime(); // LocalDateTime으로 변환
+
+            // 업로드된 상품 정보 처리
+            ProductUploadRequest productUploadRequest = new ProductUploadRequest(title, content, imagePath, price, category, location, createdDateTime, userIdx, nickname, Arrays.asList(keywords), sellType);
+
+            // 상품 등록 서비스 호출
+            Integer productIdx=productService.editProduct(productUploadRequest, product_idx);
+
+            // 응답 데이터
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("product_idx", productIdx); // 등록된 상품의 인덱스
+            apiResponse = new ApiResponse("1000", null);
+            apiResponse.setData(responseData);
+
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            apiResponse = new ApiResponse("0", "상품 수정 실패");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+        }
+    }
+
 }

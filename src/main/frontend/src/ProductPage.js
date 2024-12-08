@@ -78,6 +78,12 @@ const ProductPage = () => {
     }
   };
 
+    //상품 수정 버튼 클릭 시
+    const handleEditClick = async () => {  
+      // 수정 페이지로 이동
+      navigate(`/product/${productIdx}/edit`);
+    };
+
   //채팅 버튼 클릭 시
   const handleChatClick = () => {
     if (!userIdx) {
@@ -255,7 +261,7 @@ const ProductPage = () => {
     const token = localStorage.getItem("token");
     const isAdminStored = localStorage.getItem("isAdmin");
     setIsAdmin(JSON.parse(isAdminStored)); // 초기 isAdmin 설정
-    if (token && isAdmin===false) {
+    if (token && isAdmin === false) {
       axios
         .get("http://localhost:8080/user/profile", {
           headers: {
@@ -338,15 +344,15 @@ const ProductPage = () => {
 
           <div className="product-page-buttons">
             {!isAdmin && (
-            <button
-              className={`product-page-heart-button ${isHearted ? "hearted" : ""}`}
-              onClick={handleHeartClick}
-            >
-              {isHearted ? "찜 해제🤍" : "찜🩷"}
-            </button>
-)}
+              <button
+                className={`product-page-heart-button ${isHearted ? "hearted" : ""}`}
+                onClick={handleHeartClick}
+              >
+                {isHearted ? "찜 해제🤍" : "찜🩷"}
+              </button>
+            )}
             {/* 채팅 버튼 */}
-            {!isAdmin &&userIdx !== product.writerIdx && (
+            {!isAdmin && userIdx !== product.writerIdx && (
               <button
                 className="product-page-chat-button"
                 onClick={handleChatClick}
@@ -374,6 +380,18 @@ const ProductPage = () => {
                   </button>
                 )
               : null}
+            {/* 현재 로그인한 유저의 게시글인 경우 수정 가능, product.status가 "removed"가 아닐 때 */}
+            {user &&
+              userIdx === product.writerIdx &&
+              product.status !== "removed" && (
+                <button
+                  className="product-page-report-button"
+                  onClick={handleEditClick}
+                >
+                  수정
+                </button>
+              )}
+
             {/*현재 로그인 유저가 거래 상대방일 때이고, 거래가 이미 완료된 상태일 때만 리뷰 작성 버튼이 보임*/}
             {!reviewData &&
               user &&

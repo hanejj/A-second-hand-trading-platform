@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ProductUploadPage.css';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
-const ProductUploadPage = () => {
+const ProductEditPage = () => {
   const navigate = useNavigate();
+  const { productIdx } = useParams();
   const [user, setUser] = useState(null); // 현재 로그인한 사용자 정보 저장
   const [userIdx, setUserIdx] = useState(null); 
   const [userNickname, setUserNickname] = useState(null); 
@@ -32,7 +33,7 @@ const ProductUploadPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
     const formData = new FormData();
     formData.append('title', title);
     formData.append('content', content);
@@ -44,30 +45,31 @@ const ProductUploadPage = () => {
     formData.append('nickname', userNickname);
     formData.append('keyword', keywords.split(','));
     formData.append('sell', sellType);
-
+  
     if (image) {
       formData.append('image', image);
     }
-
+  
     try {
-      const response = await axios.post('http://localhost:8080/product/upload', formData, {
+      // /product/{productIdx}/edit 엔드포인트로 PUT 요청
+      const response = await axios.put(`http://localhost:8080/product/${productIdx}/edit`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
+  
       if (response.data.code === '1000') {
-        const productIdx = response.data.data.product_idx;
-        alert('상품이 성공적으로 업로드되었습니다.');
-        navigate(`/product/${productIdx}`);
+        alert('상품이 성공적으로 수정되었습니다.');
+        navigate(`/product/${productIdx}`); // 수정 후 해당 상품 페이지로 이동
       } else {
-        alert('상품 업로드에 실패했습니다.');
+        alert('상품 수정에 실패했습니다.');
       }
     } catch (error) {
-      console.error('상품 업로드 실패:', error);
-      alert('상품 업로드 중 오류가 발생했습니다.');
+      console.error('상품 수정 실패:', error);
+      alert('상품 수정 중 오류가 발생했습니다.');
     }
   };
+  
 
   // 뒤로 가기 버튼 핸들러
   const handleGoBack = () => {
@@ -114,7 +116,7 @@ const ProductUploadPage = () => {
       <button className="ProductUploadPage-go-back-button" onClick={handleGoBack}>
         &lt; 뒤로 가기
       </button>
-      <h2 className="ProductUploadPage-title">상품 업로드</h2>
+      <h2 className="ProductUploadPage-title">상품 수정</h2>
       <form onSubmit={handleSubmit} className="ProductUploadPage-upload-form">
         <div className="ProductUploadPage-form-group">
           <label>제목</label>
@@ -231,7 +233,7 @@ const ProductUploadPage = () => {
           }`}
           disabled={!isFormValid}
         >
-          상품 업로드
+          상품 수정 제출
         </button>
       </form>
     </div>
@@ -239,4 +241,4 @@ const ProductUploadPage = () => {
   
 };
 
-export default ProductUploadPage;
+export default ProductEditPage;

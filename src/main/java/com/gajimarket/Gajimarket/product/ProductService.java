@@ -433,4 +433,44 @@ public class ProductService {
 
         return productList;
     }
+
+    //상품 수정
+    public int editProduct(ProductUploadRequest productUploadRequest, int productIdx) {
+        // product 테이블 업데이트
+        String updateProductSql = "UPDATE product " +
+                "SET title = ?, content = ?, image = ?, price = ?, category = ?, location = ?, created_at = ?, writer_idx = ?, writer_name = ?, selling = ?, status = ? " +
+                "WHERE product_idx = ?";
+
+        int rowsAffected = jdbcTemplate.update(updateProductSql,
+                productUploadRequest.getTitle(),
+                productUploadRequest.getContent(),
+                productUploadRequest.getImage(),
+                productUploadRequest.getPrice(),
+                productUploadRequest.getCategory(),
+                productUploadRequest.getLocation(),
+                productUploadRequest.getCreatedAt(),
+                productUploadRequest.getUser_idx(),
+                productUploadRequest.getNickname(),
+                productUploadRequest.getSell(),
+                "active",
+                productIdx
+        );
+
+        if (rowsAffected > 0) {
+            // 키워드 테이블 업데이트 처리
+            // 기존 키워드 삭제
+            String deleteKeywordSql = "DELETE FROM keyword WHERE product_idx = ?";
+            jdbcTemplate.update(deleteKeywordSql, productIdx);
+
+            // 새로운 키워드 삽입
+            if (productUploadRequest.getKeyword() != null) {
+                String insertKeywordSql = "INSERT INTO keyword (product_idx, keyword) VALUES (?, ?)";
+                for (String keyword : productUploadRequest.getKeyword()) {
+                    jdbcTemplate.update(insertKeywordSql, productIdx, keyword);
+                }
+            }
+        }
+
+        return rowsAffected;
+    }
 }

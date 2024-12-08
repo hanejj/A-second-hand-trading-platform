@@ -27,6 +27,7 @@ import QuestionUploadPage from "./QuestionUploadPage";
 import AnswerUploadPage from "./AnswerUploadPage";
 import ReportDetailPage from "./ReportDetailPage";
 import AuthorPage from "./AuthorPage";
+import ProductEditPage from "./ProductEditPage";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -142,6 +143,7 @@ const App = () => {
         />
         <Route path="/report/:reportIdx" element={<ReportDetailPage />} />
         <Route path="/author/:userIdx" element={<AuthorPage />} />
+        <Route path="/product/:productIdx/edit" element={<ProductEditPage />} />
       </Routes>
     </Router>
   );

@@ -76,7 +76,6 @@ const LoginPage = ({ setIsLoggedIn }) => {
         <button type="submit" className="login-button">로그인</button>
       </form>
       <div className="login-links">
-        <a href="/forgot-password">아이디/비번 찾기</a>
         <a href="/signup">회원가입</a>
       </div>
     </div>

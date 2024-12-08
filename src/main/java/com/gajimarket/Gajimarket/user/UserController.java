@@ -51,36 +51,36 @@ public class UserController {
         Map<String, Object> responseBody = new HashMap<>();
 
         try (Connection connection = dataSource.getConnection()) {
-            String userQuery = "SELECT * FROM user WHERE id = ? AND passwd = ?";
-            PreparedStatement userStmt = connection.prepareStatement(userQuery);
-            userStmt.setString(1, userLoginRequest.getId());
-            userStmt.setString(2, userLoginRequest.getPasswd());
-            ResultSet userResult = userStmt.executeQuery();
+            // manner_point를 포함한 SQL 쿼리
+            String query = "SELECT role, manner_point FROM UserAndAdmin WHERE id = ? AND passwd = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, userLoginRequest.getId());
+            stmt.setString(2, userLoginRequest.getPasswd());
+            ResultSet result = stmt.executeQuery();
 
-            if (userResult.next()) {
+            // 결과 확인
+            if (result.next()) {
+                String role = result.getString("role");
+                boolean isAdmin = "admin".equals(role);
+                Integer mannerPoint = result.getObject("manner_point", Integer.class);
+
+                // manner_point가 -1인 경우 로그인 제한
+                if (!isAdmin && mannerPoint != null && mannerPoint == -1) {
+                    responseBody.put("code", 0);
+                    responseBody.put("message", "회원 계정이 영구 정지되었습니다.");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
+                }
+
+                // 정상 로그인 처리
                 String token = jwtTokenProvider.generateToken(userLoginRequest.getId());
                 responseBody.put("code", 1000);
                 responseBody.put("message", "로그인 성공");
                 responseBody.put("token", token);
-                responseBody.put("isAdmin", false);
+                responseBody.put("isAdmin", isAdmin);
                 return ResponseEntity.ok(responseBody);
             }
 
-            String adminQuery = "SELECT * FROM admin WHERE id = ? AND passwd = ?";
-            PreparedStatement adminStmt = connection.prepareStatement(adminQuery);
-            adminStmt.setString(1, userLoginRequest.getId());
-            adminStmt.setString(2, userLoginRequest.getPasswd());
-            ResultSet adminResult = adminStmt.executeQuery();
-
-            if (adminResult.next()) {
-                String token = jwtTokenProvider.generateToken(userLoginRequest.getId());
-                responseBody.put("code", 1000);
-                responseBody.put("message", "로그인 성공");
-                responseBody.put("token", token);
-                responseBody.put("isAdmin", true);
-                return ResponseEntity.ok(responseBody);
-            }
-
+            // 아이디 또는 비밀번호가 잘못된 경우
             responseBody.put("code", 0);
             responseBody.put("message", "아이디나 비밀번호가 잘못되었습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
@@ -307,8 +307,8 @@ public class UserController {
         Map<String, Object> responseBody = new HashMap<>();
         try (Connection connection = dataSource.getConnection()) {
             String query = "SELECT p.product_idx, p.title, p.price, p.location, p.heart_num, p.chat_num, p.image " +
-                    "FROM Wishlist w " +
-                    "JOIN Product p ON w.product_idx = p.product_idx " +
+                    "FROM Product p " +
+                    "RIGHT JOIN Wishlist w ON p.product_idx = w.product_idx " +
                     "WHERE w.user_idx = (SELECT user_idx FROM User WHERE id = ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, email);

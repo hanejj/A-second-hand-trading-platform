@@ -9,7 +9,10 @@ const AdminMainPage = () => {
   // 데이터 시각화
   const [categoryData, setCategoryData] = useState([["Category", "Count"]]); // 카테고리별 상품 수
   const [chargePointData, setChargePointData] = useState([["날짜", "충전량"]]); // 최신 일주일 포인트 충전량
+  const [regionTransactionData, setRegionTransactionData] = useState([["지역", "판매", "구매"]]); // 주요 도시 거래 비율
+  const [topHeartProductsData, setTopHeartProductsData] = useState([["상품명", "찜 수"]]); // 찜수가 많은 상품 TOP 5
   const [loading, setLoading] = useState(true);
+  
   // 카테고리 이름 매핑
   const categoryTranslation = {
     Electronics: "전자제품",
@@ -63,6 +66,77 @@ const AdminMainPage = () => {
         console.error("API 호출 중 오류 발생:", error);
         setLoading(false);
       });
+    // 주요 도시에서의 거래 비율
+  axios
+    .get("http://localhost:8080/data/product/regional-transaction")
+    .then((response) => {
+      if (response.data.code === "1000") {
+        const data = response.data.data;
+        const chartDataArray = [["지역", "판매", "구매"]];
+        const regions = ['서울', '경기도', '부산', '인천', '광주'];
+
+        // 지역별로 판매/구매 비율을 집계
+        regions.forEach((region) => {
+          const regionData = data.filter(item => item.region === region);
+          const sellCount = regionData.find(item => item.selling === "sell")?.transactionCount || 0;
+          const getCount = regionData.find(item => item.selling === "get")?.transactionCount || 0;
+
+          chartDataArray.push([region, sellCount, getCount]);
+        });
+
+        setRegionTransactionData(chartDataArray); // 상태 업데이트
+      } else {
+        console.error("주요 도시 거래 비율 데이터 로드 실패:", response.data);
+      }
+    })
+    .catch((error) => {
+      console.error("주요 도시 거래 비율 데이터 로드 실패:", error);
+    });
+    // 주요 도시에서의 거래 비율
+  axios
+  .get("http://localhost:8080/data/product/regional-transaction")
+  .then((response) => {
+    if (response.data.code === "1000") {
+      const data = response.data.data;
+      const chartDataArray = [["지역", "판매", "구매"]];
+      const regions = ['서울', '경기도', '부산', '인천', '광주'];
+
+      // 지역별로 판매/구매 비율을 집계
+      regions.forEach((region) => {
+        const regionData = data.filter(item => item.region === region);
+        const sellCount = regionData.find(item => item.selling === "sell")?.transactionCount || 0;
+        const getCount = regionData.find(item => item.selling === "get")?.transactionCount || 0;
+
+        chartDataArray.push([region, sellCount, getCount]);
+      });
+
+      setRegionTransactionData(chartDataArray); // 상태 업데이트
+    } else {
+      console.error("주요 도시 거래 비율 데이터 로드 실패:", response.data);
+    }
+  })
+  .catch((error) => {
+    console.error("주요 도시 거래 비율 데이터 로드 실패:", error);
+  });
+  // 최근 한 달간 찜수 많이 받은 상품 TOP 5
+  axios
+  .get("http://localhost:8080/data/product/most-hearted")
+  .then((response) => {
+    if (response.data.code === "1000") {
+      const data = response.data.data;
+      const chartDataArray = [["상품명", "찜 수", { role: "tooltip", type: "string", p: { html: true } }]];
+      data.forEach((item) => {
+        const tooltip = `<div><strong>제목:</strong> ${item.title} - ${item.category} <br/><strong>찜 수:</strong> ${item.heartNum}</div>`;
+            chartDataArray.push([item.title, item.heartNum, tooltip]);
+      });
+      setTopHeartProductsData(chartDataArray);
+    } else {
+      console.error("찜수 많은 상품 데이터 로드 실패:", response.data);
+    }
+  })
+  .catch((error) => {
+    console.error("찜수 많은 상품 데이터 로드 실패:", error);
+  });
   }, []);
 
   const handleButtonClick = (section) => {
@@ -87,8 +161,6 @@ const AdminMainPage = () => {
   return (
     <div className="admin-main-page">
       <h1>관리자페이지</h1>
-
-      {/* Google Chart 데이터 시각화 */}
 {/* Google Chart 데이터 시각화 */}
 <div className="chart-grid">
       {/* 카테고리별 상품 수 */}
@@ -145,6 +217,66 @@ const AdminMainPage = () => {
           <p>차트 데이터를 로드 중입니다...</p>
         )}
       </div>
+
+      {/* 주요 도시 거래 비율 차트 */}
+      <div className="chart-container">
+          {regionTransactionData.length > 1 ? (
+            <Chart
+              chartType="ColumnChart"
+              data={regionTransactionData}
+              options={{
+                title: "주요 도시에서의 거래 비율",
+                titleTextStyle: {
+                  fontSize: 20,
+                  bold: true,
+                },
+                hAxis: {
+                  title: "지역",
+                },
+                vAxis: {
+                  title: "거래 횟수",
+                },
+                isStacked: true,  // 거래 비율을 누적형으로 표시
+                colors: ["#a472c3", "#F2F5A9"], // 판매와 구매에 대한 색상
+              }}
+              width={"100%"}
+              height={"400px"}
+            />
+          ) : (
+            <p>주요 도시 거래 비율 데이터를 로드 중입니다...</p>
+          )}
+        </div>
+
+        {/* 찜수 많은 상품 TOP 5 차트 */}
+        <div className="chart-container">
+          {topHeartProductsData.length > 1 ? (
+            <Chart
+              chartType="BarChart"
+              data={topHeartProductsData}
+              options={{
+                title: "이번 달 인기 상품(찜 기준)",
+                titleTextStyle: {
+                  fontSize: 20,
+                  bold: true,
+                },
+                hAxis: {
+                  title: "찜 수",
+                  minValue: 0,
+                },
+                vAxis: {
+                  title: "상품명",
+                },
+                colors: ["#E2A9F3"],
+                tooltip: { isHtml: true },
+              }}
+              width={"100%"}
+              height={"400px"}
+            />
+          ) : (
+            <p>찜수 많은 상품 데이터를 로드 중입니다...</p>
+          )}
+        </div>
+
 
       
     </div>

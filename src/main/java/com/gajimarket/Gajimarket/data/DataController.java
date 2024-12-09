@@ -1,13 +1,16 @@
 package com.gajimarket.Gajimarket.data;
 
 import com.gajimarket.Gajimarket.ApiResponse;
+import com.gajimarket.Gajimarket.product.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/data")
@@ -50,5 +53,33 @@ public class DataController {
         }
     }
 
+    //주요 도시별 거래 타입 비율
+    @GetMapping("/product/regional-transaction")
+    public ResponseEntity<ApiResponse> getRegionalTransactionData() {
+        ApiResponse apiResponse;
+        try {
+            List<RegionTransactionData> chargeDataList = dataService.getRegionalTransactionData();
+            apiResponse = new ApiResponse("1000", null);
+            apiResponse.setData(chargeDataList);
+            return ResponseEntity.ok().body(apiResponse);
+        } catch (Exception e) {
+            apiResponse = new ApiResponse("0", "차트 데이터 로드 실패");
+            return ResponseEntity.internalServerError().body(apiResponse);
+        }
+    }
 
+    // 최근 한 달간 찜수가 가장 많은 상위 5개 상품 조회
+    @GetMapping("/product/most-hearted")
+    public ResponseEntity<ApiResponse> getTopHeartProducts() {
+        ApiResponse apiResponse;
+        try {
+            List<ProductHeartDTO> chargeDataList = dataService.getTop5ProductsByHeart();
+            apiResponse = new ApiResponse("1000", null);
+            apiResponse.setData(chargeDataList);
+            return ResponseEntity.ok().body(apiResponse);
+        } catch (Exception e) {
+            apiResponse = new ApiResponse("0", "차트 데이터 로드 실패");
+            return ResponseEntity.internalServerError().body(apiResponse);
+        }
+    }
 }

@@ -291,7 +291,7 @@ useEffect(() => {
   };
 
   init();
-}, [userIdx, isAdmin]);
+}, [userIdx, isAdmin, productIdx]);
 
   // // 초기 사용자 정보를 가져오는 useEffect
   // useEffect(() => {

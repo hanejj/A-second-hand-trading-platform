@@ -86,24 +86,23 @@ public class ProductService {
         // user_idx가 null일 경우 -1로 처리 (관리자인 경우 다른 로직 적용)
         Object userIdxParam = (user_idx != null) ? user_idx : -1;
 
-        System.out.println("userIdxParam: "+userIdxParam);
         // 1. 상품 정보 조회
         String productSql = """
-    SELECT 
-        p.*, 
-        CASE 
-            WHEN ? IS NOT NULL AND w.wish_idx IS NOT NULL THEN TRUE 
-            ELSE FALSE 
-        END AS is_hearted
-    FROM 
-        product p
-    LEFT JOIN 
-        wishlist w 
-    ON 
-        p.product_idx = w.product_idx AND w.user_idx = ?
-    WHERE 
-        p.product_idx = ?
-    """;
+SELECT 
+    p.*, 
+    CASE 
+        WHEN ? IS NOT NULL AND w.wish_idx IS NOT NULL THEN TRUE 
+        ELSE FALSE 
+    END AS is_hearted
+FROM 
+    product p
+LEFT JOIN 
+    wishlist w 
+ON 
+    p.product_idx = w.product_idx AND w.user_idx = ?
+WHERE 
+    p.product_idx = ?
+""";
 
         Product product = jdbcTemplate.queryForObject(
                 productSql,
@@ -146,25 +145,33 @@ public class ProductService {
         List<Product> recommendedProducts = Collections.emptyList();
         if (!keywords.isEmpty()) {
             String recommendedProductsSql = """
-        SELECT DISTINCT 
-            p.*,
-            CASE
-                WHEN ? IS NOT NULL AND EXISTS (
-                    SELECT 1
-                    FROM wishlist w
-                    WHERE w.product_idx = p.product_idx AND w.user_idx = ?
-                ) THEN TRUE
-                ELSE FALSE
-            END AS is_hearted
-        FROM
-            product p
-        INNER JOIN
-            keyword k ON p.product_idx = k.product_idx
-        WHERE
-            k.keyword IN (%s)
-            AND p.product_idx != ?
-            AND p.status='active'
-        """;
+SELECT DISTINCT 
+    sub.*,
+    sub.is_hearted
+FROM (
+    SELECT 
+        p.*,
+        CASE 
+            WHEN ? IS NOT NULL AND w.wish_idx IS NOT NULL THEN TRUE 
+            ELSE FALSE 
+        END AS is_hearted
+    FROM 
+        product p
+    LEFT JOIN 
+        wishlist w 
+    ON 
+        p.product_idx = w.product_idx AND w.user_idx = ?
+    WHERE 
+        p.status = 'active'
+) AS sub
+JOIN 
+    keyword k 
+ON 
+    sub.product_idx = k.product_idx
+WHERE 
+    k.keyword IN (%s)
+    AND sub.product_idx != ?
+""";
 
             String placeholders = String.join(",", keywords.stream().map(k -> "?").toArray(String[]::new));
             String finalSql = String.format(recommendedProductsSql, placeholders);
@@ -203,6 +210,7 @@ public class ProductService {
         // 응답 객체 생성
         return new ProductPageResponse(product, recommendedProducts);
     }
+
 
 
     //작성된 리뷰를 데이터베이스에 등록

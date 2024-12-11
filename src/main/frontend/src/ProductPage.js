@@ -285,9 +285,7 @@ useEffect(() => {
     setIsAdmin(JSON.parse(isAdminStored)); // 초기 isAdmin 설정
 
     await fetchUserProfile(); // 사용자 정보를 먼저 가져옴
-    if (userIdx !== null || isAdmin !== null) {
-      fetchProductDetails(); // 사용자 정보를 가져온 후 상품 정보를 요청
-    }
+    fetchProductDetails(); // 사용자 정보를 가져온 후 상품 정보를 요청
   };
 
   init();

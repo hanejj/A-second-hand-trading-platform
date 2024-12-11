@@ -380,7 +380,9 @@ useEffect(() => {
               </Link>
             </div>
           </div>
-
+          <div>
+            {product.content}
+          </div>
           <div className="product-page-buttons">
             {!isAdmin && (
               <button

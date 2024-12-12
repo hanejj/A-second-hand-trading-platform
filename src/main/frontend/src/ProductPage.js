@@ -143,6 +143,11 @@ const ProductPage = () => {
       return;
     }
 
+    if (!reviewImage) {
+      alert("사진을 선택하세요.");
+      return;
+    }
+
     if (!reviewScore) {
       alert("거래 평가를 선택하세요.");
       return;
@@ -152,10 +157,8 @@ const ProductPage = () => {
     formData.append("review", reviewContent);
     formData.append("partnerIndex", user.userIdx);
 
-    // `sellerIndex`는 현재 로그인한 사용자(user.userIdx)
-    formData.append("sellerIndex", user.userIdx);
-    // `buyerIndex`는 product.partner_idx와 동일
-    formData.append("buyerIndex", product.partnerIdx);
+    formData.append("sellerIndex", product.writerIdx);
+    formData.append("buyerIndex", user.userIdx);
     formData.append("reviewScore", reviewScore);
 
     if (reviewImage) {

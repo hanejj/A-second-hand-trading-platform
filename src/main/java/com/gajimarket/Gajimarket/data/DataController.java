@@ -3,6 +3,7 @@ package com.gajimarket.Gajimarket.data;
 import com.gajimarket.Gajimarket.ApiResponse;
 import com.gajimarket.Gajimarket.product.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,4 +83,24 @@ public class DataController {
             return ResponseEntity.internalServerError().body(apiResponse);
         }
     }
+
+    // 평균보다 많은 상품을 판매한 사용자 데이터
+    @GetMapping("/product/above-average-sellers")
+    public ResponseEntity<Map<String, Object>> getAboveAverageSellers() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Map<String, Object>> sellers = dataService.getAboveAverageProductUsersWithAverage();
+            response.put("code", "1000");
+            response.put("message", "성공");
+            response.put("data", sellers);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("code", "0");
+            response.put("message", "데이터 로드 실패");
+            response.put("data", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 }

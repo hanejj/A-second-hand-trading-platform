@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Chart } from "react-google-charts";
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from "chart.js";
+import { Bar } from "react-chartjs-2";
 import axios from "axios";
 import "./AdminMainPage.css";
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const AdminMainPage = () => {
   const navigate = useNavigate();
@@ -11,6 +15,8 @@ const AdminMainPage = () => {
   const [chargePointData, setChargePointData] = useState([["날짜", "충전량"]]); // 최신 일주일 포인트 충전량
   const [regionTransactionData, setRegionTransactionData] = useState([["지역", "판매", "구매"]]); // 주요 도시 거래 비율
   const [topHeartProductsData, setTopHeartProductsData] = useState([["상품명", "찜 수"]]); // 찜수가 많은 상품 TOP 5
+  const [barChartData, setBarChartData] = useState({});
+  const [averageCount, setAverageCount] = useState(0);
   const [loading, setLoading] = useState(true);
   
   // 카테고리 이름 매핑
@@ -137,6 +143,43 @@ const AdminMainPage = () => {
   .catch((error) => {
     console.error("찜수 많은 상품 데이터 로드 실패:", error);
   });
+
+  //평균보다 많은 상품을 올린 사용자
+  axios
+      .get("http://localhost:8080/data/product/above-average-sellers")
+      .then((response) => {
+        if (response.data.code === "1000") {
+          const data = response.data.data;
+
+          // 평균 값 설정
+          if (data.length > 0) {
+            setAverageCount(Number(data[0].average));
+          }
+
+          // 차트 데이터 설정
+          const labels = data.map((item) => item.nickname); // 사용자 이름
+          const values = data.map((item) => Number(item.transactionCount)); // 판매 개수
+
+          setBarChartData({
+            labels, // 사용자 이름
+            datasets: [
+              {
+                label: "판매 개수",
+                data: values, // 판매 개수 데이터
+                backgroundColor: "rgba(118, 215, 196, 0.7)", // 막대 배경색
+                borderColor: "#76D7C4", // 막대 테두리 색
+                borderWidth: 1,
+              },
+            ],
+          });
+        } else {
+          console.error("데이터 로드 실패:", response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("API 호출 중 오류 발생:", error);
+      });
+
   }, []);
 
   const handleButtonClick = (section) => {
@@ -277,8 +320,45 @@ const AdminMainPage = () => {
           )}
         </div>
 
-
-      
+        {/* 평균보다 많은 상품 판매자 막대 차트 */}
+        <div className="chart-container">
+          <h2>평균보다 많은 상품을 판매한 사용자</h2>
+          {barChartData.labels ? (
+            <Bar
+              data={barChartData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: "top", // 범례 위치
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: (context) => `${context.raw}개`,
+                    },
+                  },
+                },
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: "사용자",
+                    },
+                  },
+                  y: {
+                    title: {
+                      display: true,
+                      text: "판매 개수",
+                    },
+                    beginAtZero: true,
+                  },
+                },
+              }}
+            />
+          ) : (
+            <p>데이터를 로드 중입니다...</p>
+          )}
+        </div>
     </div>
 
       <div className="admin-main-page-button-grid">

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DataService {
@@ -112,6 +113,40 @@ public class DataService {
         );
 
         return result;
+    }
+
+    // 사용자별 평균 상품 판매 개수와 비교하여 필터링 및 평균 값 포함
+    public List<Map<String, Object>> getAboveAverageProductUsersWithAverage() {
+        String sql = """
+    WITH ProductCounts AS (
+        SELECT writer_idx, COUNT(*) AS product_count
+        FROM Product
+        GROUP BY writer_idx
+    ),
+    AverageCount AS (
+        SELECT AVG(product_count) AS average_count
+        FROM ProductCounts
+    )
+    SELECT u.nickname, pc.product_count, ac.average_count
+    FROM User u
+    JOIN ProductCounts pc ON u.user_idx = pc.writer_idx
+    CROSS JOIN AverageCount ac
+    HAVING pc.product_count > ac.average_count;
+    """;
+
+        try {
+            return jdbcTemplate.query(
+                    sql,
+                    (rs, rowNum) -> Map.of(
+                            "nickname", rs.getString("nickname"),
+                            "transactionCount", rs.getInt("product_count"),
+                            "average", rs.getDouble("average_count") 
+                    )
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("쿼리 실행 중 오류 발생", e);
+        }
     }
 
 }

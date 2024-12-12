@@ -73,4 +73,11 @@ public class ChatDAO {
         String query = "UPDATE Point SET point = ? WHERE user_idx = ?";
         jdbcTemplate.update(query, newPoints, userIdx);
     }
+
+    public void insertPointHistory(int userIdx, int amount, String transactionType) {
+        String query = "INSERT INTO Point_history (user_idx, change_amount, transaction_type, created_at) VALUES (?, ?, ?, NOW())";
+        jdbcTemplate.update(query, userIdx, amount, transactionType);
+    }
 }
+
+

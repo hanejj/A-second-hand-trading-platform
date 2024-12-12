@@ -251,25 +251,42 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> updateUserPoint(@PathVariable String email, @RequestBody Map<String, Integer> requestBody) {
         Map<String, Object> responseBody = new HashMap<>();
         try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+
+            // 포인트 업데이트
             String updateQuery = "INSERT INTO point (user_idx, point) VALUES ((SELECT user_idx FROM user WHERE id = ?), ?) "
                     + "ON DUPLICATE KEY UPDATE point = point + ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
-            preparedStatement.setString(1, email);
-            preparedStatement.setInt(2, requestBody.get("amount"));
-            preparedStatement.setInt(3, requestBody.get("amount"));
+            PreparedStatement updateStmt = connection.prepareStatement(updateQuery);
+            updateStmt.setString(1, email);
+            updateStmt.setInt(2, requestBody.get("amount"));
+            updateStmt.setInt(3, requestBody.get("amount"));
 
-            int rowsAffected = preparedStatement.executeUpdate();
+            int rowsAffected = updateStmt.executeUpdate();
 
             if (rowsAffected > 0) {
+                // Point_history 테이블에 데이터 삽입
+                String historyQuery = "INSERT INTO Point_history (user_idx, change_amount, transaction_type, created_at) "
+                        + "VALUES ((SELECT user_idx FROM user WHERE id = ?), ?, ?, NOW())";
+                PreparedStatement historyStmt = connection.prepareStatement(historyQuery);
+                historyStmt.setString(1, email);
+                historyStmt.setInt(2, requestBody.get("amount"));
+                historyStmt.setString(3, requestBody.get("amount") > 0 ? "charge" : "withdraw");
+
+                historyStmt.executeUpdate();
+
+                connection.commit();
+
                 responseBody.put("code", 1000);
                 responseBody.put("message", "포인트가 성공적으로 업데이트되었습니다.");
                 return ResponseEntity.ok(responseBody);
             } else {
+                connection.rollback(); // 트랜잭션 롤백
                 responseBody.put("code", 0);
                 responseBody.put("message", "사용자를 찾을 수 없습니다.");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseBody);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             responseBody.put("code", 0);
             responseBody.put("message", "포인트 업데이트 중 오류 발생");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);

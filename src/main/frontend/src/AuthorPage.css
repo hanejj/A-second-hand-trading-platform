@@ -424,3 +424,11 @@ a{
   color: #000;
   background:none;
 }
+
+.inactive-product {
+  pointer-events: none; /* 클릭 비활성화 */
+}
+
+.inactive-product-info-box {
+  opacity: 0.5; /* 흐리게 표시 */
+}

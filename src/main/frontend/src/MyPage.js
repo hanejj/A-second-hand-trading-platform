@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './MyPage.css';
+import "./CategoryPage.css";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
@@ -384,11 +385,11 @@ useEffect(() => {
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // 최신 순 정렬
         .map(product => (
           <Link 
-            to={`/product/${product.product_idx}`} 
-            className="product-card" 
-            key={product.product_idx}
+            to={`/product/${product.productIdx}`} 
+            className={`product-card ${product.status === "completed" ? "inactive-product" : ""}`} 
+            key={product.productIdx}
           >
-            <div className="product-info">
+            <div className={`product-info ${product.status === "completed" ? "inactive-product-info-box" : ""}`}> 
               <h3>{product.title}</h3>
               <p>{product.price}원</p>
               <p>{product.location}</p>
@@ -416,10 +417,10 @@ useEffect(() => {
         .map(item => (
           <Link 
             to={`/product/${item.product_idx}`} 
-            className="product-card" 
+            className={`product-card ${item.status === "completed" ? "inactive-product" : ""}`} 
             key={item.product_idx}
           >
-            <div className="product-info">
+            <div className={`product-info ${item.status === "completed" ? "inactive-product-info-box" : ""}`}> 
               <h3>{item.title}</h3>
               <p>{item.price}원</p>
               <p>{item.location}</p>
@@ -434,6 +435,37 @@ useEffect(() => {
         ))
     ) : (
       <div>찜한 상품이 없습니다.</div>
+    )}
+  </div>
+)}
+
+{activeTab === '구매내역' && (
+  <div className="product-list">
+    {purchasedProducts.length > 0 ? (
+      [...purchasedProducts]
+        .filter(product => product.status !== 'removed') // status가 removed인 상품 제외
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // 최신 순 정렬
+        .map(product => (
+          <Link 
+            to={`/product/${product.productIdx}`} 
+            className={`product-card ${product.status === "completed" ? "inactive-product" : ""}`} 
+            key={product.productIdx}
+          >
+            <div className={`product-info ${product.status === "completed" ? "inactive-product-info-box" : ""}`}> 
+              <h3>{product.title}</h3>
+              <p>가격: {product.price.toLocaleString()}원</p>
+              <p>위치: {product.location}</p>
+              <p>♡ {product.heartNum} 💬 {product.chatNum}</p>
+            </div>
+            <img 
+              src={`http://localhost:8080/image?image=${product.image}`} 
+              alt={product.title} 
+              className="product-image"
+            />
+          </Link>
+        ))
+    ) : (
+      <div>구매한 상품이 없습니다.</div>
     )}
   </div>
 )}
@@ -470,37 +502,6 @@ useEffect(() => {
       })
     ) : (
       <div>채팅 내역이 없습니다.</div>
-    )}
-  </div>
-)}
-
-{activeTab === '구매내역' && (
-  <div className="product-list">
-    {purchasedProducts.length > 0 ? (
-      [...purchasedProducts]
-        .filter(product => product.status !== 'removed') // status가 removed인 상품 제외
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // 최신 순 정렬
-        .map(product => (
-          <Link 
-            to={`/product/${product.productIdx}`} 
-            className="product-card" 
-            key={product.productIdx}
-          >
-            <div className="product-info">
-              <h3>{product.title}</h3>
-              <p>가격: {product.price.toLocaleString()}원</p>
-              <p>위치: {product.location}</p>
-              <p>♡ {product.heartNum} 💬 {product.chatNum}</p>
-            </div>
-            <img 
-              src={`http://localhost:8080/image?image=${product.image}`} 
-              alt={product.title} 
-              className="product-image"
-            />
-          </Link>
-        ))
-    ) : (
-      <div>구매한 상품이 없습니다.</div>
     )}
   </div>
 )}

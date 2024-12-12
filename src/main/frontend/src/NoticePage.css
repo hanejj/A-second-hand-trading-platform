@@ -110,3 +110,19 @@
     background-color: #b02a37;
   }
   
+  .important-button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: lightgray;
+  }
+  
+  .important-button.important {
+    color: gold;
+  }
+  
+  .important-button:hover {
+    color: orange;
+  }
+  

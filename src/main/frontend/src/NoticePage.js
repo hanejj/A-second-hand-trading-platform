@@ -5,6 +5,7 @@ import "./NoticePage.css";
 const NoticePage = () => {
   const [notices, setNotices] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [importantNotices, setImportantNotices] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,8 +18,9 @@ const NoticePage = () => {
         const response = await fetch("http://localhost:8080/notice");
         if (response.ok) {
           const data = await response.json();
-          console.log("Fetched notices:", data);
           setNotices(data.data || []);
+          const savedImportantNotices = JSON.parse(localStorage.getItem("importantNotices")) || [];
+          setImportantNotices(savedImportantNotices);
         } else {
           console.error("Failed to fetch notices");
           setNotices([]);
@@ -31,6 +33,26 @@ const NoticePage = () => {
 
     fetchNotices();
   }, []);
+
+  const toggleImportant = (id) => {
+    if (!isAdmin) return; // 관리자가 아니면 동작하지 않음
+
+    const updatedImportantNotices = importantNotices.includes(id)
+      ? importantNotices.filter((noticeId) => noticeId !== id)
+      : [...importantNotices, id];
+
+    setImportantNotices(updatedImportantNotices);
+    localStorage.setItem("importantNotices", JSON.stringify(updatedImportantNotices));
+  };
+
+  const sortedNotices = [...notices].sort((a, b) => {
+    const isAImportant = importantNotices.includes(a.noticeId);
+    const isBImportant = importantNotices.includes(b.noticeId);
+    if (isAImportant === isBImportant) {
+      return new Date(b.noticeCreatedAt) - new Date(a.noticeCreatedAt);
+    }
+    return isBImportant - isAImportant;
+  });
 
   const handleDelete = async (id) => {
     if (window.confirm("이 공지사항을 삭제하시겠습니까?")) {
@@ -72,6 +94,7 @@ const NoticePage = () => {
         <thead>
           <tr>
             <th className="notice-page-column">순번</th>
+            <th className="notice-page-column">중요</th>
             <th className="notice-page-column">제목</th>
             <th className="notice-page-column">글쓴이</th>
             <th className="notice-page-column">작성시간</th>
@@ -79,36 +102,44 @@ const NoticePage = () => {
           </tr>
         </thead>
         <tbody>
-          {notices
-            .sort((a, b) => new Date(b.noticeCreatedAt) - new Date(a.noticeCreatedAt)) // 최신순 정렬
-            .map((notice, index) => (
-              <tr key={notice.noticeId} className="notice-page-row">
-                <td>{notices.length - index}</td> {/* 최신순으로 번호 부여 */}
+          {sortedNotices.map((notice, index) => (
+            <tr key={notice.noticeId} className="notice-page-row">
+              <td>{sortedNotices.length - index}</td>
+              <td>
+                <button
+                  className={`important-button ${
+                    importantNotices.includes(notice.noticeId) ? "important" : ""
+                  }`}
+                  onClick={() => toggleImportant(notice.noticeId)}
+                >
+                  ★
+                </button>
+              </td>
+              <td>
+                <Link to={`/notices/${notice.noticeId}`} className="notice-page-link">
+                  {notice.noticeTitle}
+                </Link>
+              </td>
+              <td>{notice.adminName}</td>
+              <td>{new Date(notice.noticeCreatedAt).toLocaleDateString()}</td>
+              {isAdmin && (
                 <td>
-                  <Link to={`/notices/${notice.noticeId}`} className="notice-page-link">
-                    {notice.noticeTitle}
-                  </Link>
+                  <button
+                    className="edit-button"
+                    onClick={() => navigate(`/notices/edit/${notice.noticeId}`)}
+                  >
+                    수정
+                  </button>
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDelete(notice.noticeId)}
+                  >
+                    삭제
+                  </button>
                 </td>
-                <td>{notice.adminName}</td>
-                <td>{new Date(notice.noticeCreatedAt).toLocaleDateString()}</td>
-                {isAdmin && (
-                  <td>
-                    <button
-                      className="edit-button"
-                      onClick={() => navigate(`/notices/edit/${notice.noticeId}`)}
-                    >
-                      수정
-                    </button>
-                    <button
-                      className="delete-button"
-                      onClick={() => handleDelete(notice.noticeId)}
-                    >
-                      삭제
-                    </button>
-                  </td>
-                )}
-              </tr>
-            ))}
+              )}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

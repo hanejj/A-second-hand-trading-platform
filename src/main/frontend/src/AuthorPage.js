@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./AuthorPage.css";
+import "./CategoryPage.css";
 import { useParams, Link, useNavigate } from "react-router-dom";
 
 const AuthorPage = () => {
@@ -192,35 +193,45 @@ const AuthorPage = () => {
       </div>
 
       <div className="product-list">
-        {products.length > 0 ? (
-          [...products]
-            .filter((product) => product.status !== "removed") // 삭제된 상품 제외
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // 최신순 정렬
-            .map((product) => (
-              <Link
-                to={`/product/${product.product_idx}`}
-                className="product-card"
-                key={product.product_idx}
-              >
-                <div className="product-info">
-                  <h3>{product.title}</h3>
-                  <p>{product.price.toLocaleString()}원</p>
-                  <p>{product.location}</p>
-                  <p>
-                    ♡ {product.heart_num} 💬 {product.chat_num}
-                  </p>
-                </div>
-                <img
-                  src={`http://localhost:8080/image?image=${product.image}`}
-                  alt={product.title}
-                  className="product-image"
-                />
-              </Link>
-            ))
-        ) : (
-          <div>판매하는 상품이 없습니다.</div>
-        )}
-      </div>
+  {products.length > 0 ? (
+    products
+      .filter((product) => product.status !== "removed") // 삭제된 상품 제외
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // 최신순 정렬
+      .map((product) => (
+        <Link
+          to={`/product/${product.product_idx}`}
+          className={`product-card ${
+            product.status === "completed" ? "inactive-product" : ""
+          }`}
+          key={product.product_idx}
+        >
+          <div
+            className={`product-info-box ${
+              product.status === "completed" ? "inactive-product-info-box" : ""
+            }`} // 상품 정보 박스에 클래스 추가
+          >
+            <h3>{product.title}</h3>
+            <p>{product.price.toLocaleString()}원</p>
+            <p>{product.location}</p>
+            <p>
+              ♡ {product.heart_num} 💬 {product.chat_num}
+            </p>
+            {product.status === "completed" && (
+              <p className="product-status">거래 완료</p>
+            )}
+          </div>
+          <img
+            src={`http://localhost:8080/image?image=${product.image}`}
+            alt={product.title}
+            className="product-image"
+          />
+        </Link>
+      ))
+  ) : (
+    <div>판매하는 상품이 없습니다.</div>
+  )}
+</div>
+
       {showReportModal && (
         <div className="author-page-modal">
           <div className="author-page-modal-content">

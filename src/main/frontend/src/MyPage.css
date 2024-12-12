@@ -8,6 +8,14 @@
     background-color: #f9f9ff;
 }
 
+.inactive-product {
+  pointer-events: none; /* 클릭 비활성화 */
+}
+
+.inactive-product-info-box {
+  opacity: 0.5; /* 흐리게 표시 */
+}
+
 .header-section {
     display: flex;
     width: 100%;

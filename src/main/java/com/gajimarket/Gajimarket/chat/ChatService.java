@@ -39,12 +39,14 @@ public class ChatService {
             return false; // 포인트 부족
         }
 
-        // 포인트 갱신
+        // 트랜잭션 내 작업
         chatDAO.updateUserPoints(senderId, senderPoints - amount); // 송금자 포인트 차감
+        chatDAO.insertPointHistory(senderId, -amount, "withdraw"); // 송금자 기록 추가
+
         int recipientPoints = chatDAO.getUserPoints(recipientId);
-        chatDAO.updateUserPoints(recipientId, recipientPoints + amount); // 수신자 포인트 추가
+        chatDAO.updateUserPoints(recipientId, recipientPoints + amount); // 수신자 포인트 증가
+        chatDAO.insertPointHistory(recipientId, amount, "charge"); // 수신자 기록 추가
 
         return true; // 성공
     }
-
 }

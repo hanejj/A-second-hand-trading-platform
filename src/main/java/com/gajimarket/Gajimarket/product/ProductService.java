@@ -287,7 +287,7 @@ public class ProductService {
         // 키워드가 있는 경우, 키워드 테이블 업데이트
         if (productUploadRequest.getKeyword() != null && productIdx != null) {
             for (String keyword : productUploadRequest.getKeyword()) {
-                String keywordSql = "INSERT INTO keyword (product_idx, keyword) VALUES (?, ?)";
+                String keywordSql = "INSERT INTO keyword (product_idx, keyword) VALUES (?, TRIM(?))";
                 jdbcTemplate.update(keywordSql, productIdx, keyword);
             }
         }

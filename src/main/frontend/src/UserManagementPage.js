@@ -164,7 +164,7 @@ const UserManagementPage = () => {
                 <button
                   className="user-management-page-action-button action-button-danger"
                   onClick={() => handleBanUser(user.idx, user.name)} // 영구 정지 요청
-                  disabled={user.manner_point === -1} // 매너 지수가 -1이면 버튼 비활성화
+                  disabled={user.manner_point <= 0} // 매너 지수가 -1이면 버튼 비활성화
                 >
                   영구 정지
                 </button>

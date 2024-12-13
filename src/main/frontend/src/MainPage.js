@@ -32,7 +32,7 @@ const MainPage = () => {
           },
         });
         if (response.data.code === "1000") {
-          const data = response.data.data.slice(0, 9);
+          const data = response.data.data.slice(0, 10);
           console.log("Popular Products:", data); // 인기 상품 확인
           setPopularProducts(data); // 상위 9개 상품만 저장
         } else {
@@ -55,7 +55,7 @@ const MainPage = () => {
           },
         });
         if (response.data.code === "1000") {
-          const data = response.data.data.slice(0, 9);
+          const data = response.data.data.slice(0, 10);
           console.log("Latest Products:", data); // 최신 상품 확인
           setLatestProducts(data); // 상위 9개 상품만 저장
         } else {

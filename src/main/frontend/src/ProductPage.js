@@ -210,39 +210,6 @@ const ProductPage = () => {
     }
   };
 
-  // 상품 정보 가져오기
-  const fetchProductDetails = async () => {
-    try {
-      if (isAdmin === null) setIsAdmin(false); // isAdmin 상태가 null인 경우 요청하지 않음
-      const response = await axios.get(
-        `http://localhost:8080/product/${productIdx}`,
-        {
-          params: {
-            user_idx: userIdx,
-            isAdmin: isAdmin,
-          },
-        },
-      );
-      if (response.data.code === "1000") {
-        setProduct(response.data.data.product); // 상품 정보
-        setRecommendedProducts(response.data.data.recommendedProducts); // 추천 상품
-        setIsHearted(response.data.data.product.isHearted || false); // 초기 찜 상태 설정
-        // 상품 정보 변경 시 리뷰 데이터 초기화
-        setReviewData(null); // 리뷰 데이터 초기화
-        fetchReviewData(response.data.data.product.review); // 리뷰 데이터를 새로 가져오기
-      } else if (response.data.code === "500") {
-        // 접근 불가 상품 처리
-        alert("접근 불가 상품입니다.");
-        navigate("/"); // 메인 페이지로 이동
-      } else {
-        console.error("Unexpected response code:", response.data.code);
-        alert("상품 정보를 불러오는 중 문제가 발생했습니다.");
-      }
-    } catch (error) {
-      console.error("Error fetching product details:", error);
-    }
-  };
-
   // 리뷰 정보 가져오기
   const fetchReviewData = async (hasReview) => {
     if (hasReview) {
@@ -260,39 +227,73 @@ const ProductPage = () => {
   };
 
 
-
-  // 사용자 정보를 가져오는 함수
-const fetchUserProfile = async () => {
-  const token = localStorage.getItem("token");
-  if (token && isAdmin === false) {
+useEffect(() => {
+  const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/user/profile", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      });
-      if (response.data && response.data.user) {
-        setUser(response.data.user);
-        setUserIdx(response.data.user.userIdx);
+      // isAdmin 초기값 설정
+      const isAdminStored = localStorage.getItem("isAdmin");
+      const isAdminParsed = JSON.parse(isAdminStored);
+      setIsAdmin(isAdminParsed); // 초기 isAdmin 설정
+
+      let user = null;
+      let userIdxLocal = null;
+
+      // 사용자 정보 가져오기 (isAdmin이 false인 경우에만)
+      if (!isAdminParsed) {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const userProfileResponse = await axios.get(
+            "http://localhost:8080/user/profile",
+            {
+              headers: {
+                Authorization: "Bearer " + token,
+              },
+            }
+          );
+          if (userProfileResponse.data && userProfileResponse.data.user) {
+            user = userProfileResponse.data.user;
+            userIdxLocal = user.userIdx;
+            setUser(user);
+            setUserIdx(userIdxLocal);
+          }
+        }
+      }
+
+      // 상품 정보 가져오기
+      const productResponse = await axios.get(
+        `http://localhost:8080/product/${productIdx}`,
+        {
+          params: {
+            user_idx: userIdxLocal,
+            isAdmin: isAdminParsed,
+          },
+        }
+      );
+
+      if (productResponse.data.code === "1000") {
+        setProduct(productResponse.data.data.product); // 상품 정보
+        setRecommendedProducts(productResponse.data.data.recommendedProducts); // 추천 상품
+        setIsHearted(productResponse.data.data.product.isHearted || false); // 초기 찜 상태 설정
+
+        // 상품 정보 변경 시 리뷰 데이터 초기화 및 새로 가져오기
+        setReviewData(null);
+        fetchReviewData(productResponse.data.data.product.review);
+      } else if (productResponse.data.code === "500") {
+        // 접근 불가 상품 처리
+        alert("접근 불가 상품입니다.");
+        navigate("/"); // 메인 페이지로 이동
+      } else {
+        console.error("Unexpected response code:", productResponse.data.code);
+        alert("상품 정보를 불러오는 중 문제가 발생했습니다.");
       }
     } catch (error) {
-      console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+      console.error("Error fetching data:", error);
     }
-  }
-};
-
-// 초기 사용자 정보 및 상품 정보를 가져오는 useEffect
-useEffect(() => {
-  const init = async () => {
-    const isAdminStored = localStorage.getItem("isAdmin");
-    setIsAdmin(JSON.parse(isAdminStored)); // 초기 isAdmin 설정
-
-    await fetchUserProfile(); // 사용자 정보를 먼저 가져옴
-    fetchProductDetails(); // 사용자 정보를 가져온 후 상품 정보를 요청
   };
 
-  init();
-}, [userIdx, isAdmin, productIdx]);
+  fetchData();
+}, [productIdx]); // productIdx가 변경될 때마다 실행
+
 
 
 

@@ -82,6 +82,12 @@ const NoticeDetailPage = () => {
 
       <div className="notice-content">
         <p>{notice.noticeContent || '내용 없음'}</p>
+        {notice.noticeImage && (
+    <img
+      src={"http://localhost:8080/image?image=" + notice.noticeImage}
+      alt="noticeImage"
+    />
+  )}
       </div>
 
       {isAdmin && (

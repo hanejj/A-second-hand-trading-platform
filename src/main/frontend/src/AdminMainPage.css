@@ -48,9 +48,10 @@
   /* 그리드 레이아웃을 위한 차트 컨테이너 */
 .chart-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 그리드 칸 수 조절 */
+  grid-template-columns: repeat(3, 1fr); /* 그리드 칸 수 조절 */
   gap: 20px; /* 차트 간의 간격 */
   margin-top: 30px; /* 위쪽 여백 */
+  align-items: center;
 }
 
 .chart-container {

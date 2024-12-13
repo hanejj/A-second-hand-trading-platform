@@ -19,62 +19,64 @@ const CategoryPage = () => {
   const [userIdx, setUserIdx]=useState(null);
   const [user, setUser] = useState(null); // 현재 로그인한 사용자 정보 저장
   
-  // 현재 로그인 정보 가져오기
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios
-        .get("http://localhost:8080/user/profile", {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((response) => {
-          if (response.data && response.data.user) {
-            setUser(response.data.user);
-            setUserIdx(response.data.user.userIdx);
-          }
-        })
-        .catch((error) => {
-          console.error("사용자 정보를 가져오는 중 오류 발생:", error);
-        });
-    }
-  
-    const isAdminStored = localStorage.getItem("isAdmin");
-    setIsAdmin(JSON.parse(isAdminStored)); // 초기 isAdmin 설정
-  }, []);
-  
-  // 상품 목록 요청
-  useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/product", {
+    
+  
+        // isAdmin 초기 설정
+        const isAdminStored = localStorage.getItem("isAdmin");
+        const isAdminParsed = JSON.parse(isAdminStored);
+        setIsAdmin(isAdminParsed);
+
+        if(isAdmin===false){
+          // 로그인 정보 가져오기
+        const token = localStorage.getItem("token");
+        let userIdxLocal = null;
+  
+        if (token) {
+          const userResponse = await axios.get("http://localhost:8080/user/profile", {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          });
+  
+          if (userResponse.data && userResponse.data.user) {
+            setUser(userResponse.data.user);
+            userIdxLocal = userResponse.data.user.userIdx;
+            setUserIdx(userIdxLocal);
+          }
+        }
+        }  
+        // 상품 목록 가져오기
+        const productResponse = await axios.get("http://localhost:8080/product", {
           params: {
             selling,
             category: category === "all" ? "all" : category,
             order: "new", // 기본 정렬: 최신순
-            isAdmin: isAdmin,
+            isAdmin: isAdminParsed,
           },
         });
-
-        if (response.data.code === "1000") {
+  
+        if (productResponse.data.code === "1000") {
           console.log(
             `Fetched products for ${category} (${selling}):`,
-            response.data.data,
+            productResponse.data.data
           );
-          setProducts(response.data.data);
+          setProducts(productResponse.data.data);
         } else {
-          console.error("Failed to fetch products:", response.data.message);
+          console.error("Failed to fetch products:", productResponse.data.message);
           setProducts([]); // 실패 시 빈 배열로 설정
         }
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching data:", error);
         setProducts([]); // 에러 발생 시 빈 배열로 설정
       }
     };
-
-    fetchProducts();
-  }, [category, selling, isAdmin]);
+  
+    fetchData();
+  }, [category, selling]); // 종속성 배열에서 isAdmin 제거
+  
 
   return (
     <div className="category-page">

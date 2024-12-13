@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,13 +136,28 @@ public class NoticeController {
         }
     }
 
-    //이미지 저장 로직
-    private String saveImage(MultipartFile imageFile) throws IOException {
-        String uploadDir = "uploads/"; // 실제 경로로 변경 필요
-        String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, fileName);
-        Files.createDirectories(filePath.getParent());
-        Files.write(filePath, imageFile.getBytes());
-        return fileName;
+    //파일 시스템에 이미지 저장
+    private String saveImage(MultipartFile image) {
+        try {
+            String uploadDir = "src/main/resources/static/uploads/";
+            String originalFileName = image.getOriginalFilename();
+            String extension = ""; // 파일 확장자
+
+            // 파일 확장자 추출
+            if (originalFileName != null && originalFileName.contains(".")) {
+                extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            }
+
+            // 고유 파일명 생성: UUID 기반
+            String uniqueFileName = UUID.randomUUID().toString() + extension;
+
+            Path filePath = Paths.get(uploadDir + uniqueFileName);
+            Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return "/uploads/" + uniqueFileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("이미지 저장 실패");
+        }
     }
 }

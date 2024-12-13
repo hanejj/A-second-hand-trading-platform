@@ -75,7 +75,7 @@ const CategoryPage = () => {
     };
   
     fetchData();
-  }, [category, selling]); // 종속성 배열에서 isAdmin 제거
+  }, [category, selling, isAdmin, userIdx]); // 종속성 배열에서 isAdmin 제거
   
 
   return (

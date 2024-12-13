@@ -28,20 +28,26 @@ const LoginPage = ({ setIsLoggedIn }) => {
       });
   
       if (response.ok) {
-        const data = await response.json();  // 응답 본문을 JSON으로 파싱
-        const token = data.token;  // 응답 본문에서 토큰 추출
+        const data = await response.json(); // 응답 본문을 JSON으로 파싱
+        const token = data.token; // 응답 본문에서 토큰 추출
         const isAdmin = data.isAdmin; // isAdmin 정보 추출
-  
+      
         if (token) {
           localStorage.setItem('token', token); // 토큰 저장
           localStorage.setItem('isAdmin', isAdmin); // isAdmin 정보 저장
           setIsLoggedIn(true); // 로그인 상태 업데이트
           alert("로그인에 성공했습니다!");
-          navigate('/');  // MainPage로 이동
+          navigate('/'); // MainPage로 이동
         }
       } else {
-        alert('아이디나 비밀번호가 잘못되었습니다.');
+        const data = await response.json(); // 응답 본문을 JSON으로 파싱
+        if (data.message === "회원 계정이 영구 정지되었습니다.") {
+          alert('정지된 계정입니다. 문제가 있다면 admin1@gaji.com으로 연락주십시오.');
+        } else {
+          alert('아이디나 비밀번호가 잘못되었습니다.');
+        }
       }
+      
     } catch (error) {
       console.error("로그인 요청 중 에러 발생:", error);
     }

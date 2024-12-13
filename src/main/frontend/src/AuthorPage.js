@@ -83,14 +83,14 @@ const AuthorPage = () => {
     try {
       const response = await axios.post(
         `http://localhost:8080/report/user/${userIdx}`,
-        new URLSearchParams({
+        {
           title: reportTitle,
           content: reportContent,
           user_idx: userIdx,
-        }),
+        },
         {
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
         },
       );

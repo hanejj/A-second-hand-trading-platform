@@ -135,12 +135,14 @@ const ReportDetailPage = () => {
            {reportDetail.reportedUserNickname}↗
           </Link>
         </p>
-        <p>
-          <strong>신고하는 글:</strong>{" "}
-          <Link to={`/product/${reportDetail.reportedProductIdx}`}>
-            {reportDetail.reportedProductTitle}↗
-          </Link>
-        </p>
+        {reportDetail.reportedProductIdx !== 0 && (
+    <p>
+      <strong>신고하는 글:</strong>{" "}
+      <Link to={`/product/${reportDetail.reportedProductIdx}`}>
+        {reportDetail.reportedProductTitle}↗
+      </Link>
+    </p>
+  )}
         <p>
           <strong>내용:</strong> {reportDetail.content}
         </p>

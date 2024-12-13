@@ -173,10 +173,8 @@ public class ProductController {
         try {
             // 이미지 저장 처리
             String imagePath = saveImage(image);
-            // createdAt을 LocalDateTime으로 변환
-            // createdAt을 ZonedDateTime으로 파싱 (Z가 포함된 날짜 처리)
-            ZonedDateTime zonedDateTime = ZonedDateTime.parse(createdAt, DateTimeFormatter.ISO_DATE_TIME);
-            LocalDateTime createdDateTime = zonedDateTime.toLocalDateTime(); // LocalDateTime으로 변환
+            // 현재 시간으로 변환
+            LocalDateTime createdDateTime = LocalDateTime.now(); // 현재 시간으로 변환
 
             // 업로드된 상품 정보 처리
             ProductUploadRequest productUploadRequest = new ProductUploadRequest(title, content, imagePath, price, category, location, createdDateTime, userIdx, nickname, Arrays.asList(keywords), sellType);

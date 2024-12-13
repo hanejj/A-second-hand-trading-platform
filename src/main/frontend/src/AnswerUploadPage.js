@@ -12,7 +12,7 @@ const AnswerUploadPage = () => {
   const [question, setQuestion] = useState(null); // 질문 데이터를 저장할 상태
   const navigate = useNavigate();
   const [isFormValid, setIsFormValid] = useState(false);
-  const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+  const [isAdmin, setIsAdmin] = useState(null);
   const [adminIdx, setAdminIdx] = useState(null);
 
   // 문의글 정보 가져오기
@@ -35,6 +35,10 @@ const AnswerUploadPage = () => {
 
   useEffect(() => {
     fetchQuestionDetail();
+    // isAdmin 초기 설정
+    const isAdminStored = localStorage.getItem("isAdmin");
+    const isAdminParsed = JSON.parse(isAdminStored);
+    setIsAdmin(isAdminParsed);
     // 현재 로그인한 관리자 정보 가져오기
     const token = localStorage.getItem("token");
     if (token) {
@@ -43,10 +47,13 @@ const AnswerUploadPage = () => {
           headers: {
             Authorization: "Bearer " + token, // JWT 토큰을 Authorization 헤더에 추가
           },
+          params: {
+            isAdmin: isAdminParsed,
+          },
         })
         .then((response) => {
           if (response.data) {
-            setAdminIdx(response.data.admin_idx);
+            setAdminIdx(response.data.data.admin_idx);
           }
         })
         .catch((error) => {
@@ -54,6 +61,7 @@ const AnswerUploadPage = () => {
         });
     }
   }, [question_idx]); // question_idx가 변경되면 다시 호출
+
 
   const handlePublicStatusChange = (status) => {
     setPublicStatus(status);
@@ -65,6 +73,7 @@ const AnswerUploadPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    
     const formData = new FormData();
     formData.append("question_idx", question_idx);
     formData.append("title", title);

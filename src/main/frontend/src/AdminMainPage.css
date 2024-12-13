@@ -44,4 +44,26 @@
     background-color: #8456a4;
   }
   
-  
+  /* Google Chart Section */
+  /* 그리드 레이아웃을 위한 차트 컨테이너 */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 그리드 칸 수 조절 */
+  gap: 20px; /* 차트 간의 간격 */
+  margin-top: 30px; /* 위쪽 여백 */
+}
+
+.chart-container {
+  margin: 30px auto;
+  padding: 10px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+}
+
+.chart-container p {
+  color: #666;
+  font-size: 1.2em;
+  margin: 0;
+}

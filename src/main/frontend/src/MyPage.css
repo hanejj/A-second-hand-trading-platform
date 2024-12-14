@@ -1,0 +1,537 @@
+/* MyPage.css */
+
+.my-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f9f9ff;
+}
+
+.inactive-product {
+  pointer-events: none; /* 클릭 비활성화 */
+}
+
+.inactive-product-info-box {
+  opacity: 0.5; /* 흐리게 표시 */
+}
+
+.header-section {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f4e1ff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    box-sizing: border-box; 
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.avatar-img {
+  width: 100px; /* 원하는 크기로 설정 */
+  height: 100px;
+  border-radius: 50%; /* 원형 이미지 */
+  object-fit: cover; /* 비율 유지 */
+}
+
+.avatar-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-img {
+  max-width: 120px; /* 최대 너비 */
+  max-height: 120px; /* 최대 높이 */
+  border-radius: 50%; /* 원형 처리 */
+  object-fit: cover; /* 이미지 비율 유지하면서 크기에 맞추기 */
+  margin-bottom: 10px; /* 이미지 하단 여백 */
+}
+
+.image-upload-label {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.image-upload-input {
+  display: none; /* 업로드 버튼 숨기기 */
+}
+
+.image-remove-button {
+  margin-top: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-email {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.user-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.user-message {
+    font-size: 14px;
+    color: #666;
+}
+
+.points-section {
+    display: flex;
+    align-items: center;
+}
+
+.points-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+    margin-left: 80px;
+}
+
+.points-button-box{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap:8px;
+}
+
+.points-value {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.points-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.edit-button {
+    padding: 10px 20px;
+    background-color: #d081ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    background-color: #ba6fe1;
+}
+
+.tabs-section {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+    border-bottom: 2px solid #d081ff;
+    font-weight: bold;
+}
+
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/*상품 리스트*/
+.product-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  padding: 20px; /* 양옆에 20px의 여백 추가 */
+}
+
+
+/* 상품 카드 */
+.product-card {
+  height: 200px;
+  display: flex;
+  flex-direction: row; /* 이미지와 텍스트가 가로로 배치되도록 설정 */
+  align-items: center; /* 세로로 중앙 정렬 */
+  justify-content: space-between; /* 왼쪽 정보와 오른쪽 이미지 간 공간 분배 */
+  background-color: #fff;
+  border: 2px solid #c19cd9; /* 기존 스타일 유지 */
+  padding: 20px;
+  border-radius: 10px;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, background-color 0.3s;
+  overflow: hidden; /* 카드 내부의 내용이 넘칠 경우 숨김 처리 */
+  min-width: 500px;
+  text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
+}
+
+  .product-card:hover {
+      transform: scale(1.05);
+      background-color: #f3e6ff;
+  }
+
+  /* 상품 정보 (왼쪽에 위치) */
+.product-info {
+  flex: 1; /* 남은 공간을 차지하도록 설정 */
+  display: flex;
+  flex-direction: column; /* 세로로 텍스트 배치 */
+  justify-content: space-between; /* 텍스트 간 공간 분배 */
+  max-width: 100%; /* 이미지 너비를 제외한 최대 너비 설정 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
+}
+
+/* 상품 제목 */
+.product-card h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: black; /* 상품 제목 색상 유지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
+  white-space: nowrap; /* 텍스트가 한 줄에만 표시되도록 설정 */
+  max-width: 300px; /* 제목이 이미지 침범하지 않도록 조정*/
+  height: 24px; /* 제목의 고정 높이 설정 */
+}
+
+/* 상품 제목 */
+.product-card h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: black; /* 상품 제목 색상 유지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
+  white-space: nowrap; /* 텍스트가 한 줄에만 표시되도록 설정 */
+  max-width: 300px; /* 제목이 이미지 침범하지 않도록 조정*/
+  height: 24px; /* 제목의 고정 높이 설정 */
+}
+
+  /* 상품 설명 (가격, 위치, 좋아요, 채팅 수) */
+  .product-card p {
+      font-size: 16px;
+      color: #555;
+      margin: 0;
+      overflow: hidden; /* 넘치는 텍스트 숨김 */
+      text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
+      white-space: nowrap; /* 텍스트가 한 줄에만 표시되도록 설정 */
+      max-width: 100%; /* 최대 너비 설정 */
+      height: 20px; /* 설명의 고정 높이 설정 */
+  }
+
+/* 상품 이미지 (오른쪽에 위치) */
+  .product-card img {
+      width: 180px; /* 이미지 크기 */
+      height: 180px; /* 정사각형 이미지 */
+      object-fit: cover; /* 이미지 비율 유지하며 잘라서 채우기 */
+      border-radius: 8px;
+  }
+
+/*인기 상품, 최신 상품 제목*/
+.main-page-title {
+  text-align: left;
+  margin: 20px;
+  color: #C87BD6;
+}
+
+a{
+  text-decoration: none; /* 링크에 밑줄을 제거 */
+}
+
+.product-card .product-info {
+  flex-grow: 1; /* 텍스트 영역이 여유 공간을 차지하도록 설정 */
+  margin-right: 20px; /* 이미지와의 간격 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘칠 경우 "..." 표시 */
+}
+
+/* 링크 스타일 제거 */
+.product-link {
+  text-decoration: none; /* 링크의 밑줄 제거 */
+  color: inherit; /* 부모 요소의 색상(검은색)을 상속받게 설정 */
+}
+
+/* 전체 채팅 목록 */
+.chat-list {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 중앙 정렬 */
+  gap: 20px; /* 각 채팅 그룹 간격 */
+}
+
+/* 상품별 채팅 그룹 */
+.product-chat-group {
+  width: 80%; /* 컨테이너 폭 확대 */
+  max-width: 800px; /* 최대 폭 제한 */
+  background-color: white;
+  padding: 20px; /* 여백 추가 */
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* 메시지와 제목 간격 */
+}
+
+.product-chat-group h3 {
+  margin-top: 0;
+  font-size: 20px; /* 제목 크기 확대 */
+  color: #7a57d1;
+  margin-bottom: 15px;
+}
+
+.product-chat-group h3 a {
+  text-decoration: none;
+  color: #7a57d1;
+}
+
+.product-chat-group h3 a:hover {
+  text-decoration: underline;
+}
+
+/* 채팅 메시지 영역 */
+.chat-messages {
+  padding: 15px;
+  max-height: 500px; /* 스크롤 높이 확대 */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+/* 개별 채팅 카드 */
+.chat-card {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%; /* 메시지 최대 너비 */
+  border-radius: 15px;
+  padding: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 내 메시지 (오른쪽 정렬) */
+.chat-message.own-message {
+  align-self: flex-end; /* 오른쪽 정렬 */
+  background-color: #ffe082; /* 연한 노란색 */
+  color: #333;
+  text-align: left;
+  border-radius: 15px 15px 0 15px; /* 오른쪽 위를 둥글게 */
+}
+
+/* 상대방 메시지 (왼쪽 정렬) */
+.chat-message.other-message {
+  align-self: flex-start; /* 왼쪽 정렬 */
+  background-color: #e3f2fd; /* 연한 파란색 */
+  color: #333;
+  text-align: left;
+  border-radius: 15px 15px 15px 0; /* 왼쪽 위를 둥글게 */
+}
+
+/* 메시지 시간 */
+.chat-time {
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+  text-align: right;
+}
+
+/* 스크롤바 스타일 */
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background-color: #bbb;
+}
+
+  /* 각 상품별 채팅 그룹 */
+.product-chat-group {
+  flex: 0 1 calc(50% - 20px); /* 한 줄에 2개씩 배치, 간격을 제외한 크기 */
+  border: 1px solid #ddd;
+  border-radius: 12px; /* 모서리를 더 둥글게 */
+  padding: 20px; /* 여백을 더 넉넉히 */
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 더 깊은 그림자 */
+  overflow: hidden;
+  max-width: 600px; /* 각 카드의 최대 크기 */
+  margin: 10px; /* 각 카드 간격 */
+}
+  
+  .points-section {
+    display: flex; /* 가로로 배치 */
+    align-items: center; /* 세로 가운데 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    gap: 20px; /* 각 박스 간 간격 */
+    margin-top: 20px; /* 상단 여백 */
+  }
+  
+  .points-box {
+    text-align: center; /* 텍스트를 가운데 정렬 */
+  }
+  
+  .points-value {
+    font-size: 20px; /* 포인트 값 크기 */
+    font-weight: bold; /* 굵은 폰트 */
+    color: #4a4a4a; /* 회색 */
+  }
+  
+  .points-label {
+    font-size: 14px; /* 레이블 크기 */
+    color: #555; /* 밝은 회색 */
+  }
+  
+  .point-buttons {
+    display: flex; /* 버튼을 가로로 배치 */
+    flex-direction: column; /* 세로로 나열 */
+    align-items: center; /* 버튼 중앙 정렬 */
+    gap: 10px; /* 버튼 간격 */
+  }
+  
+  .point-button {
+    background-color: #d081ff; /* 부드러운 보라색 */
+    padding:10px;
+    color: white; /* 흰색 텍스트 */
+    border: none; /* 기본 테두리 제거 */
+    border-radius: 8px; /* 둥근 모서리 */
+    padding: 8px 12px; /* 안쪽 여백 */
+    font-size: 14px; /* 글씨 크기 */
+    font-weight: bold; /* 굵은 글씨 */
+    cursor: pointer; /* 마우스 커서 포인터로 변경 */
+    transition: all 0.3s ease; /* 부드러운 효과 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+  }
+  
+  .point-button:hover {
+    background-color: #483d8b; /* 호버 시 진한 보라색 */
+    transform: scale(1.05); /* 살짝 확대 */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3); /* 그림자 강조 */
+  } 
+
+  /* 문의 내역 공통 스타일 */
+.inquiries-list {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.inquiries-list h1 {
+  color: #cd40cd;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.inquiries-table {
+  width: 100%; /* 화면 너비의 90% */
+  margin: 0 auto; /* 테이블을 페이지 중앙으로 배치 */
+  border-collapse: collapse;
+}
+
+.inquiries-table th,
+.inquiries-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.inquiries-table th {
+  background-color: #d5a0e2;
+  color: white;
+  font-weight: bold;
+}
+
+.inquiries-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.inquiries-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.answer-row {
+  background-color: #f6f6f6;
+}
+
+.inquiry-link {
+  text-decoration: none; /* 밑줄 제거 */
+  color: black;
+}
+
+.inquiry-link:hover {
+  color: #a472c3; /* 호버 시 색상 변경 */
+}
+
+/* 뒤로가기 버튼 스타일 */
+.go-back-button {
+  background-color: transparent;
+  border: none;
+  color: #c87bd6;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.go-back-button:hover {
+  color: #cd40cd;
+}
+
+/* 문의 작성 버튼 */
+.inquiries-page-button-container {
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  margin: 20px; /* 테이블과의 간격 */
+}
+
+.inquiries-page-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #d5a0e2;
+  color: white;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.inquiries-page-button:hover {
+  background-color: #af69e1;
+}

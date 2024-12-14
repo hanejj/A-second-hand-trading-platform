@@ -1,0 +1,114 @@
+.inquiry-detail-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    width: 90%; /* 적당한 너비 */
+    max-width: 2200px; /* 최대 너비 제한 */
+    margin: 40px auto; /* 위아래 40px 여백, 가운데 정렬 */
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+
+  .inquiry-detail-page-header {
+    margin-bottom: 10px;
+  }
+  
+  .inquiry-detail-page-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .inquiry-detail-page-meta {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .inquiry-detail-page-divider {
+    border: none;
+    border-top: 2px solid #ddd;
+    margin: 20px 0;
+  }
+  
+  .inquiry-detail-page-content {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  .inquiry-detail-page h1 {
+    font-size: 2rem;
+    color: #6a2f91;
+    margin-bottom: 20px;
+  }
+  
+  .inquiry-detail-page p {
+    font-size: 1rem;
+    margin: 10px 0;
+    line-height: 1.5;
+  }
+  
+  .inquiry-detail-page img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .inquiry-detail-page-answer-section {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f7f0fa;
+    border-radius: 10px;
+  }
+  
+  .inquiry-detail-page-answer-section h3 {
+    font-size: 1.5rem;
+    color: #6a2f91;
+    margin-bottom: 10px;
+  }
+
+  .inquiry-detail-page-answer-link {
+    text-decoration: none; /* 밑줄 제거 */
+    color:black;
+  }
+  
+  .answer-section a {
+    color: #6a2f91;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .answer-section a:hover {
+    text-decoration: underline;
+  }
+  
+  .inquiry-detail-page-add-answer {
+    display: flex;
+    gap: 20px; /* 버튼 간 간격 추가 */
+    margin-top: 20px;
+  }
+  
+  .inquiry-detail-page-add-answer-button{
+    padding: 10px 20px;
+    border: none;
+    background-color: #d5a0e2;
+    color: white;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    gap:20px;
+  }
+
+  .go-back-button {
+    background-color: transparent;
+    border: none;
+    color: #C87BD6;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  
+  .go-back-button:hover {
+    color:#cd40cd;
+  }

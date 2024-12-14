@@ -1,0 +1,70 @@
+/* 페이지 전체 스타일 */
+.admin-main-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+/* 페이지 전체 스타일 */
+.admin-main-page h1 {
+  color:#cd40cd;
+  text-align: center;
+}
+  
+  /* 버튼 그리드 */
+  .admin-main-page-button-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3개의 열로 구성 */
+    gap: 100px; /* 버튼 간의 간격 */
+    margin-top: 20px;
+  }
+  
+  /* 버튼 스타일 */
+  .admin-main-page-button {
+    width: 500px;
+    background-color: #d5a0e2;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: transform 0.3s, background-color 0.3s;
+  }
+  
+  .admin-main-page-button:hover {
+    background-color: #a472c3;
+    transform: scale(1.1); /* 버튼이 살짝 커지도록 설정 */
+  }
+  
+  .admin-main-page-button:active {
+    background-color: #8456a4;
+  }
+  
+  /* Google Chart Section */
+  /* 그리드 레이아웃을 위한 차트 컨테이너 */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 그리드 칸 수 조절 */
+  gap: 20px; /* 차트 간의 간격 */
+  margin-top: 30px; /* 위쪽 여백 */
+  align-items: center;
+}
+
+.chart-container {
+  margin: 30px auto;
+  padding: 10px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+}
+
+.chart-container p {
+  color: #666;
+  font-size: 1.2em;
+  margin: 0;
+}

@@ -1,0 +1,62 @@
+/* 전체 페이지 스타일 */
+.product-search-page {
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  color: #333; /* 기본 텍스트 색상 */
+  max-width: 100%; /* 최대 너비 설정 */
+  margin: 0 auto; /* 중앙 정렬 */
+}
+
+/* 페이지 제목 */
+.product-search-page h2 {
+  color: #cd40cd; /* 보라색 */
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+/* 검색 폼 스타일 */
+.product-search-page form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 10px; /* 검색 필드와 버튼 간격 */
+}
+
+.product-search-page form input[type="text"] {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 300px;
+  transition: border-color 0.3s;
+}
+
+.product-search-page form input[type="text"]:focus {
+  border-color: #d081ff; /* 포커스 시 보라색 강조 */
+  outline: none;
+}
+
+.product-search-page form button {
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #d081ff; /* 보라색 버튼 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.product-search-page form button:hover {
+  background-color: #cd40cd; /* 호버 시 짙은 보라색 */
+}
+
+/* 에러 메시지 스타일 */
+.product-search-page .error-message {
+  color: #dc3545; /* 빨간색 */
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+}

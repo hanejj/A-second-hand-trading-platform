@@ -90,7 +90,17 @@ const ProductEditPage = () => {
         },
       );
       if (response.data.code === "1000") {
-        setProduct(response.data.data.product); // 상품 정보 설정
+        const productData = response.data.data.product;
+
+        // 상품 정보 설정
+        setProduct(productData);
+        // 각 필드의 초기값 설정
+        setTitle(productData.title);
+        setContent(productData.content);
+        setPrice(productData.price.toString());
+        setCategory(productData.category);
+        setLocation(productData.location);
+        setSellType(productData.selling);
       } else if (response.data.code === "500") {
         // 접근 불가 상품 처리
         alert("접근 불가 상품입니다.");
@@ -226,10 +236,18 @@ const ProductEditPage = () => {
   
         <div className="ProductUploadPage-form-group">
           <label>이미지</label>
+          {product?.image && (
+            <div>
+              <img
+                src={"http://localhost:8080/image?image="+product.image}
+                alt="Uploaded Product"
+                style={{ width: '200px', marginBottom: '10px' }}
+              />
+            </div>
+          )}
           <input
             type="file"
             onChange={handleImageChange}
-            required
             className="ProductUploadPage-input-field"
           />
         </div>

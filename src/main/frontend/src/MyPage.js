@@ -380,16 +380,16 @@ useEffect(() => {
       {activeTab === '판매내역' && (
   <div className="product-list">
     {products.length > 0 ? (
-      [...products]
-        .filter(product => product.status !== 'removed') // status가 removed인 상품 제외
+      products
+        .filter(product => product.status !== 'removed') // 'removed' 상태 제외
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // 최신 순 정렬
         .map(product => (
           <Link 
-            to={`/product/${product.productIdx}`} 
-            className={`product-card ${product.status === "completed" ? "inactive-product" : ""}`} 
-            key={product.productIdx}
+            to={`/product/${product.product_idx}`} 
+            className="product-card" 
+            key={product.product_idx}
           >
-            <div className={`product-info ${product.status === "completed" ? "inactive-product-info-box" : ""}`}> 
+            <div className={`product-info ${product.status === "completed" ? "inactive-product-info-box" : ""}`}>
               <h3>{product.title}</h3>
               <p>{product.price}원</p>
               <p>{product.location}</p>
@@ -448,7 +448,7 @@ useEffect(() => {
         .map(product => (
           <Link 
             to={`/product/${product.productIdx}`} 
-            className={`product-card ${product.status === "completed" ? "inactive-product" : ""}`} 
+            className={`product-card`} 
             key={product.productIdx}
           >
             <div className={`product-info ${product.status === "completed" ? "inactive-product-info-box" : ""}`}> 

@@ -218,7 +218,9 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> getUserSellingProducts(@PathVariable String email) {
         Map<String, Object> responseBody = new HashMap<>();
         try (Connection connection = dataSource.getConnection()) {
-            String query = "SELECT product_idx, title, price, location, heart_num, chat_num, image FROM product WHERE writer_idx = (SELECT user_idx FROM user WHERE id = ?)";
+            String query = "SELECT product_idx, title, price, location, heart_num, chat_num, image, status " +
+                    "FROM product " +
+                    "WHERE writer_idx = (SELECT user_idx FROM user WHERE id = ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, email);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -233,6 +235,7 @@ public class UserController {
                 product.put("heart_num", resultSet.getInt("heart_num"));
                 product.put("chat_num", resultSet.getInt("chat_num"));
                 product.put("image", resultSet.getString("image"));
+                product.put("status", resultSet.getString("status"));
                 products.add(product);
             }
 
